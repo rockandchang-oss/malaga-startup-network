@@ -1,0 +1,204 @@
+import { useEffect, useMemo, useState } from "react"
+import { Link } from "react-router-dom"
+import {
+  loadQuestions, submitOnboarding, saveInterests,
+  type Question, type Answers, type Contact, type Suggestion,
+} from "../lib/onboarding"
+
+const WHATSAPP = import.meta.env.VITE_CONTACT_WHATSAPP as string | undefined
+const EMAIL = import.meta.env.VITE_CONTACT_EMAIL as string | undefined
+
+export default function Onboarding() {
+  const [questions, setQuestions] = useState<Question[]>([])
+  const [loadingQ, setLoadingQ] = useState(true)
+  const [step, setStep] = useState(0)
+  const [answers, setAnswers] = useState<Answers>({})
+  const [contact, setContact] = useState<Contact>({ contact_name: "", project_name: "", email: "", whatsapp: "", consent: false })
+  const [submitting, setSubmitting] = useState(false)
+  const [result, setResult] = useState<{ leadId: string; suggestions: Suggestion[] } | null>(null)
+  const [picks, setPicks] = useState<Set<number>>(new Set())
+  const [done, setDone] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    loadQuestions().then((qs) => { setQuestions(qs); setLoadingQ(false) })
+  }, [])
+
+  // steps = each question + contact step
+  const totalSteps = questions.length + 1
+  const isContactStep = step === questions.length
+  const progress = Math.round(((step) / totalSteps) * 100)
+
+  const currentQ = questions[step]
+  const currentAnswer = currentQ ? answers[currentQ.id] : undefined
+
+  function toggleOption(q: Question, optionId: string) {
+    setAnswers((prev) => {
+      const existing = prev[q.id]?.optionIds ?? []
+      let next: string[]
+      if (q.input_type === "single_select") next = [optionId]
+      else next = existing.includes(optionId) ? existing.filter((x) => x !== optionId) : [...existing, optionId]
+      return { ...prev, [q.id]: { optionIds: next } }
+    })
+  }
+
+  const canNext = useMemo(() => {
+    if (isContactStep) return contact.consent && (contact.email || contact.whatsapp)
+    if (!currentQ) return false
+    if (!currentQ.is_required) return true
+    return (currentAnswer?.optionIds?.length ?? 0) > 0 || !!currentAnswer?.text
+  }, [isContactStep, currentQ, currentAnswer, contact])
+
+  async function handleSubmit() {
+    setSubmitting(true); setError(null)
+    try {
+      const r = await submitOnboarding(questions, answers, contact)
+      setResult(r)
+    } catch (e: any) {
+      setError(e.message ?? "Ha ocurrido un error. Inténtalo de nuevo.")
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  async function confirmPicks() {
+    if (!result) return
+    const chosen = Array.from(picks).map((i) => result.suggestions[i])
+    await saveInterests(result.leadId, chosen)
+    setDone(true)
+  }
+
+  if (loadingQ) return <div className="container-x py-32 text-center text-slate-400">Preparando tus preguntas…</div>
+
+  // ---------- RESULTS ----------
+  if (result) {
+    if (done) {
+      const waText = encodeURIComponent("¡Hola! Vengo de Málaga Startup Network y me interesan algunos programas.")
+      return (
+        <div className="container-x max-w-2xl py-20 text-center">
+          <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-green-100 text-3xl">✓</div>
+          <h1 className="mt-6 text-3xl font-extrabold">¡Hecho, {contact.contact_name || "emprendedor"}!</h1>
+          <p className="mt-3 text-slate-600">
+            Hemos guardado tus intereses. El equipo de la red te contactará. Si quieres acelerar, escríbenos:
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            {WHATSAPP && <a className="btn-sun" href={`https://wa.me/${WHATSAPP}?text=${waText}`} target="_blank" rel="noreferrer">Escribir por WhatsApp</a>}
+            {EMAIL && <a className="btn-ghost" href={`mailto:${EMAIL}`}>Enviar un email</a>}
+          </div>
+          <Link to="/entidades" className="mt-8 inline-block text-sm font-semibold text-brand-700 hover:underline">Explorar todas las entidades →</Link>
+        </div>
+      )
+    }
+    return (
+      <div className="container-x max-w-4xl py-14">
+        <h1 className="text-3xl font-extrabold tracking-tight">Esto es lo que encaja contigo</h1>
+        <p className="mt-2 text-slate-600">Selecciona los que te interesen (uno o varios) y te ponemos en contacto.</p>
+        <div className="mt-8 grid gap-5 sm:grid-cols-2">
+          {result.suggestions.map((s, i) => {
+            const selected = picks.has(i)
+            return (
+              <button key={i} onClick={() => setPicks((p) => { const n = new Set(p); n.has(i) ? n.delete(i) : n.add(i); return n })}
+                className={`card text-left transition ${selected ? "ring-2 ring-brand-500" : "hover:shadow-md"}`}>
+                {s.photo_url && <img src={s.photo_url} alt="" className="h-36 w-full rounded-t-2xl object-cover" />}
+                <div className="p-5">
+                  <div className="flex items-center gap-3">
+                    {s.logo_url && <img src={s.logo_url} alt="" className="h-8 w-8 object-contain" />}
+                    <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">{s.entity_name}</span>
+                  </div>
+                  <h3 className="mt-2 font-bold">{s.name}</h3>
+                  <p className="mt-1 text-sm text-slate-600">{s.description}</p>
+                  {s.reason && <p className="mt-2 text-xs text-brand-700">Por qué: {s.reason}</p>}
+                  <span className={`mt-3 inline-block rounded-full px-3 py-1 text-xs font-semibold ${selected ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-500"}`}>
+                    {selected ? "Seleccionado ✓" : "Seleccionar"}
+                  </span>
+                </div>
+              </button>
+            )
+          })}
+        </div>
+        <div className="mt-8 flex justify-end">
+          <button disabled={picks.size === 0} onClick={confirmPicks}
+            className="btn-primary disabled:cursor-not-allowed disabled:opacity-50">
+            Continuar con {picks.size || 0} seleccionado{picks.size === 1 ? "" : "s"} →
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // ---------- WIZARD ----------
+  return (
+    <div className="container-x max-w-2xl py-12">
+      <div className="mb-8">
+        <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+          <div className="h-full rounded-full bg-brand-600 transition-all" style={{ width: `${progress}%` }} />
+        </div>
+        <p className="mt-2 text-xs font-medium text-slate-400">Paso {step + 1} de {totalSteps}</p>
+      </div>
+
+      {!isContactStep && currentQ && (
+        <div>
+          <h1 className="text-2xl font-extrabold tracking-tight">{currentQ.prompt}</h1>
+          {currentQ.help_text && <p className="mt-2 text-slate-500">{currentQ.help_text}</p>}
+          <div className="mt-6 space-y-3">
+            {currentQ.options.map((o) => {
+              const sel = currentAnswer?.optionIds?.includes(o.id)
+              return (
+                <button key={o.id} onClick={() => toggleOption(currentQ, o.id)}
+                  className={`flex w-full items-center gap-3 rounded-xl border px-4 py-4 text-left transition ${sel ? "border-brand-500 bg-brand-50" : "border-slate-200 hover:border-brand-300"}`}>
+                  <span className={`grid h-5 w-5 place-items-center rounded-md border-2 ${sel ? "border-brand-600 bg-brand-600 text-white" : "border-slate-300"}`}>
+                    {sel && "✓"}
+                  </span>
+                  <span className="font-medium">{o.label}</span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {isContactStep && (
+        <div>
+          <h1 className="text-2xl font-extrabold tracking-tight">Casi está. ¿Cómo te contactamos?</h1>
+          <p className="mt-2 text-slate-500">Te enviaremos tus encajes y los siguientes pasos.</p>
+          <div className="mt-6 space-y-4">
+            <Field label="Tu nombre" value={contact.contact_name} onChange={(v) => setContact({ ...contact, contact_name: v })} />
+            <Field label="Nombre del proyecto" value={contact.project_name} onChange={(v) => setContact({ ...contact, project_name: v })} />
+            <Field label="Email" type="email" value={contact.email} onChange={(v) => setContact({ ...contact, email: v })} />
+            <Field label="WhatsApp / teléfono" value={contact.whatsapp} onChange={(v) => setContact({ ...contact, whatsapp: v })} />
+            <label className="flex items-start gap-3 text-sm text-slate-600">
+              <input type="checkbox" checked={contact.consent} onChange={(e) => setContact({ ...contact, consent: e.target.checked })} className="mt-1" />
+              Acepto que Málaga Startup Network trate mis datos para contactarme sobre programas de apoyo.
+            </label>
+          </div>
+        </div>
+      )}
+
+      {error && <p className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">{error}</p>}
+
+      <div className="mt-8 flex items-center justify-between">
+        <button onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0}
+          className="text-sm font-medium text-slate-500 disabled:opacity-0">← Atrás</button>
+        {isContactStep ? (
+          <button onClick={handleSubmit} disabled={!canNext || submitting} className="btn-primary disabled:opacity-50">
+            {submitting ? "Calculando encajes…" : "Ver mis programas →"}
+          </button>
+        ) : (
+          <button onClick={() => setStep((s) => s + 1)} disabled={!canNext} className="btn-primary disabled:opacity-50">
+            Continuar →
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function Field({ label, value, onChange, type = "text" }: { label: string; value: string; onChange: (v: string) => void; type?: string }) {
+  return (
+    <label className="block">
+      <span className="text-sm font-medium text-slate-700">{label}</span>
+      <input type={type} value={value} onChange={(e) => onChange(e.target.value)}
+        className="mt-1 w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100" />
+    </label>
+  )
+}

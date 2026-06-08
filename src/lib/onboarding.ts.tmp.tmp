@@ -1,0 +1,178 @@
+import { supabase } from "./supabase"
+
+export type Option = {
+  id: string
+  label: string
+  value: string | null
+  maps_to_tag_id: string | null
+  maps_to_stage_id: string | null
+  sort_order: number
+}
+export type Question = {
+  id: string
+  step: number
+  prompt: string
+  help_text: string | null
+  input_type: "single_select" | "multi_select" | "text" | "number" | "email" | "phone" | "boolean"
+  is_required: boolean
+  sort_order: number
+  options: Option[]
+}
+
+export type Answers = Record<string, { optionIds: string[]; text?: string }>
+
+export type Contact = {
+  contact_name: string
+  project_name: string
+  email: string
+  whatsapp: string
+  consent: boolean
+}
+
+export type Suggestion = {
+  program_id: string | null
+  entity_id: string | null
+  name: string
+  entity_name: string
+  logo_url: string | null
+  photo_url: string | null
+  description: string | null
+  score: number
+  reason: string | null
+}
+
+export async function loadQuestions(): Promise<Question[]> {
+  const { data: qs } = await supabase
+    .from("onboarding_questions")
+    .select("id,step,prompt,help_text,input_type,is_required,sort_order")
+    .eq("is_active", true)
+    .order("step")
+    .order("sort_order")
+  if (!qs) return []
+
+  const { data: opts } = await supabase
+    .from("onboarding_options")
+    .select("id,question_id,label,value,maps_to_tag_id,maps_to_stage_id,sort_order")
+    .order("sort_order")
+
+  return qs.map((q: any) => ({
+    ...q,
+    options: (opts ?? []).filter((o: any) => o.question_id === q.id),
+  }))
+}
+
+// Maps selected option "value" codes to structured lead columns (for stats).
+function structuredFromValues(values: string[]) {
+  const v = new Set(values)
+  const lead: Record<string, any> = {}
+  if (v.has("idea")) lead.has_idea = true
+  if (v.has("sin_fin")) lead.has_funding = false
+  if (v.has("mvp")) lead.has_validated = true
+  if (v.has("clientes")) { lead.paying_customers = 10; lead.has_validated = true }
+  if (v.has("facturo")) lead.revenue_band = "recurrente"
+  if (v.has("constituida")) lead.is_incorporated = true
+  if (v.has("ronda")) { lead.in_funding_round = true; lead.needs_investment = true }
+  if (v.has("impacto")) lead.social_impact = true
+  // location (Q2)
+  if (v.has("malaga-capital")) { lead.location_city = "Málaga"; lead.location_region = "Málaga" }
+  else if (v.has("malaga-provincia")) lead.location_region = "Málaga"
+  else if (v.has("andalucia")) lead.location_region = "Andalucía"
+  else if (v.has("espana")) lead.location_country = "España"
+  else if (v.has("internacional")) lead.location_country = "Internacional"
+  // needs
+  if (v.has("financiacion")) lead.needs_investment = true
+  return lead
+}
+
+export async function submitOnboarding(
+  questions: Question[],
+  answers: Answers,
+  contact: Contact,
+): Promise<{ leadId: string; suggestions: Suggestion[] }> {
+  // Flatten selected options
+  const allOptions = questions.flatMap((q) => q.options)
+  const selectedIds = new Set(Object.values(answers).flatMap((a) => a.optionIds))
+  const selected = allOptions.filter((o) => selectedIds.has(o.id))
+  const values = selected.map((o) => o.value ?? "").filter(Boolean)
+  const stageId = selected.find((o) => o.maps_to_stage_id)?.maps_to_stage_id ?? null
+  const tagIds = Array.from(new Set(selected.map((o) => o.maps_to_tag_id).filter(Boolean))) as string[]
+
+  // Build raw_answers map (prompt -> labels/text) for the conversational record
+  const raw: Record<string, any> = {}
+  for (const q of questions) {
+    const a = answers[q.id]
+    if (!a) continue
+    if (a.text) raw[q.prompt] = a.text
+    else raw[q.prompt] = q.options.filter((o) => a.optionIds.includes(o.id)).map((o) => o.label)
+  }
+
+  const leadPayload = {
+    contact_name: contact.contact_name || null,
+    project_name: contact.project_name || null,
+    email: contact.email || null,
+    whatsapp: contact.whatsapp || null,
+    stage_id: stageId,
+    consent: contact.consent,
+    raw_answers: raw,
+    ...structuredFromValues(values),
+  }
+
+  const { data: lead, error } = await supabase.from("leads").insert(leadPayload).select("id").single()
+  if (error || !lead) throw new Error(error?.message ?? "No se pudo crear el lead")
+  const leadId = lead.id
+
+  // Granular responses
+  const responseRows = selected.map((o) => ({
+    lead_id: leadId,
+    question_id: questions.find((q) => q.options.some((opt) => opt.id === o.id))?.id ?? null,
+    option_id: o.id,
+  }))
+  // text responses
+  for (const q of questions) {
+    const a = answers[q.id]
+    if (a?.text) responseRows.push({ lead_id: leadId, question_id: q.id, option_id: null, text_value: a.text } as any)
+  }
+  if (responseRows.length) await supabase.from("lead_responses").insert(responseRows)
+  if (tagIds.length) await supabase.from("lead_tags").insert(tagIds.map((tag_id) => ({ lead_id: leadId, tag_id })))
+
+  // Matching via edge function (falls back to client query if unavailable)
+  let suggestions: Suggestion[] = []
+  try {
+    const { data, error: fnErr } = await supabase.functions.invoke("match-programs", { body: { lead_id: leadId } })
+    if (!fnErr && data?.suggestions) suggestions = data.suggestions
+  } catch { /* fall back below */ }
+
+  if (suggestions.length === 0) suggestions = await fallbackMatch(tagIds, stageId)
+  return { leadId, suggestions }
+}
+
+// Client-side fallback: published programs matching tags/stage, else featured entities.
+async function fallbackMatch(tagIds: string[], stageId: string | null): Promise<Suggestion[]> {
+  const { data: programs } = await supabase
+    .from("programs")
+    .select("id,name,short_description,photo_url,entity_id,entities(name,logo_url)")
+    .eq("status", "published")
+    .limit(6)
+  if (programs && programs.length) {
+    return programs.map((p: any) => ({
+      program_id: p.id, entity_id: p.entity_id, name: p.name,
+      entity_name: p.entities?.name ?? "", logo_url: p.entities?.logo_url ?? null,
+      photo_url: p.photo_url, description: p.short_description, score: 0.5, reason: null,
+    }))
+  }
+  const { data: ents } = await supabase
+    .from("entities").select("id,name,slug,logo_url,short_description")
+    .eq("status", "published").eq("is_featured", true).limit(6)
+  return (ents ?? []).map((e: any) => ({
+    program_id: null, entity_id: e.id, name: e.name, entity_name: e.name,
+    logo_url: e.logo_url, photo_url: null, description: e.short_description, score: 0.4, reason: null,
+  }))
+}
+
+export async function saveInterests(leadId: string, picks: Suggestion[]) {
+  if (!picks.length) return
+  await supabase.from("lead_interests").insert(
+    picks.map((p) => ({ lead_id: leadId, program_id: p.program_id, entity_id: p.entity_id })),
+  )
+  await supabase.from("leads").update({ status: "qualified" }).eq("id", leadId)
+}
