@@ -102,6 +102,7 @@ export default function Onboarding() {
 
   // ---------- SUGGESTIONS ----------
   if (phase === "suggestions") {
+    const showAndalucia = !!selection && selection.values.some((v) => ["malaga-capital", "malaga-provincia", "andalucia"].includes(v))
     return (
       <div className="container-x max-w-5xl py-12">
         <ProgressBar progress={progress} label="Tus encajes" />
@@ -114,36 +115,65 @@ export default function Onboarding() {
         <div className="mt-8 grid gap-5 sm:grid-cols-2">
           {suggestions.map((s, i) => {
             const selected = picks.has(i)
+            const toggle = () => setPicks((p) => { const n = new Set(p); n.has(i) ? n.delete(i) : n.add(i); return n })
+            const href = s.entity_slug ? `/entidades/${s.entity_slug}` : null
+            const header = (
+              <div className="relative h-32 w-full overflow-hidden bg-gradient-to-br from-brand-400 to-brand-600">
+                {s.photo_url && <img src={s.photo_url} alt="" loading="lazy" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }} className="h-full w-full object-cover" />}
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-700/85 via-brand-600/35 to-brand-500/10" />
+                <div className="absolute left-3 top-3 flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 shadow-sm">
+                  {s.logo_url && <img src={s.logo_url} alt="" className="h-5 w-5 object-contain" />}
+                  <span className="text-xs font-semibold text-slate-700">{s.entity_name}</span>
+                </div>
+              </div>
+            )
+            const body = (
+              <>
+                <h3 className="font-bold leading-snug">{s.name}</h3>
+                <p className="mt-1 text-sm text-slate-600">{s.description}</p>
+                {s.reason && <p className="mt-2 text-xs font-medium text-brand-700">Por qué encaja: {s.reason}</p>}
+                {s.cases && s.cases.length > 0 && (
+                  <p className="mt-2 text-[11px] leading-snug text-slate-400">
+                    <span className="font-semibold text-slate-500">Casos de éxito:</span> {s.cases.join(", ")}
+                  </p>
+                )}
+              </>
+            )
             return (
-              <button key={i} onClick={() => setPicks((p) => { const n = new Set(p); n.has(i) ? n.delete(i) : n.add(i); return n })}
-                className={`group relative overflow-hidden rounded-2xl border text-left transition ${selected ? "border-brand-500 ring-2 ring-brand-400" : "border-slate-200 hover:border-brand-300 hover:shadow-md"}`}>
-                <div className="relative h-32 w-full overflow-hidden bg-gradient-to-br from-brand-400 to-brand-600">
-                  {s.photo_url && <img src={s.photo_url} alt="" loading="lazy" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }} className="h-full w-full object-cover" />}
-                  <div className="absolute inset-0 bg-gradient-to-t from-brand-700/85 via-brand-600/35 to-brand-500/10" />
-                  <div className="absolute left-3 top-3 flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 shadow-sm">
-                    {s.logo_url && <img src={s.logo_url} alt="" className="h-5 w-5 object-contain" />}
-                    <span className="text-xs font-semibold text-slate-700">{s.entity_name}</span>
-                  </div>
-                  <div className={`absolute right-3 top-3 grid h-7 w-7 place-items-center rounded-full text-sm font-bold ${selected ? "bg-brand-500 text-brand-950" : "bg-white/90 text-slate-400"}`}>
-                    {selected ? "✓" : "+"}
+              <div key={i}
+                className={`group relative flex flex-col overflow-hidden rounded-2xl border text-left transition ${selected ? "border-brand-500 ring-2 ring-brand-400" : "border-slate-200 hover:border-brand-300 hover:shadow-md"}`}>
+                {href ? <Link to={href} className="block">{header}</Link> : header}
+                <button type="button" onClick={toggle} aria-label={selected ? "Quitar selección" : "Seleccionar"}
+                  className={`absolute right-3 top-3 grid h-7 w-7 place-items-center rounded-full text-sm font-bold transition ${selected ? "bg-brand-500 text-brand-950" : "bg-white/90 text-slate-400 hover:text-brand-600"}`}>
+                  {selected ? "✓" : "+"}
+                </button>
+                <div className="flex flex-1 flex-col p-5">
+                  {href ? <Link to={href} className="block">{body}</Link> : <div>{body}</div>}
+                  <div className="mt-3 flex items-center gap-3">
+                    <button type="button" onClick={toggle}
+                      className={`rounded-full px-3 py-1 text-xs font-semibold transition ${selected ? "bg-brand-500 text-brand-950" : "bg-slate-100 text-slate-500 hover:bg-brand-100 hover:text-brand-700"}`}>
+                      {selected ? "Seleccionado ✓" : "Quiero información"}
+                    </button>
+                    {href && <Link to={href} className="text-xs font-semibold text-brand-700 hover:underline">Ver ficha →</Link>}
                   </div>
                 </div>
-                <div className="p-5">
-                  <h3 className="font-bold leading-snug">{s.name}</h3>
-                  <p className="mt-1 text-sm text-slate-600">{s.description}</p>
-                  {s.reason && <p className="mt-2 text-xs font-medium text-brand-700">Por qué encaja: {s.reason}</p>}
-                  {s.cases && s.cases.length > 0 && (
-                    <p className="mt-2 text-[11px] leading-snug text-slate-400">
-                      <span className="font-semibold text-slate-500">Casos de éxito:</span> {s.cases.join(", ")}
-                    </p>
-                  )}
-                  <span className={`mt-3 inline-block rounded-full px-3 py-1 text-xs font-semibold ${selected ? "bg-brand-500 text-brand-950" : "bg-slate-100 text-slate-500 group-hover:bg-brand-100 group-hover:text-brand-700"}`}>
-                    {selected ? "Seleccionado" : "Quiero información"}
-                  </span>
-                </div>
-              </button>
+              </div>
             )
           })}
+
+          {showAndalucia && (
+            <Link to="/entidades/andalucia-emprende"
+              className="group relative flex flex-col overflow-hidden rounded-2xl border border-[#4A5D8A]/40 bg-[#4A5D8A] text-left shadow-sm transition hover:shadow-md">
+              <div className="flex flex-1 flex-col justify-between p-5 text-white">
+                <div>
+                  <span className="inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">Andalucía Emprende</span>
+                  <h3 className="mt-3 text-lg font-bold leading-snug">¿Quieres ver la agenda de actividades relacionadas con el emprendimiento en Andalucía?</h3>
+                  <p className="mt-2 text-sm text-white/80">Talleres, formación y eventos para emprender en toda la comunidad.</p>
+                </div>
+                <span className="mt-4 inline-block text-sm font-semibold group-hover:underline">Ver la agenda →</span>
+              </div>
+            </Link>
+          )}
         </div>
 
         <div className="mt-8 flex items-center justify-between">

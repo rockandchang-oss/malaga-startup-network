@@ -24,7 +24,8 @@ export default function Home() {
         {/* Fondo: imagen sutil + degradado para legibilidad */}
         <div className="absolute inset-0 -z-10">
           <img src={heroBg} alt="" className="h-full w-full scale-105 object-cover blur-[1.5px]" />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/55 via-white/70 to-white" />
+          <div className="absolute inset-0 bg-[#4A5D8A]/45 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/45 via-white/65 to-white" />
         </div>
         <div className="container-x grid items-center gap-10 py-20 lg:grid-cols-2 lg:py-28">
           <div>

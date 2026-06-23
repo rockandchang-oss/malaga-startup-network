@@ -14,7 +14,7 @@ export type Contact = { contact_name: string; project_name: string; email: strin
 export type Suggestion = {
   program_id: string | null; entity_id: string | null; name: string; entity_name: string
   logo_url: string | null; photo_url: string | null; description: string | null; score: number; reason: string | null
-  cases?: string[]
+  cases?: string[]; entity_slug?: string | null
 }
 export type Selection = {
   stageId: string | null; tagIds: string[]; values: string[]
@@ -109,6 +109,11 @@ async function attachSuccessCases(suggestions: Suggestion[]) {
   const byEntity: Record<string, string[]> = {}
   for (const c of data ?? []) { (byEntity[(c as any).entity_id] ??= []).push((c as any).title) }
   for (const s of suggestions) if (s.entity_id) s.cases = (byEntity[s.entity_id] ?? []).slice(0, 3)
+  // Slugs para enlazar cada tarjeta a la ficha de la entidad
+  const { data: ents } = await supabase.from("entities").select("id,slug").in("id", entityIds)
+  const slugById: Record<string, string> = {}
+  for (const e of ents ?? []) slugById[(e as any).id] = (e as any).slug
+  for (const s of suggestions) if (s.entity_id) s.entity_slug = slugById[s.entity_id] ?? null
 }
 
 // Crea el lead UNA sola vez con todo (anon puede INSERTAR, no actualizar).

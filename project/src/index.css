@@ -8,7 +8,7 @@ html { scroll-behavior: smooth; }
 body { @apply bg-white text-brand-950 font-sans antialiased; }
 
 @layer components {
-  .btn { @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 font-semibold transition; }
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 font-semibold transition; }
   .btn-primary { @apply btn bg-brand-500 text-brand-950 hover:bg-brand-600 shadow-sm; }
   .btn-sun { @apply btn bg-brand-500 text-brand-950 hover:bg-brand-600 shadow-sm; }
   .btn-ghost { @apply btn border border-brand-300 text-brand-800 hover:bg-brand-50; }
