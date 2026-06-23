@@ -163,14 +163,22 @@ export default function Onboarding() {
 
           {showAndalucia && (
             <Link to="/entidades/andalucia-emprende"
-              className="group relative flex flex-col overflow-hidden rounded-2xl border border-[#4A5D8A]/40 bg-[#4A5D8A] text-left shadow-sm transition hover:shadow-md">
-              <div className="flex flex-1 flex-col justify-between p-5 text-white">
-                <div>
-                  <span className="inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">Andalucía Emprende</span>
-                  <h3 className="mt-3 text-lg font-bold leading-snug">¿Quieres ver la agenda de actividades relacionadas con el emprendimiento en Andalucía?</h3>
-                  <p className="mt-2 text-sm text-white/80">Talleres, formación y eventos para emprender en toda la comunidad.</p>
+              className="group relative flex flex-col overflow-hidden rounded-2xl border border-[#4A5D8A]/30 bg-gradient-to-br from-[#4A5D8A] to-[#3a4a6f] text-left shadow-sm transition hover:shadow-lg">
+              <div className="flex flex-1 flex-col p-5 text-white">
+                <div className="flex items-center gap-3">
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white p-1.5 shadow-sm">
+                    <img src="https://malagastartupnetwork.com/img/logos-startups/logo-AndaluciaEmprende.png" alt="Andalucía Emprende" className="h-full w-full object-contain" />
+                  </span>
+                  <div>
+                    <p className="text-sm font-bold leading-tight">Andalucía Emprende</p>
+                    <p className="text-[11px] font-medium uppercase tracking-wide text-white/70">Agenda de eventos</p>
+                  </div>
                 </div>
-                <span className="mt-4 inline-block text-sm font-semibold group-hover:underline">Ver la agenda →</span>
+                <h3 className="mt-4 text-base font-bold leading-snug">¿Quieres ver la agenda de actividades relacionadas con el emprendimiento en Andalucía?</h3>
+                <p className="mt-2 text-sm text-white/80">Talleres, formación y eventos para emprender en toda la comunidad.</p>
+                <span className="mt-4 inline-flex w-fit items-center gap-1.5 rounded-full bg-white px-4 py-2 text-sm font-semibold text-[#4A5D8A] shadow-sm transition group-hover:gap-2.5">
+                  Ver la agenda →
+                </span>
               </div>
             </Link>
           )}
