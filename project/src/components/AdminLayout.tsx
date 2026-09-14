@@ -1,3 +1,4 @@
+import logoMSN from "../assets/logo-MSN.jpg"
 import { NavLink, Outlet, useNavigate, Link } from "react-router-dom"
 import { useAuth } from "../lib/auth"
 
@@ -15,7 +16,7 @@ export default function AdminLayout() {
     <div className="flex min-h-screen bg-slate-50">
       <aside className="hidden w-60 flex-col border-r border-slate-200 bg-white p-4 md:flex">
         <Link to="/" className="mb-6 flex items-center gap-2">
-          <img src="/logo-MSN.jpg" alt="MSN" className="h-8 w-8 rounded-lg object-cover" />
+          <img src={logoMSN} alt="MSN" className="h-8 w-8 rounded-lg object-cover" />
           <span className="text-sm font-extrabold leading-tight">MSN Panel</span>
         </Link>
         <nav className="flex-1 space-y-1">

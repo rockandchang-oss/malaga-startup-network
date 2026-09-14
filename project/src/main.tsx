@@ -32,7 +32,7 @@ function RequireSuperadmin({ children }: { children: React.ReactNode }) {
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={import.meta.env.VITE_BASENAME || "/"}>
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />

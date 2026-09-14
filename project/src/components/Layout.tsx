@@ -1,9 +1,10 @@
+import logoMSN from "../assets/logo-MSN.jpg"
 import { Link, NavLink, Outlet } from "react-router-dom"
 
 function Logo() {
   return (
     <Link to="/" className="flex items-center gap-2">
-      <img src="/logo-MSN.jpg" alt="Málaga Startup Network" className="h-9 w-9 rounded-xl object-cover" />
+      <img src={logoMSN} alt="Málaga Startup Network" className="h-9 w-9 rounded-xl object-cover" />
       <span className="font-extrabold leading-tight tracking-tight">
         Málaga <span className="text-brand-600">Startup</span> Network
       </span>

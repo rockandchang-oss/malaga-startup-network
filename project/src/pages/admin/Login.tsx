@@ -1,3 +1,4 @@
+import logoMSN from "../../assets/logo-MSN.jpg"
 import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import { supabase } from "../../lib/supabase"
@@ -22,7 +23,7 @@ export default function Login() {
     <div className="grid min-h-screen place-items-center bg-slate-50 px-4">
       <div className="w-full max-w-sm">
         <Link to="/" className="mb-6 flex items-center justify-center gap-2">
-          <img src="/logo-MSN.jpg" alt="MSN" className="h-10 w-10 rounded-xl object-cover" />
+          <img src={logoMSN} alt="MSN" className="h-10 w-10 rounded-xl object-cover" />
           <span className="font-extrabold">Málaga Startup Network</span>
         </Link>
         <form onSubmit={submit} className="card space-y-4 p-6">
