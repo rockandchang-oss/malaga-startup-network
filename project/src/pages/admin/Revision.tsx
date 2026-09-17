@@ -31,20 +31,20 @@ export default function Revision() {
     const { error } = await supabase.from("posts")
       .update({ status: "published", published_at: p.published_at ?? new Date().toISOString() })
       .eq("id", p.id)
-    setMsg(error ? "\u274c No se pudo publicar: " + error.message : "\u2713 Publicado: " + p.title)
+    setMsg(error ? "❌ No se pudo publicar: " + error.message : "✓ Publicado: " + p.title)
     load()
   }
 
   async function devolver(p: Post) {
     const { error } = await supabase.from("posts").update({ status: "draft" }).eq("id", p.id)
-    setMsg(error ? "\u274c No se pudo devolver: " + error.message : "\u21a9 Devuelto a borrador: " + p.title)
+    setMsg(error ? "❌ No se pudo devolver: " + error.message : "↩ Devuelto a borrador: " + p.title)
     load()
   }
 
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-extrabold">Revisi\u00f3n de contenidos</h1>
+        <h1 className="text-2xl font-extrabold">Revisión de contenidos</h1>
         {posts.length > 0 && (
           <span className="rounded-full bg-brand-500 px-3 py-1 text-sm font-bold text-brand-950">
             {posts.length} pendiente{posts.length === 1 ? "" : "s"}
@@ -52,18 +52,18 @@ export default function Revision() {
         )}
       </div>
       <p className="mt-1 text-slate-500">
-        Entradas que las entidades han enviado para revisar. Nada se publica sin que lo apruebes aqu\u00ed.
+        Entradas que las entidades han enviado para revisar. Nada se publica sin que lo apruebes aquí.
       </p>
 
       {msg && <p className="mt-3 rounded-lg bg-slate-50 p-3 text-sm text-slate-700">{msg}</p>}
 
-      {cargando && <p className="mt-6 text-slate-400">Cargando\u2026</p>}
+      {cargando && <p className="mt-6 text-slate-400">Cargando…</p>}
 
       {!cargando && posts.length === 0 && (
         <div className="card mt-6 p-8 text-center">
           <p className="text-lg font-semibold text-slate-700">No hay nada pendiente</p>
           <p className="mt-1 text-sm text-slate-500">
-            Cuando una entidad env\u00ede una entrada para revisi\u00f3n, aparecer\u00e1 aqu\u00ed.
+            Cuando una entidad envíe una entrada para revisión, aparecerá aquí.
           </p>
         </div>
       )}
@@ -76,7 +76,7 @@ export default function Revision() {
               <div className="min-w-[240px] flex-1">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                   {entidades[p.entity_id] ?? "Sin entidad"}
-                  {p.updated_at ? " \u00b7 enviado el " + new Date(p.updated_at).toLocaleDateString("es-ES") : ""}
+                  {p.updated_at ? " · enviado el " + new Date(p.updated_at).toLocaleDateString("es-ES") : ""}
                 </p>
                 <h2 className="mt-1 text-lg font-bold leading-snug">{p.title}</h2>
                 <p className="mt-1 text-sm text-slate-600">{p.excerpt}</p>
