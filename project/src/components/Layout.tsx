@@ -1,14 +1,16 @@
 import logoMSN from "../assets/logo-MSN.jpg"
 import { Link, NavLink, Outlet } from "react-router-dom"
 
+const SITE = (import.meta.env.VITE_SITE_URL as string) || "https://malagastartupnetwork.com"
+
 function Logo() {
   return (
-    <Link to="/" className="flex items-center gap-2">
+    <a href={SITE} className="flex items-center gap-2" title="Ir a la web de Malaga Startup Network">
       <img src={logoMSN} alt="Málaga Startup Network" className="h-9 w-9 rounded-xl object-cover" />
       <span className="font-extrabold leading-tight tracking-tight">
         Málaga <span className="text-brand-600">Startup</span> Network
       </span>
-    </Link>
+    </a>
   )
 }
 
@@ -22,9 +24,8 @@ export default function Layout() {
         <div className="container-x flex h-16 items-center justify-between">
           <Logo />
           <nav className="hidden items-center gap-7 md:flex">
-            <NavLink to="/" className={navClass} end>Inicio</NavLink>
             <NavLink to="/entidades" className={navClass}>Entidades</NavLink>
-            <NavLink to="/noticias" className={navClass}>Noticias</NavLink>
+            <a href={SITE + "/pages/actualidad.html"} className="text-sm font-medium text-slate-600 hover:text-brand-700">Actualidad</a>
           </nav>
           <Link to="/empezar" className="btn-primary !px-4 !py-2 text-sm">Empezar</Link>
         </div>
@@ -48,7 +49,7 @@ export default function Layout() {
             <ul className="mt-3 space-y-2 text-sm text-slate-500">
               <li><Link to="/empezar" className="hover:text-brand-700">Encontrar mi programa</Link></li>
               <li><Link to="/entidades" className="hover:text-brand-700">Entidades de la red</Link></li>
-              <li><a href="https://malagastartupnetwork.com" className="hover:text-brand-700">Web oficial</a></li>
+              <li><a href={SITE} className="hover:text-brand-700">Web oficial</a></li>
             </ul>
           </div>
           <div>
