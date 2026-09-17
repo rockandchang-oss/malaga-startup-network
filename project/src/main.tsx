@@ -21,6 +21,7 @@ import Leads from "./pages/admin/Leads"
 import Stats from "./pages/admin/Stats"
 import AdminEntities from "./pages/admin/AdminEntities"
 import AdminUsers from "./pages/admin/AdminUsers"
+import Revision from "./pages/admin/Revision"
 
 function RequireSuperadmin({ children }: { children: React.ReactNode }) {
   const { loading, isSuperadmin } = useAuth()
@@ -53,6 +54,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <Route path="estadisticas" element={<RequireSuperadmin><Stats /></RequireSuperadmin>} />
             <Route path="entidades" element={<RequireSuperadmin><AdminEntities /></RequireSuperadmin>} />
             <Route path="usuarios" element={<RequireSuperadmin><AdminUsers /></RequireSuperadmin>} />
+            <Route path="revision" element={<RequireSuperadmin><Revision /></RequireSuperadmin>} />
           </Route>
 
           <Route path="*" element={<NotFound />} />

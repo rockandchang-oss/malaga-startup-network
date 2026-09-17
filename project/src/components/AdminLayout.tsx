@@ -27,6 +27,7 @@ export default function AdminLayout() {
           {isSuperadmin && (
             <>
               <p className="px-3 pb-1 pt-4 text-xs font-semibold uppercase tracking-wide text-slate-400">Superadmin</p>
+              <NavLink to="/admin/revision" className={link}>Revisión</NavLink>
               <NavLink to="/admin/leads" className={link}>Leads</NavLink>
               <NavLink to="/admin/estadisticas" className={link}>Estadísticas</NavLink>
               <NavLink to="/admin/entidades" className={link}>Entidades</NavLink>
