@@ -51,6 +51,6 @@ npm run build                   # build de producción en dist/
 - [ ] Conexión a Lovable (estética) — pendiente (requiere navegador).
 - [ ] Despliegue en `malaga-startup-network.rockandchange.es` — guía en docs/DESPLIEGUE.md.
 
-Acceso superadmin inicial: rockandchang@gmail.com / MSNadmin2026! (cambiar al entrar).
+Acceso al panel: las credenciales NO se publican aqui. Estan en el gestor de secretos (`secreto get MALAGA__SUPERADMIN_LOGIN`). Ver `_comun/credenciales.md`.
 
 Ver `docs/ARQUITECTURA.md` para el detalle.
