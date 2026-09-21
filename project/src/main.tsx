@@ -1,6 +1,7 @@
 import React from "react"
 import ReactDOM from "react-dom/client"
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom"
+import { useEffect as useEffectRR } from "react"
 import "./index.css"
 import { AuthProvider, useAuth } from "./lib/auth"
 import Layout from "./components/Layout"
@@ -13,6 +14,7 @@ import Blog from "./pages/Blog"
 import BlogPost from "./pages/BlogPost"
 import NotFound from "./pages/NotFound"
 import Login from "./pages/admin/Login"
+import Clave from "./pages/admin/Clave"
 import Dashboard from "./pages/admin/Dashboard"
 import MyEntity from "./pages/admin/MyEntity"
 import MyPrograms from "./pages/admin/MyPrograms"
@@ -22,6 +24,15 @@ import Stats from "./pages/admin/Stats"
 import AdminEntities from "./pages/admin/AdminEntities"
 import AdminUsers from "./pages/admin/AdminUsers"
 import Revision from "./pages/admin/Revision"
+
+function RedirigirInvitacion() {
+  const nav = useNavigate()
+  useEffectRR(() => {
+    const h = window.location.hash || ""
+    if (h.indexOf("type=invite") >= 0 || h.indexOf("type=recovery") >= 0 || h.indexOf("otp_expired") >= 0) nav("/admin/clave", { replace: true })
+  }, [])
+  return null
+}
 
 function RequireSuperadmin({ children }: { children: React.ReactNode }) {
   const { loading, isSuperadmin } = useAuth()
@@ -34,6 +45,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <AuthProvider>
       <BrowserRouter basename={import.meta.env.VITE_BASENAME || "/"}>
+        <RedirigirInvitacion />
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
@@ -45,6 +57,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           </Route>
 
           <Route path="/admin/login" element={<Login />} />
+          <Route path="/admin/clave" element={<Clave />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="entidad" element={<MyEntity />} />

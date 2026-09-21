@@ -43,7 +43,12 @@ export default function Login() {
             {loading ? "Entrando…" : "Entrar"}
           </button>
         </form>
-        <p className="mt-4 text-center text-xs text-slate-400">Acceso reservado a entidades de la red.</p>
+        <p className="mt-4 text-center text-xs text-slate-400">
+          Acceso reservado a entidades de la red.
+        </p>
+        <p className="mt-2 text-center text-xs">
+          <Link to="/admin/clave" className="text-brand-700 hover:underline">¿Primera vez? Establece tu contraseña</Link>
+        </p>
       </div>
     </div>
   )
