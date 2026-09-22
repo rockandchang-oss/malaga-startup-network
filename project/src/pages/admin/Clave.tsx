@@ -2,6 +2,10 @@ import { useEffect, useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import { supabase } from "../../lib/supabase"
 
+const SITE = (import.meta.env.VITE_SITE_URL as string) || "https://malagastartupnetwork.com"
+const BASE = (import.meta.env.VITE_BASENAME as string) || ""
+const URL_CLAVE = SITE + BASE + "/admin/clave"
+
 type Estado = "cargando" | "listo" | "sin-sesion" | "caducado"
 
 export default function Clave() {
@@ -29,7 +33,7 @@ export default function Clave() {
   async function pedirEnlace(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
-    const r = await supabase.auth.resetPasswordForEmail(correo)
+    const r = await supabase.auth.resetPasswordForEmail(correo, { redirectTo: URL_CLAVE })
     if (r.error) setError(r.error.message)
     else setEnviado(true)
   }

@@ -29,6 +29,7 @@ import Revision from "./pages/admin/Revision"
 function RedirigirInvitacion() {
   const nav = useNavigate()
   useEffectRR(() => {
+    if (window.location.pathname.indexOf("/admin/clave") >= 0) return
     const h = window.location.hash || ""
     const esError = h.indexOf("otp_expired") >= 0 || h.indexOf("access_denied") >= 0
     const esInvit = h.indexOf("type=invite") >= 0 || h.indexOf("type=recovery") >= 0
