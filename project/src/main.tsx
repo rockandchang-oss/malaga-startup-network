@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-route
 import { useEffect as useEffectRR } from "react"
 import "./index.css"
 import { AuthProvider, useAuth } from "./lib/auth"
+import { supabase as supabaseCliente } from "./lib/supabase"
 import Layout from "./components/Layout"
 import AdminLayout from "./components/AdminLayout"
 import Home from "./pages/Home"
@@ -29,7 +30,17 @@ function RedirigirInvitacion() {
   const nav = useNavigate()
   useEffectRR(() => {
     const h = window.location.hash || ""
-    if (h.indexOf("type=invite") >= 0 || h.indexOf("type=recovery") >= 0 || h.indexOf("otp_expired") >= 0) nav("/admin/clave", { replace: true })
+    const esError = h.indexOf("otp_expired") >= 0 || h.indexOf("access_denied") >= 0
+    const esInvit = h.indexOf("type=invite") >= 0 || h.indexOf("type=recovery") >= 0
+    if (esError) { nav("/admin/clave" + h, { replace: true }); return }
+    if (!esInvit) return
+    let hecho = false
+    const ir = () => { if (!hecho) { hecho = true; nav("/admin/clave", { replace: true }) } }
+    // el cliente de Supabase lee el hash de forma asincrona: esperamos a la sesion
+    const { data: sub } = supabaseCliente.auth.onAuthStateChange((_e, sesion) => { if (sesion) ir() })
+    supabaseCliente.auth.getSession().then(({ data }) => { if (data.session) ir() })
+    const t = setTimeout(() => nav("/admin/clave" + h, { replace: true }), 4000)
+    return () => { clearTimeout(t); sub.subscription.unsubscribe() }
   }, [])
   return null
 }

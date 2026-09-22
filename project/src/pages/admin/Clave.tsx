@@ -12,12 +12,27 @@ export default function Clave() {
   const [error, setError] = useState<string | null>(null)
   const [ok, setOk] = useState(false)
   const [guardando, setGuardando] = useState(false)
+  const [correo, setCorreo] = useState("")
+  const [enviado, setEnviado] = useState(false)
 
   useEffect(() => {
     const h = window.location.hash || ""
     if (h.indexOf("otp_expired") >= 0 || h.indexOf("access_denied") >= 0) { setEstado("caducado"); return }
-    supabase.auth.getSession().then(({ data }) => setEstado(data.session ? "listo" : "sin-sesion"))
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, sesion) => { if (sesion) setEstado("listo") })
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) setEstado("listo")
+      else setTimeout(() => setEstado((v) => (v === "cargando" ? "sin-sesion" : v)), 2500)
+    })
+    return () => sub.subscription.unsubscribe()
   }, [])
+
+  async function pedirEnlace(e: React.FormEvent) {
+    e.preventDefault()
+    setError(null)
+    const r = await supabase.auth.resetPasswordForEmail(correo)
+    if (r.error) setError(r.error.message)
+    else setEnviado(true)
+  }
 
   async function guardar(e: React.FormEvent) {
     e.preventDefault()
@@ -40,25 +55,34 @@ export default function Clave() {
 
         {estado === "cargando" && <p className="text-center text-slate-400">Comprobando el enlace…</p>}
 
-        {estado === "caducado" && (
-          <div className="card p-6 text-center">
-            <h1 className="text-xl font-bold">El enlace ha caducado</h1>
-            <p className="mt-2 text-sm text-slate-600">
-              Los enlaces de invitación caducan a las 24 horas. Pide que te envíen uno nuevo
-              y ábrelo cuanto antes.
-            </p>
-            <Link to="/admin/login" className="btn-ghost mt-5 inline-block text-sm">Ir al acceso</Link>
-          </div>
-        )}
+        
 
-        {estado === "sin-sesion" && (
-          <div className="card p-6 text-center">
-            <h1 className="text-xl font-bold">Necesitas abrir el enlace del correo</h1>
-            <p className="mt-2 text-sm text-slate-600">
-              Para establecer tu contraseña, entra desde el enlace de invitación que te
-              hemos enviado por correo. Si ya tienes contraseña, accede con normalidad.
+                {(estado === "sin-sesion" || estado === "caducado") && (
+          <div className="card p-6">
+            <h1 className="text-center text-xl font-bold">
+              {estado === "caducado" ? "El enlace ha caducado" : "Necesitas el enlace del correo"}
+            </h1>
+            <p className="mt-2 text-center text-sm text-slate-600">
+              {estado === "caducado"
+                ? "Los enlaces caducan a las 24 horas. Pide uno nuevo aquí mismo:"
+                : "Escribe tu correo y te enviamos un enlace para establecer tu contraseña:"}
             </p>
-            <Link to="/admin/login" className="btn-ghost mt-5 inline-block text-sm">Ir al acceso</Link>
+            {enviado ? (
+              <p className="mt-4 rounded-lg bg-green-50 p-3 text-center text-sm text-green-700">
+                Enlace enviado. Revisa tu correo (y la carpeta de spam). Caduca en 24 horas.
+              </p>
+            ) : (
+              <form onSubmit={pedirEnlace} className="mt-4 space-y-3">
+                <input type="email" required value={correo} onChange={(e) => setCorreo(e.target.value)}
+                  placeholder="tu@correo.com"
+                  className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-brand-500" />
+                {error && <p className="rounded-lg bg-red-50 p-3 text-sm text-red-600">{error}</p>}
+                <button className="btn-primary w-full">Enviarme el enlace</button>
+              </form>
+            )}
+            <p className="mt-4 text-center">
+              <Link to="/admin/login" className="text-xs text-brand-700 hover:underline">Ya tengo contraseña, ir al acceso</Link>
+            </p>
           </div>
         )}
 
