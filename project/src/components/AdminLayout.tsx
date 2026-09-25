@@ -10,7 +10,7 @@ export default function AdminLayout() {
   if (!session) { nav("/admin/login"); return null }
 
   const link = ({ isActive }: { isActive: boolean }) =>
-    `block rounded-lg px-3 py-2 text-sm font-medium ${isActive ? "bg-brand-600 text-white" : "text-slate-600 hover:bg-slate-100"}`
+    `block shrink-0 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium ${isActive ? "bg-brand-600 text-white" : "text-slate-600 hover:bg-slate-100"}`
 
   return (
     <div className="flex min-h-screen bg-slate-50">
@@ -24,6 +24,7 @@ export default function AdminLayout() {
           <NavLink to="/admin/entidad" className={link}>Mi entidad</NavLink>
           <NavLink to="/admin/programas" className={link}>Mis programas</NavLink>
           <NavLink to="/admin/noticias" className={link}>Noticias</NavLink>
+          <NavLink to="/admin/candidaturas" className={link}>Candidaturas 2026</NavLink>
           {isSuperadmin && (
             <>
               <p className="px-3 pb-1 pt-4 text-xs font-semibold uppercase tracking-wide text-slate-400">Superadmin</p>
@@ -42,6 +43,17 @@ export default function AdminLayout() {
         </div>
       </aside>
       <main className="flex-1 overflow-x-hidden">
+        <div className="flex gap-2 overflow-x-auto border-b border-slate-200 bg-white px-3 py-2 md:hidden">
+          <NavLink to="/admin" end className={link}>Inicio</NavLink>
+          <NavLink to="/admin/entidad" className={link}>Mi entidad</NavLink>
+          <NavLink to="/admin/programas" className={link}>Programas</NavLink>
+          <NavLink to="/admin/noticias" className={link}>Noticias</NavLink>
+          <NavLink to="/admin/candidaturas" className={link}>Candidaturas</NavLink>
+          {isSuperadmin && <NavLink to="/admin/revision" className={link}>Revisión</NavLink>}
+          {isSuperadmin && <NavLink to="/admin/leads" className={link}>Leads</NavLink>}
+          {isSuperadmin && <NavLink to="/admin/usuarios" className={link}>Usuarios</NavLink>}
+          <button onClick={signOut} className="shrink-0 px-3 py-2 text-sm font-medium text-red-600">Salir</button>
+        </div>
         <div className="mx-auto max-w-5xl p-6">
           <Outlet />
         </div>

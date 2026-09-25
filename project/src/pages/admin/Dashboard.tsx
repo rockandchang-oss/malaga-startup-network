@@ -30,6 +30,14 @@ export default function Dashboard() {
         {isSuperadmin ? "Panel de administración de la red." : "Gestiona el perfil y los programas de tu entidad."}
       </p>
 
+      <Link to="/admin/candidaturas" className="mt-6 block rounded-2xl border border-brand-200 bg-brand-50 p-5 hover:shadow-md">
+        <p className="text-xs font-bold uppercase tracking-wide text-brand-700">Candidaturas 2026 · plazo hasta el 29 de septiembre</p>
+        <p className="mt-1 text-lg font-extrabold text-brand-950">
+          {isSuperadmin ? "Sigue qué entidades han propuesto ya sus 2 startups" : "Elige tus 2 startups para el evento anual"}
+        </p>
+        <p className="mt-1 text-sm text-brand-800">{isSuperadmin ? "Ver el seguimiento →" : "Proponerlas ahora →"}</p>
+      </Link>
+
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         {isSuperadmin && <Stat label="Leads" value={stats.leads} to="/admin/leads" />}
         {isSuperadmin && <Stat label="Entidades" value={stats.entities} to="/admin/entidades" />}
