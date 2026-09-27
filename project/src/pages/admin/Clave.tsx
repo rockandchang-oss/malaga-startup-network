@@ -6,7 +6,7 @@ const SITE = (import.meta.env.VITE_SITE_URL as string) || "https://malagastartup
 const BASE = (import.meta.env.VITE_BASENAME as string) || ""
 const URL_CLAVE = SITE + BASE + "/admin/clave"
 
-type Estado = "cargando" | "listo" | "sin-sesion" | "caducado"
+type Estado = "cargando" | "confirmar" | "listo" | "sin-sesion" | "caducado"
 
 export default function Clave() {
   const nav = useNavigate()
@@ -19,7 +19,25 @@ export default function Clave() {
   const [correo, setCorreo] = useState("")
   const [enviado, setEnviado] = useState(false)
 
+  const qs = new URLSearchParams(window.location.search)
+  const tokenHash = qs.get("token_hash")
+  const tipo = (qs.get("type") || "recovery") as "invite" | "recovery" | "signup" | "magiclink" | "email"
+  const [verificando, setVerificando] = useState(false)
+
+  // Enlaces del correo con token_hash: NO se consumen al abrir la pagina (los antivirus de correo
+  // corporativo abren los enlaces automaticamente y gastaban la invitacion). Se consumen al pulsar.
+  async function continuar() {
+    if (!tokenHash) return
+    setVerificando(true); setError(null)
+    const r = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: tipo })
+    setVerificando(false)
+    window.history.replaceState(null, "", window.location.pathname)
+    if (r.error) setEstado("caducado")
+    else setEstado("listo")
+  }
+
   useEffect(() => {
+    if (tokenHash) { setEstado("confirmar"); return }
     const h = window.location.hash || ""
     if (h.indexOf("otp_expired") >= 0 || h.indexOf("access_denied") >= 0) { setEstado("caducado"); return }
     const { data: sub } = supabase.auth.onAuthStateChange((_e, sesion) => { if (sesion) setEstado("listo") })
@@ -58,6 +76,19 @@ export default function Clave() {
         </Link>
 
         {estado === "cargando" && <p className="text-center text-slate-400">Comprobando el enlace…</p>}
+
+        {estado === "confirmar" && (
+          <div className="card p-6 text-center">
+            <h1 className="text-xl font-bold">Bienvenido/a al panel</h1>
+            <p className="mt-2 text-sm text-slate-600">
+              Pulsa el botón para continuar y elegir tu contraseña de acceso.
+            </p>
+            {error && <p className="mt-3 rounded-lg bg-red-50 p-3 text-sm text-red-600">{error}</p>}
+            <button onClick={continuar} disabled={verificando} className="btn-primary mt-5 w-full disabled:opacity-50">
+              {verificando ? "Comprobando…" : "Continuar"}
+            </button>
+          </div>
+        )}
 
         
 
