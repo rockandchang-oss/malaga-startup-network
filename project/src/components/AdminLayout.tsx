@@ -1,10 +1,16 @@
 import logoMSN from "../assets/logo-MSN.jpg"
 import { NavLink, Outlet, useNavigate, Link } from "react-router-dom"
 import { useAuth } from "../lib/auth"
+import { useEffect, useState } from "react"
+import TourEntidad from "./TourEntidad"
 
 export default function AdminLayout() {
   const { profile, loading, session, isSuperadmin, signOut } = useAuth()
   const nav = useNavigate()
+  const [tour, setTour] = useState(false)
+  useEffect(() => {
+    if (profile && profile.role !== "superadmin" && profile.entity_id && !profile.tour_visto_at) setTour(true)
+  }, [profile?.id])
 
   if (loading) return <div className="grid min-h-screen place-items-center text-slate-400">Cargando…</div>
   if (!session) { nav("/admin/login"); return null }
@@ -14,6 +20,7 @@ export default function AdminLayout() {
 
   return (
     <div className="flex min-h-screen bg-slate-50">
+      {tour && profile && <TourEntidad userId={profile.id} onClose={() => setTour(false)} />}
       <aside className="hidden w-60 flex-col border-r border-slate-200 bg-white p-4 md:flex">
         <Link to="/" className="mb-6 flex items-center gap-2">
           <img src={logoMSN} alt="MSN" className="h-8 w-8 rounded-lg object-cover" />
@@ -42,6 +49,7 @@ export default function AdminLayout() {
         <div className="mt-4 border-t border-slate-100 pt-4">
           <p className="truncate text-xs text-slate-500">{profile?.full_name}</p>
           <p className="mb-2 text-xs text-slate-400">{isSuperadmin ? "Superadmin" : "Entidad"}</p>
+          {!isSuperadmin && <button onClick={() => setTour(true)} className="mb-2 block text-sm font-medium text-[#4A5D8A] hover:underline">Ver el tour</button>}
           <button onClick={signOut} className="text-sm font-medium text-red-600 hover:underline">Cerrar sesión</button>
         </div>
       </aside>

@@ -9,6 +9,7 @@ export type Profile = {
   role: "superadmin" | "entity_admin" | "editor"
   entity_id: string | null
   avatar_url: string | null
+  tour_visto_at?: string | null
 }
 
 type AuthCtx = {
@@ -33,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function loadProfile(userId: string) {
     const { data } = await supabase
       .from("profiles")
-      .select("id,full_name,role,entity_id,avatar_url")
+      .select("id,full_name,role,entity_id,avatar_url,tour_visto_at")
       .eq("id", userId)
       .maybeSingle()
     setProfile(data as Profile | null)
