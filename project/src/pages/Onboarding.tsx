@@ -19,7 +19,7 @@ export default function Onboarding() {
   const [selection, setSelection] = useState<Selection | null>(null)
   const [suggestions, setSuggestions] = useState<Suggestion[]>([])
   const [picks, setPicks] = useState<Set<number>>(new Set())
-  const [contact, setContact] = useState<Contact>({ contact_name: "", project_name: "", email: "", whatsapp: "", consent: false })
+  const [contact, setContact] = useState<Contact>({ contact_name: "", project_name: "", email: "", whatsapp: "", es_whatsapp: true, consent: false })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -62,7 +62,7 @@ export default function Onboarding() {
     setSubmitting(true); setError(null)
     try {
       const chosen = Array.from(picks).map((i) => suggestions[i])
-      await submitLead(selection, contact, chosen)
+      await submitLead(selection, contact, chosen, suggestions)
       setPhase("done")
     } catch (e: any) { setError(e.message ?? "No se pudo enviar. Inténtalo de nuevo.") }
     finally { setSubmitting(false) }
@@ -197,23 +197,34 @@ export default function Onboarding() {
 
   // ---------- CONTACT ----------
   if (phase === "contact") {
-    const canSend = contact.consent && (contact.email || contact.whatsapp)
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(contact.email.trim())
+    const telOk = contact.whatsapp.replace(/\D/g, "").length >= 9
+    const faltan = [
+      !contact.contact_name.trim() && "tu nombre", !contact.project_name.trim() && "el nombre del proyecto",
+      !emailOk && "un email válido", !telOk && "un teléfono válido", !contact.consent && "aceptar el tratamiento de datos",
+    ].filter(Boolean) as string[]
+    const canSend = faltan.length === 0
     return (
       <div className="container-x max-w-2xl py-12">
         <ProgressBar progress={progress} label="Último paso" />
         <h1 className="text-2xl font-extrabold tracking-tight">Casi está. ¿Cómo te contactamos?</h1>
         <p className="mt-2 text-slate-500">Avisaremos a las {picks.size} entidad{picks.size === 1 ? "" : "es"} que elegiste y te enviaremos los siguientes pasos.</p>
         <div className="mt-6 space-y-4">
-          <Field label="Tu nombre" value={contact.contact_name} onChange={(v) => setContact({ ...contact, contact_name: v })} />
-          <Field label="Nombre del proyecto" value={contact.project_name} onChange={(v) => setContact({ ...contact, project_name: v })} />
-          <Field label="Email" type="email" value={contact.email} onChange={(v) => setContact({ ...contact, email: v })} />
-          <Field label="WhatsApp / teléfono" value={contact.whatsapp} onChange={(v) => setContact({ ...contact, whatsapp: v })} />
+          <Field label="Tu nombre *" value={contact.contact_name} onChange={(v) => setContact({ ...contact, contact_name: v })} />
+          <Field label="Nombre del proyecto *" value={contact.project_name} onChange={(v) => setContact({ ...contact, project_name: v })} />
+          <Field label="Email *" type="email" value={contact.email} onChange={(v) => setContact({ ...contact, email: v })} />
+          <Field label="Teléfono *" type="tel" value={contact.whatsapp} onChange={(v) => setContact({ ...contact, whatsapp: v })} />
+          <label className="-mt-2 flex items-center gap-2 text-sm text-slate-600">
+            <input type="checkbox" checked={contact.es_whatsapp} onChange={(e) => setContact({ ...contact, es_whatsapp: e.target.checked })} />
+            Este número tiene WhatsApp (las entidades podrán escribirte por ahí)
+          </label>
           <label className="flex items-start gap-3 text-sm text-slate-600">
             <input type="checkbox" checked={contact.consent} onChange={(e) => setContact({ ...contact, consent: e.target.checked })} className="mt-1" />
             Acepto que Málaga Startup Network y las entidades seleccionadas traten mis datos para contactarme.
           </label>
         </div>
         {error && <p className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">{error}</p>}
+        {!canSend && <p className="mt-4 text-sm text-slate-500">Para enviar falta: {faltan.join(", ")}.</p>}
         <div className="mt-8 flex items-center justify-between">
           <button onClick={() => setPhase("suggestions")} className="text-sm font-medium text-slate-500">← Volver a los encajes</button>
           <button onClick={submitContact} disabled={!canSend || submitting} className="btn-primary disabled:opacity-50">

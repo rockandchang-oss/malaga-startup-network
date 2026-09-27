@@ -82,7 +82,11 @@ function ProgramEditor({ entityId, program, onClose }: { entityId: string; progr
       name: p.name, slug: p.slug || slugify(p.name || "programa"),
       short_description: p.short_description, long_description: p.long_description, benefits: p.benefits,
       cta_label: p.cta_label, cta_url: p.cta_url, photo_url: p.photo_url, status: p.status,
+      vigencia: p.vigencia || "permanente",
+      fecha_inicio: p.vigencia === "temporal" ? (p.fecha_inicio || null) : null,
+      fecha_fin: p.vigencia === "temporal" ? (p.fecha_fin || null) : null,
     }
+    if (payload.vigencia === "temporal" && !payload.fecha_fin) { setSaving(false); alert("Un programa temporal necesita fecha de fin (plazo)."); return }
     let pid = p.id
     if (pid) {
       await supabase.from("programs").update(payload).eq("id", pid)
@@ -121,6 +125,25 @@ function ProgramEditor({ entityId, program, onClose }: { entityId: string; progr
             <Inp label="Texto del botón (CTA)" value={p.cta_label} onChange={(v) => set("cta_label", v)} />
             <Inp label="Enlace del botón (URL)" value={p.cta_url} onChange={(v) => set("cta_url", v)} />
           </div>
+          <div className="rounded-xl border border-slate-200 p-4">
+            <span className="text-sm font-medium text-slate-700">Vigencia</span>
+            <div className="mt-2 flex flex-wrap gap-4 text-sm">
+              <label className="flex items-center gap-2"><input type="radio" checked={(p.vigencia || "permanente") === "permanente"} onChange={() => set("vigencia", "permanente")} /> Permanente (siempre abierto)</label>
+              <label className="flex items-center gap-2"><input type="radio" checked={p.vigencia === "temporal"} onChange={() => set("vigencia", "temporal")} /> Temporal (convocatoria con plazo)</label>
+            </div>
+            {p.vigencia === "temporal" && (
+              <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                <label className="block text-sm text-slate-700">Abre el
+                  <input type="date" className="input mt-1 w-full" value={p.fecha_inicio || ""} onChange={(e) => set("fecha_inicio", e.target.value)} />
+                </label>
+                <label className="block text-sm text-slate-700">Cierra el *
+                  <input type="date" className="input mt-1 w-full" value={p.fecha_fin || ""} onChange={(e) => set("fecha_fin", e.target.value)} />
+                </label>
+                <p className="text-xs text-slate-500 sm:col-span-2">Al pasar la fecha de cierre deja de mostrarse y de recomendarse automáticamente.</p>
+              </div>
+            )}
+          </div>
+
           <div>
             <span className="text-sm font-medium text-slate-700">Foto</span>
             <div className="mt-1 flex items-center gap-3">

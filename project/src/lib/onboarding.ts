@@ -10,7 +10,7 @@ export type Question = {
   is_required: boolean; sort_order: number; options: Option[]
 }
 export type Answers = Record<string, { optionIds: string[]; text?: string }>
-export type Contact = { contact_name: string; project_name: string; email: string; whatsapp: string; consent: boolean }
+export type Contact = { contact_name: string; project_name: string; email: string; whatsapp: string; es_whatsapp: boolean; consent: boolean }
 export type Suggestion = {
   program_id: string | null; entity_id: string | null; name: string; entity_name: string
   logo_url: string | null; photo_url: string | null; description: string | null; score: number; reason: string | null
@@ -117,14 +117,15 @@ async function attachSuccessCases(suggestions: Suggestion[]) {
 }
 
 // Crea el lead UNA sola vez con todo (anon puede INSERTAR, no actualizar).
-export async function submitLead(selection: Selection, contact: Contact, picks: Suggestion[]) {
+export async function submitLead(selection: Selection, contact: Contact, picks: Suggestion[], sugeridas: Suggestion[] = []) {
   const leadId = crypto.randomUUID()
   const { error } = await supabase.from("leads").insert({
     id: leadId,
     contact_name: contact.contact_name || null,
     project_name: contact.project_name || null,
-    email: contact.email || null,
-    whatsapp: contact.whatsapp || null,
+    email: contact.email.trim() || null,
+    phone: contact.whatsapp.trim() || null,
+    whatsapp: contact.es_whatsapp ? (contact.whatsapp.trim() || null) : null,
     consent: contact.consent,
     stage_id: selection.stageId,
     raw_answers: selection.raw,
@@ -137,6 +138,10 @@ export async function submitLead(selection: Selection, contact: Contact, picks: 
     await supabase.from("lead_responses").insert(selection.responses.map((r) => ({ lead_id: leadId, ...r })))
   if (selection.tagIds.length)
     await supabase.from("lead_tags").insert(selection.tagIds.map((tag_id) => ({ lead_id: leadId, tag_id })))
+  if (sugeridas.length)
+    await supabase.from("lead_suggestions").insert(sugeridas.map((x) => ({
+      lead_id: leadId, program_id: x.program_id, entity_id: x.entity_id, score: x.score, reason: x.reason, source: "rules",
+    })))
   if (picks.length)
     await supabase.from("lead_interests").insert(picks.map((p) => ({ lead_id: leadId, program_id: p.program_id, entity_id: p.entity_id })))
   return leadId
