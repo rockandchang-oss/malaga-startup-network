@@ -1,32 +1,22 @@
 import { useEffect, useState } from "react"
 import { supabase } from "../../lib/supabase"
-import { useAuth } from "../../lib/auth"
 import { uploadImage } from "../../lib/storage"
+import { useEntidadActiva, SelectorEntidad } from "../../lib/entidadActiva"
+import logoMSN from "../../assets/logo-MSN.jpg"
 
 type Entity = Record<string, any>
 
 export default function MyEntity() {
-  const { profile, isSuperadmin } = useAuth()
-  const [entityId, setEntityId] = useState<string | null>(null)
+  const { entityId, elegir, lista, isSuperadmin } = useEntidadActiva()
   const [e, setE] = useState<Entity | null>(null)
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState<string | null>(null)
 
   useEffect(() => {
-    (async () => {
-      let id = profile?.entity_id ?? null
-      // superadmin without entity: let them edit the first one as fallback
-      if (!id && isSuperadmin) {
-        const { data } = await supabase.from("entities").select("id").order("name").limit(1).maybeSingle()
-        id = data?.id ?? null
-      }
-      setEntityId(id)
-      if (id) {
-        const { data } = await supabase.from("entities").select("*").eq("id", id).maybeSingle()
-        setE(data)
-      }
-    })()
-  }, [profile, isSuperadmin])
+    setE(null); setMsg(null)
+    if (!entityId) return
+    supabase.from("entities").select("*").eq("id", entityId).maybeSingle().then(({ data }) => setE(data))
+  }, [entityId])
 
   if (!entityId) return <p className="rounded-lg bg-amber-50 p-4 text-sm text-amber-700">Tu usuario no está vinculado a ninguna entidad todavía.</p>
   if (!e) return <p className="text-slate-400">Cargando…</p>
@@ -52,13 +42,14 @@ export default function MyEntity() {
 
   return (
     <div>
+      {isSuperadmin && <SelectorEntidad entityId={entityId} elegir={elegir} lista={lista} />}
       <h1 className="text-2xl font-extrabold">{e.name}</h1>
       <p className="mt-1 text-slate-500">Edita la información pública de tu entidad.</p>
 
       <div className="mt-6 grid gap-5">
         <div className="card p-5">
           <div className="flex items-center gap-4">
-            <img src={e.logo_url || "/logo-MSN.jpg"} alt="logo" className="h-16 w-16 rounded-xl border object-contain p-1" />
+            <img src={e.logo_url || logoMSN} alt="logo" className="h-16 w-16 rounded-xl border object-contain p-1" />
             <label className="btn-ghost cursor-pointer text-sm">
               Cambiar logo
               <input type="file" accept="image/*" className="hidden" onChange={(ev) => ev.target.files?.[0] && onLogo(ev.target.files[0])} />

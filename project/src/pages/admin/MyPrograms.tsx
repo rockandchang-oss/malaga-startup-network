@@ -1,27 +1,16 @@
 import { useEffect, useState } from "react"
 import { supabase } from "../../lib/supabase"
-import { useAuth } from "../../lib/auth"
 import { uploadImage } from "../../lib/storage"
+import { useEntidadActiva, SelectorEntidad } from "../../lib/entidadActiva"
 
 type Program = Record<string, any>
 
 export default function MyPrograms() {
-  const { profile, isSuperadmin } = useAuth()
-  const [entityId, setEntityId] = useState<string | null>(null)
+  const { entityId, elegir, lista, isSuperadmin } = useEntidadActiva()
   const [programs, setPrograms] = useState<Program[]>([])
   const [editing, setEditing] = useState<Program | null>(null)
 
-  useEffect(() => {
-    (async () => {
-      let id = profile?.entity_id ?? null
-      if (!id && isSuperadmin) {
-        const { data } = await supabase.from("entities").select("id").order("name").limit(1).maybeSingle()
-        id = data?.id ?? null
-      }
-      setEntityId(id)
-      if (id) load(id)
-    })()
-  }, [profile, isSuperadmin])
+  useEffect(() => { setPrograms([]); setEditing(null); if (entityId) load(entityId) }, [entityId])
 
   async function load(id: string) {
     const { data } = await supabase.from("programs").select("*").eq("entity_id", id).order("sort_order")
@@ -32,6 +21,7 @@ export default function MyPrograms() {
 
   return (
     <div>
+      {isSuperadmin && <SelectorEntidad entityId={entityId} elegir={elegir} lista={lista} />}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-extrabold">Mis programas</h1>
         <button onClick={() => setEditing({ entity_id: entityId, status: "draft", name: "", slug: "" })} className="btn-primary text-sm">+ Nuevo programa</button>

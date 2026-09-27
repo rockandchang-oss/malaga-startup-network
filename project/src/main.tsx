@@ -26,6 +26,8 @@ import AdminEntities from "./pages/admin/AdminEntities"
 import AdminUsers from "./pages/admin/AdminUsers"
 import Revision from "./pages/admin/Revision"
 import Candidaturas from "./pages/admin/Candidaturas"
+import Avisos from "./pages/admin/Avisos"
+import MisLeads from "./pages/admin/MisLeads"
 
 function RedirigirInvitacion() {
   const nav = useNavigate()
@@ -77,6 +79,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <Route path="programas" element={<MyPrograms />} />
             <Route path="noticias" element={<MyPosts />} />
             <Route path="candidaturas" element={<Candidaturas />} />
+            <Route path="avisos" element={<Avisos />} />
+            <Route path="emprendedores" element={<MisLeads />} />
             <Route path="leads" element={<RequireSuperadmin><Leads /></RequireSuperadmin>} />
             <Route path="estadisticas" element={<RequireSuperadmin><Stats /></RequireSuperadmin>} />
             <Route path="entidades" element={<RequireSuperadmin><AdminEntities /></RequireSuperadmin>} />

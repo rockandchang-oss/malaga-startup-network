@@ -10,21 +10,23 @@ export default function AdminLayout() {
   if (!session) { nav("/admin/login"); return null }
 
   const link = ({ isActive }: { isActive: boolean }) =>
-    `block shrink-0 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium ${isActive ? "bg-brand-600 text-white" : "text-slate-600 hover:bg-slate-100"}`
+    `block shrink-0 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium ${isActive ? (isSuperadmin ? "bg-brand-600 text-white" : "bg-[#4A5D8A] text-white") : "text-slate-600 hover:bg-slate-100"}`
 
   return (
     <div className="flex min-h-screen bg-slate-50">
       <aside className="hidden w-60 flex-col border-r border-slate-200 bg-white p-4 md:flex">
         <Link to="/" className="mb-6 flex items-center gap-2">
           <img src={logoMSN} alt="MSN" className="h-8 w-8 rounded-lg object-cover" />
-          <span className="text-sm font-extrabold leading-tight">MSN Panel</span>
+          <span className="text-sm font-extrabold leading-tight">MSN Panel{!isSuperadmin && <span className="block text-[11px] font-semibold text-[#4A5D8A]">Entidades</span>}</span>
         </Link>
         <nav className="flex-1 space-y-1">
           <NavLink to="/admin" end className={link}>Inicio</NavLink>
-          <NavLink to="/admin/entidad" className={link}>Mi entidad</NavLink>
-          <NavLink to="/admin/programas" className={link}>Mis programas</NavLink>
+          <NavLink to="/admin/entidad" className={link}>{isSuperadmin ? "Editar entidades" : "Mi entidad"}</NavLink>
+          <NavLink to="/admin/programas" className={link}>{isSuperadmin ? "Programas" : "Mis programas"}</NavLink>
           <NavLink to="/admin/noticias" className={link}>Noticias</NavLink>
           <NavLink to="/admin/candidaturas" className={link}>Candidaturas 2026</NavLink>
+          <NavLink to="/admin/avisos" className={link}>Avisos y reuniones</NavLink>
+          <NavLink to="/admin/emprendedores" className={link}>Emprendedores</NavLink>
           {isSuperadmin && (
             <>
               <p className="px-3 pb-1 pt-4 text-xs font-semibold uppercase tracking-wide text-slate-400">Superadmin</p>
@@ -45,10 +47,12 @@ export default function AdminLayout() {
       <main className="flex-1 overflow-x-hidden">
         <div className="flex gap-2 overflow-x-auto border-b border-slate-200 bg-white px-3 py-2 md:hidden">
           <NavLink to="/admin" end className={link}>Inicio</NavLink>
-          <NavLink to="/admin/entidad" className={link}>Mi entidad</NavLink>
+          <NavLink to="/admin/entidad" className={link}>{isSuperadmin ? "Editar entidades" : "Mi entidad"}</NavLink>
           <NavLink to="/admin/programas" className={link}>Programas</NavLink>
           <NavLink to="/admin/noticias" className={link}>Noticias</NavLink>
           <NavLink to="/admin/candidaturas" className={link}>Candidaturas</NavLink>
+          <NavLink to="/admin/avisos" className={link}>Avisos</NavLink>
+          <NavLink to="/admin/emprendedores" className={link}>Emprendedores</NavLink>
           {isSuperadmin && <NavLink to="/admin/revision" className={link}>Revisión</NavLink>}
           {isSuperadmin && <NavLink to="/admin/leads" className={link}>Leads</NavLink>}
           {isSuperadmin && <NavLink to="/admin/usuarios" className={link}>Usuarios</NavLink>}
