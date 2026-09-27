@@ -27,6 +27,7 @@ export default function AdminLayout() {
           <NavLink to="/admin/candidaturas" className={link}>Candidaturas 2026</NavLink>
           <NavLink to="/admin/avisos" className={link}>Avisos y reuniones</NavLink>
           <NavLink to="/admin/emprendedores" className={link}>Emprendedores</NavLink>
+          {!isSuperadmin && <NavLink to="/admin/estadisticas" className={link}>Estadísticas</NavLink>}
           {isSuperadmin && (
             <>
               <p className="px-3 pb-1 pt-4 text-xs font-semibold uppercase tracking-wide text-slate-400">Superadmin</p>

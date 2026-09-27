@@ -1,6 +1,7 @@
 import React from "react"
 import ReactDOM from "react-dom/client"
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom"
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom"
+import { registrar } from "./lib/actividad"
 import { useEffect as useEffectRR } from "react"
 import "./index.css"
 import { AuthProvider, useAuth } from "./lib/auth"
@@ -49,6 +50,13 @@ function RedirigirInvitacion() {
   return null
 }
 
+function RastreoPaginas() {
+  const loc = useLocation()
+  const { loading } = useAuth()
+  useEffectRR(() => { if (!loading) registrar("pagina") }, [loc.pathname, loading])
+  return null
+}
+
 function RequireSuperadmin({ children }: { children: React.ReactNode }) {
   const { loading, isSuperadmin } = useAuth()
   if (loading) return null
@@ -61,6 +69,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <AuthProvider>
       <BrowserRouter basename={import.meta.env.VITE_BASENAME || "/"}>
         <RedirigirInvitacion />
+        <RastreoPaginas />
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
@@ -82,7 +91,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <Route path="avisos" element={<Avisos />} />
             <Route path="emprendedores" element={<MisLeads />} />
             <Route path="leads" element={<RequireSuperadmin><Leads /></RequireSuperadmin>} />
-            <Route path="estadisticas" element={<RequireSuperadmin><Stats /></RequireSuperadmin>} />
+            <Route path="estadisticas" element={<Stats />} />
             <Route path="entidades" element={<RequireSuperadmin><AdminEntities /></RequireSuperadmin>} />
             <Route path="usuarios" element={<RequireSuperadmin><AdminUsers /></RequireSuperadmin>} />
             <Route path="revision" element={<RequireSuperadmin><Revision /></RequireSuperadmin>} />

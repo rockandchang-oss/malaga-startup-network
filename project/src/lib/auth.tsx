@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 import type { Session } from "@supabase/supabase-js"
 import { supabase } from "./supabase"
+import { fijarActor } from "./actividad"
 
 export type Profile = {
   id: string
@@ -36,6 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .eq("id", userId)
       .maybeSingle()
     setProfile(data as Profile | null)
+    fijarActor(data as any)
   }
 
   useEffect(() => {
@@ -47,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: sub } = supabase.auth.onAuthStateChange(async (_e, s) => {
       setSession(s)
       if (s) await loadProfile(s.user.id)
-      else setProfile(null)
+      else { setProfile(null); fijarActor(null) }
     })
     return () => sub.subscription.unsubscribe()
   }, [])

@@ -4,9 +4,8 @@ import {
   loadQuestions, matchByAnswers, submitLead,
   type Question, type Answers, type Contact, type Suggestion, type Selection,
 } from "../lib/onboarding"
+import { registrar } from "../lib/actividad"
 
-const WHATSAPP = import.meta.env.VITE_CONTACT_WHATSAPP as string | undefined
-const EMAIL = import.meta.env.VITE_CONTACT_EMAIL as string | undefined
 
 type Phase = "questions" | "matching" | "suggestions" | "contact" | "done"
 
@@ -23,7 +22,7 @@ export default function Onboarding() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => { loadQuestions().then((qs) => { setQuestions(qs); setLoadingQ(false) }) }, [])
+  useEffect(() => { loadQuestions().then((qs) => { setQuestions(qs); setLoadingQ(false) }); registrar("onboarding_inicio", undefined, true) }, [])
 
   const currentQ = questions[step]
   const currentAnswer = currentQ ? answers[currentQ.id] : undefined
@@ -52,6 +51,7 @@ export default function Onboarding() {
     try {
       const r = await matchByAnswers(questions, answers)
       setSelection(r.selection); setSuggestions(r.suggestions); setPhase("suggestions")
+      registrar("onboarding_encajes", { n: r.suggestions.length }, true)
     } catch (e: any) {
       setError(e.message ?? "Error al calcular tus encajes."); setPhase("questions")
     }
@@ -63,6 +63,7 @@ export default function Onboarding() {
     try {
       const chosen = Array.from(picks).map((i) => suggestions[i])
       await submitLead(selection, contact, chosen, suggestions)
+      registrar("onboarding_enviado", { elegidas: chosen.length, entidades: chosen.map((c) => c.entity_id) }, true)
       setPhase("done")
     } catch (e: any) { setError(e.message ?? "No se pudo enviar. Inténtalo de nuevo.") }
     finally { setSubmitting(false) }
@@ -72,19 +73,13 @@ export default function Onboarding() {
 
   // ---------- DONE ----------
   if (phase === "done") {
-    const waText = encodeURIComponent("¡Hola! Vengo de Málaga Startup Network y me interesan algunos programas.")
     return (
       <div className="container-x max-w-2xl py-20 text-center">
         <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-green-100 text-3xl">✓</div>
         <h1 className="mt-6 text-3xl font-extrabold">¡Hecho, {contact.contact_name || "emprendedor"}!</h1>
         <p className="mt-3 text-slate-600">
-          Hemos avisado a las entidades que elegiste de que hay un perfil que encaja con lo que buscan. Te
-          contactarán pronto. Si quieres acelerar, escríbenos:
+          Hemos compartido tu perfil con las entidades que elegiste. Te contactarán pronto por email o por teléfono.
         </p>
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
-          {WHATSAPP && <a className="btn-sun" href={`https://wa.me/${WHATSAPP}?text=${waText}`} target="_blank" rel="noreferrer">Escribir por WhatsApp</a>}
-          {EMAIL && <a className="btn-ghost" href={`mailto:${EMAIL}`}>Enviar un email</a>}
-        </div>
         <Link to="/entidades" className="mt-8 inline-block text-sm font-semibold text-brand-700 hover:underline">Explorar todas las entidades →</Link>
       </div>
     )
@@ -186,7 +181,7 @@ export default function Onboarding() {
 
         <div className="mt-8 flex items-center justify-between">
           <span className="text-sm text-slate-400">{picks.size} seleccionado{picks.size === 1 ? "" : "s"}</span>
-          <button disabled={picks.size === 0} onClick={() => setPhase("contact")}
+          <button disabled={picks.size === 0} onClick={() => { setPhase("contact"); registrar("onboarding_contacto", { elegidas: picks.size }, true) }}
             className="btn-primary disabled:cursor-not-allowed disabled:opacity-50">
             Continuar →
           </button>
