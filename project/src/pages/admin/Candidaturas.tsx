@@ -18,6 +18,10 @@ const vacia = (entity_id: string, posicion: 1 | 2): Cand =>
 function fechaLarga(iso: string) {
   return new Date(iso).toLocaleString("es-ES", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Madrid" })
 }
+function aLocal(iso: string) {
+  const d = new Date(iso); const p = (n: number) => String(n).padStart(2, "0")
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`
+}
 function quedan(iso: string) {
   const ms = new Date(iso).getTime() - Date.now()
   if (ms <= 0) return "Plazo cerrado"
@@ -160,7 +164,7 @@ function VistaAdmin({ conv, abierta, onConv }: { conv: Conv; abierta: boolean; o
   const [cands, setCands] = useState<Cand[]>([])
   const [sel, setSel] = useState<string>("")
   const [filtro, setFiltro] = useState<"todas" | "pendientes" | "completas">("todas")
-  const [fecha, setFecha] = useState(conv.fecha_limite.slice(0, 16))
+  const [fecha, setFecha] = useState(aLocal(conv.fecha_limite))
   const [msg, setMsg] = useState<string | null>(null)
 
   async function cargar() {
@@ -168,8 +172,9 @@ function VistaAdmin({ conv, abierta, onConv }: { conv: Conv; abierta: boolean; o
       supabase.from("entities").select("id,name,status,slug").order("name"),
       supabase.from("candidaturas").select("*").eq("edicion", EDICION),
     ])
-    setEnts(((e ?? []) as Ent[]).filter((x) => x.slug !== "entidad-prueba-msn"))
-    setCands((c ?? []) as Cand[])
+    const reales = ((e ?? []) as Ent[]).filter((x) => x.slug !== "entidad-prueba-msn")
+    setEnts(reales)
+    setCands(((c ?? []) as Cand[]).filter((x) => reales.some((r) => r.id === x.entity_id)))
   }
   useEffect(() => { cargar() }, [])
 
