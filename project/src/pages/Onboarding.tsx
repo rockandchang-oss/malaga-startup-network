@@ -8,6 +8,7 @@ import { registrar } from "../lib/actividad"
 
 
 type Phase = "questions" | "matching" | "suggestions" | "contact" | "done"
+const CLAVE_FUNNEL = "msn_funnel_v1"
 
 export default function Onboarding() {
   const [questions, setQuestions] = useState<Question[]>([])
@@ -18,11 +19,32 @@ export default function Onboarding() {
   const [selection, setSelection] = useState<Selection | null>(null)
   const [suggestions, setSuggestions] = useState<Suggestion[]>([])
   const [picks, setPicks] = useState<Set<number>>(new Set())
-  const [contact, setContact] = useState<Contact>({ contact_name: "", project_name: "", email: "", whatsapp: "", es_whatsapp: true, consent: false })
+  const [contact, setContact] = useState<Contact>({ contact_name: "", project_name: "", email: "", whatsapp: "", es_whatsapp: true, web: "", consent: false })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => { loadQuestions().then((qs) => { setQuestions(qs); setLoadingQ(false) }); registrar("onboarding_inicio", undefined, true) }, [])
+  const [restaurado, setRestaurado] = useState(false)
+  useEffect(() => {
+    loadQuestions().then((qs) => { setQuestions(qs); setLoadingQ(false) })
+    // 1) recuperar el avance guardado (refresco, volver atras, abrir una ficha…)
+    try {
+      const g = JSON.parse(localStorage.getItem(CLAVE_FUNNEL) || "null")
+      if (g && Date.now() - g.t < 24 * 3600 * 1000 && g.phase !== "done") {
+        setStep(g.step ?? 0); setAnswers(g.answers ?? {}); setSelection(g.selection ?? null)
+        setSuggestions(g.suggestions ?? []); setPicks(new Set(g.picks ?? []))
+        setContact((c) => ({ ...c, ...(g.contact ?? {}), consent: false }))
+        setPhase(g.phase === "matching" ? "questions" : (g.phase ?? "questions"))
+      } else registrar("onboarding_inicio", undefined, true)
+    } catch { registrar("onboarding_inicio", undefined, true) }
+    setRestaurado(true)
+  }, [])
+  useEffect(() => {
+    if (!restaurado) return
+    try {
+      if (phase === "done") localStorage.removeItem(CLAVE_FUNNEL)
+      else localStorage.setItem(CLAVE_FUNNEL, JSON.stringify({ t: Date.now(), step, answers, phase, selection, suggestions, picks: Array.from(picks), contact: { ...contact, consent: false } }))
+    } catch { /* sin almacenamiento */ }
+  }, [restaurado, step, answers, phase, selection, suggestions, picks, contact])
 
   const currentQ = questions[step]
   const currentAnswer = currentQ ? answers[currentQ.id] : undefined
@@ -137,19 +159,19 @@ export default function Onboarding() {
             return (
               <div key={i}
                 className={`group relative flex flex-col overflow-hidden rounded-2xl border text-left transition ${selected ? "border-brand-500 ring-2 ring-brand-400" : "border-slate-200 hover:border-brand-300 hover:shadow-md"}`}>
-                {href ? <Link to={href} className="block">{header}</Link> : header}
-                <button type="button" onClick={toggle} aria-label={selected ? "Quitar selección" : "Seleccionar"}
-                  className={`absolute right-3 top-3 grid h-7 w-7 place-items-center rounded-full text-sm font-bold transition ${selected ? "bg-brand-500 text-brand-950" : "bg-white/90 text-slate-400 hover:text-brand-600"}`}>
-                  {selected ? "✓" : "+"}
+                {href ? <Link to={href} target="_blank" rel="noopener" className="block">{header}</Link> : header}
+                <button type="button" onClick={toggle} aria-label={selected ? "Quitar selección" : "Me interesa"} title={selected ? "Quitar de mi selección" : "Añadir a mi selección para que te contacten"}
+                  className={`absolute right-3 top-3 flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold shadow-sm transition ${selected ? "bg-brand-500 text-brand-950" : "bg-white text-brand-700 hover:bg-brand-50"}`}>
+                  {selected ? "✓ Seleccionado" : "+ Me interesa"}
                 </button>
                 <div className="flex flex-1 flex-col p-5">
-                  {href ? <Link to={href} className="block">{body}</Link> : <div>{body}</div>}
+                  {href ? <Link to={href} target="_blank" rel="noopener" className="block">{body}</Link> : <div>{body}</div>}
                   <div className="mt-3 flex items-center gap-3">
                     <button type="button" onClick={toggle}
                       className={`rounded-full px-3 py-1 text-xs font-semibold transition ${selected ? "bg-brand-500 text-brand-950" : "bg-slate-100 text-slate-500 hover:bg-brand-100 hover:text-brand-700"}`}>
                       {selected ? "Seleccionado ✓" : "Quiero información"}
                     </button>
-                    {href && <Link to={href} className="text-xs font-semibold text-brand-700 hover:underline">Ver ficha →</Link>}
+                    {href && <Link to={href} target="_blank" rel="noopener" className="text-xs font-semibold text-brand-700 hover:underline">Ver ficha ↗</Link>}
                   </div>
                 </div>
               </div>
@@ -157,7 +179,7 @@ export default function Onboarding() {
           })}
 
           {showAndalucia && (
-            <Link to="/entidades/andalucia-emprende"
+            <Link to="/entidades/andalucia-emprende" target="_blank" rel="noopener"
               className="group relative flex flex-col overflow-hidden rounded-2xl border border-[#4A5D8A]/30 bg-gradient-to-br from-[#4A5D8A] to-[#3a4a6f] text-left shadow-sm transition hover:shadow-lg">
               <div className="flex flex-1 flex-col p-5 text-white">
                 <div className="flex items-center gap-3">
@@ -209,6 +231,7 @@ export default function Onboarding() {
           <Field label="Nombre del proyecto *" value={contact.project_name} onChange={(v) => setContact({ ...contact, project_name: v })} />
           <Field label="Email *" type="email" value={contact.email} onChange={(v) => setContact({ ...contact, email: v })} />
           <Field label="Teléfono *" type="tel" value={contact.whatsapp} onChange={(v) => setContact({ ...contact, whatsapp: v })} />
+          <Field label="Web de tu startup (opcional)" value={contact.web} onChange={(v) => setContact({ ...contact, web: v })} />
           <label className="-mt-2 flex items-center gap-2 text-sm text-slate-600">
             <input type="checkbox" checked={contact.es_whatsapp} onChange={(e) => setContact({ ...contact, es_whatsapp: e.target.checked })} />
             Este número tiene WhatsApp (las entidades podrán escribirte por ahí)

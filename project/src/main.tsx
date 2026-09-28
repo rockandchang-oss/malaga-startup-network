@@ -29,6 +29,8 @@ import Revision from "./pages/admin/Revision"
 import Candidaturas from "./pages/admin/Candidaturas"
 import Avisos from "./pages/admin/Avisos"
 import MisLeads from "./pages/admin/MisLeads"
+import Feedback from "./pages/admin/Feedback"
+import BotonFeedback from "./components/BotonFeedback"
 
 function RedirigirInvitacion() {
   const nav = useNavigate()
@@ -70,6 +72,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <BrowserRouter basename={import.meta.env.VITE_BASENAME || "/"}>
         <RedirigirInvitacion />
         <RastreoPaginas />
+        <BotonFeedback />
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
@@ -95,6 +98,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <Route path="entidades" element={<RequireSuperadmin><AdminEntities /></RequireSuperadmin>} />
             <Route path="usuarios" element={<RequireSuperadmin><AdminUsers /></RequireSuperadmin>} />
             <Route path="revision" element={<RequireSuperadmin><Revision /></RequireSuperadmin>} />
+            <Route path="feedback" element={<RequireSuperadmin><Feedback /></RequireSuperadmin>} />
           </Route>
 
           <Route path="*" element={<NotFound />} />

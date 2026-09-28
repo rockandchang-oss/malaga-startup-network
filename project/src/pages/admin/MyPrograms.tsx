@@ -24,6 +24,7 @@ export default function MyPrograms() {
       {isSuperadmin && <SelectorEntidad entityId={entityId} elegir={elegir} lista={lista} />}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-extrabold">Mis programas</h1>
+        <VerFicha entityId={entityId} />
         <button onClick={() => setEditing({ entity_id: entityId, status: "draft", name: "", slug: "" })} className="btn-primary text-sm">+ Nuevo programa</button>
       </div>
 
@@ -46,6 +47,13 @@ export default function MyPrograms() {
       {editing && <ProgramEditor entityId={entityId} program={editing} onClose={() => { setEditing(null); load(entityId) }} />}
     </div>
   )
+}
+
+function VerFicha({ entityId }: { entityId: string }) {
+  const [slug, setSlug] = useState<string | null>(null)
+  useEffect(() => { supabase.from("entities").select("slug").eq("id", entityId).maybeSingle().then(({ data }) => setSlug((data as any)?.slug ?? null)) }, [entityId])
+  if (!slug) return null
+  return <a href={`${import.meta.env.VITE_BASENAME || ""}/entidades/${slug}`} target="_blank" rel="noopener" className="ml-auto mr-3 text-sm font-semibold text-[#4A5D8A] hover:underline">👁 Ver como startup ↗</a>
 }
 
 function slugify(s: string) {
@@ -88,6 +96,11 @@ function ProgramEditor({ entityId, program, onClose }: { entityId: string; progr
     }
     if (payload.vigencia === "temporal" && !payload.fecha_fin) { setSaving(false); alert("Un programa temporal necesita fecha de fin (plazo)."); return }
     let pid = p.id
+    if (pid && p.updated_at) {
+      const { data: actual } = await supabase.from("programs").select("updated_at").eq("id", pid).maybeSingle()
+      if (actual && (actual as any).updated_at !== p.updated_at &&
+          !window.confirm("Este programa se ha modificado desde otro sitio desde que lo abriste.\n\nAceptar = SOBRESCRIBIR con tus cambios\nCancelar = no guardar (cierra y vuelve a abrirlo para ver la última versión)")) { setSaving(false); return }
+    }
     if (pid) {
       await supabase.from("programs").update(payload).eq("id", pid)
     } else {

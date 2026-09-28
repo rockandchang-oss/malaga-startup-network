@@ -25,7 +25,7 @@ export default function Layout() {
           <Logo />
           <nav className="hidden items-center gap-7 md:flex">
             <NavLink to="/entidades" className={navClass}>Entidades</NavLink>
-            <a href={SITE + "/pages/actualidad.html"} className="text-sm font-medium text-slate-600 hover:text-brand-700">Actualidad</a>
+            <a href={SITE + "/pages/actualidad.html"} target="_blank" rel="noopener" className="text-sm font-medium text-slate-600 hover:text-brand-700">Actualidad</a>
           </nav>
           <Link to="/empezar" className="btn-primary !px-4 !py-2 text-sm">Empezar</Link>
         </div>
@@ -49,7 +49,7 @@ export default function Layout() {
             <ul className="mt-3 space-y-2 text-sm text-slate-500">
               <li><Link to="/empezar" className="hover:text-brand-700">Encontrar mi programa</Link></li>
               <li><Link to="/entidades" className="hover:text-brand-700">Entidades de la red</Link></li>
-              <li><a href={SITE} className="hover:text-brand-700">Web oficial</a></li>
+              <li><a href={SITE} target="_blank" rel="noopener" className="hover:text-brand-700">Web oficial</a></li>
             </ul>
           </div>
           <div>

@@ -4,7 +4,7 @@ import { useAuth } from "../../lib/auth"
 
 type L = {
   id: string; created_at: string; status: string; contact_name: string | null; project_name: string | null
-  email: string | null; phone: string | null; whatsapp: string | null; visible: boolean
+  email: string | null; phone: string | null; whatsapp: string | null; web: string | null; visible: boolean
   eligida_por_mi: boolean; sugerida_a_mi: boolean; location_city: string | null
   raw_answers: Record<string, any> | null; entidades_elegidas: string[]; entidades_sugeridas: string[]
 }
@@ -75,6 +75,7 @@ export default function MisLeads() {
             <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-sm">
               <span><b>Email:</b> {l.visible ? (l.email ? <a className="text-[#4A5D8A] hover:underline" href={`mailto:${l.email}`}>{l.email}</a> : "—") : <Oculto largo={16} />}</span>
               <span><b>Teléfono:</b> {l.visible ? (l.phone || l.whatsapp || "—") : <Oculto largo={9} />}</span>
+              <span><b>Web:</b> {l.visible ? (l.web ? <a className="text-[#4A5D8A] hover:underline" target="_blank" rel="noreferrer" href={l.web.startsWith("http") ? l.web : "https://" + l.web}>{l.web}</a> : "—") : <Oculto largo={12} />}</span>
               {l.visible && l.whatsapp && <a className="font-semibold text-emerald-700 hover:underline" target="_blank" rel="noreferrer" href={`https://wa.me/${l.whatsapp.replace(/\D/g, "")}`}>WhatsApp</a>}
             </div>
             {l.raw_answers && Object.keys(l.raw_answers).length > 0 && (

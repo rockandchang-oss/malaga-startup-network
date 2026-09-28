@@ -10,7 +10,7 @@ export type Question = {
   is_required: boolean; sort_order: number; options: Option[]
 }
 export type Answers = Record<string, { optionIds: string[]; text?: string }>
-export type Contact = { contact_name: string; project_name: string; email: string; whatsapp: string; es_whatsapp: boolean; consent: boolean }
+export type Contact = { contact_name: string; project_name: string; email: string; whatsapp: string; es_whatsapp: boolean; web: string; consent: boolean }
 export type Suggestion = {
   program_id: string | null; entity_id: string | null; name: string; entity_name: string
   logo_url: string | null; photo_url: string | null; description: string | null; score: number; reason: string | null
@@ -126,6 +126,7 @@ export async function submitLead(selection: Selection, contact: Contact, picks: 
     email: contact.email.trim() || null,
     phone: contact.whatsapp.trim() || null,
     whatsapp: contact.es_whatsapp ? (contact.whatsapp.trim() || null) : null,
+    web: (contact.web || "").trim() || null,
     consent: contact.consent,
     stage_id: selection.stageId,
     raw_answers: selection.raw,

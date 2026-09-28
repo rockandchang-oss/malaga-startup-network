@@ -11,11 +11,12 @@ export default function MyEntity() {
   const [e, setE] = useState<Entity | null>(null)
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState<string | null>(null)
+  const [version, setVersion] = useState<string | null>(null)
 
   useEffect(() => {
     setE(null); setMsg(null)
     if (!entityId) return
-    supabase.from("entities").select("*").eq("id", entityId).maybeSingle().then(({ data }) => setE(data))
+    supabase.from("entities").select("*").eq("id", entityId).maybeSingle().then(({ data }) => { setE(data); setVersion((data as any)?.updated_at ?? null) })
   }, [entityId])
 
   if (!entityId) return <p className="rounded-lg bg-amber-50 p-4 text-sm text-amber-700">Tu usuario no está vinculado a ninguna entidad todavía.</p>
@@ -29,21 +30,35 @@ export default function MyEntity() {
     catch { setMsg("Error subiendo el logo.") }
   }
 
-  async function save() {
+  async function save(forzar = false) {
     setSaving(true); setMsg(null)
-    const { error } = await supabase.from("entities").update({
+    if (!forzar) {
+      const { data: actual } = await supabase.from("entities").select("updated_at").eq("id", entityId).maybeSingle()
+      if (actual && version && (actual as any).updated_at !== version) {
+        setSaving(false)
+        if (window.confirm("Esta ficha se ha modificado desde otro sitio (otra pestaña u otra persona) desde que la abriste.\n\nAceptar = SOBRESCRIBIR con tus cambios\nCancelar = RECARGAR la versión guardada (perderás lo que has escrito aquí)")) return save(true)
+        const { data } = await supabase.from("entities").select("*").eq("id", entityId).maybeSingle()
+        setE(data); setVersion((data as any)?.updated_at ?? null); setMsg("Ficha recargada con la última versión guardada.")
+        return
+      }
+    }
+    const { data: guardada, error } = await supabase.from("entities").update({
       short_description: e.short_description, long_description: e.long_description, history: e.history,
       website: e.website, email: e.email, phone: e.phone, whatsapp: e.whatsapp, linkedin: e.linkedin,
       location_city: e.location_city, logo_url: e.logo_url, cover_url: e.cover_url,
-    }).eq("id", entityId)
+    }).eq("id", entityId).select("updated_at").maybeSingle()
     setSaving(false)
+    if (!error && guardada) setVersion((guardada as any).updated_at)
     setMsg(error ? "Error al guardar." : "Guardado correctamente.")
   }
 
   return (
     <div>
       {isSuperadmin && <SelectorEntidad entityId={entityId} elegir={elegir} lista={lista} />}
-      <h1 className="text-2xl font-extrabold">{e.name}</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-extrabold">{e.name}</h1>
+        {e.slug && <a href={`${import.meta.env.VITE_BASENAME || ""}/entidades/${e.slug}`} target="_blank" rel="noopener" className="rounded-full border border-[#4A5D8A] px-4 py-1.5 text-sm font-semibold text-[#4A5D8A] hover:bg-[#4A5D8A] hover:text-white">👁 Ver como startup ↗</a>}
+      </div>
       <p className="mt-1 text-slate-500">Edita la información pública de tu entidad.</p>
 
       <div className="mt-6 grid gap-5">
@@ -72,7 +87,7 @@ export default function MyEntity() {
       </div>
 
       <div className="mt-6 flex items-center gap-4">
-        <button onClick={save} disabled={saving} className="btn-primary disabled:opacity-50">
+        <button onClick={() => save()} disabled={saving} className="btn-primary disabled:opacity-50">
           {saving ? "Guardando…" : "Guardar cambios"}
         </button>
         {msg && <span className="text-sm text-slate-500">{msg}</span>}
