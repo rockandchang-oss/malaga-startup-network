@@ -172,7 +172,7 @@ function VistaAdmin({ conv, abierta, onConv }: { conv: Conv; abierta: boolean; o
       supabase.from("entities").select("id,name,status,slug").order("name"),
       supabase.from("candidaturas").select("*").eq("edicion", EDICION),
     ])
-    const reales = ((e ?? []) as Ent[]).filter((x) => x.slug !== "entidad-prueba-msn")
+    const reales = ((e ?? []) as Ent[]).filter((x) => x.slug !== "entidad-prueba-msn" && x.status !== "archived")
     setEnts(reales)
     setCands(((c ?? []) as Cand[]).filter((x) => reales.some((r) => r.id === x.entity_id)))
   }

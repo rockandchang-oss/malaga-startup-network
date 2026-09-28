@@ -27,11 +27,11 @@ export default function Dashboard() {
       if (isSuperadmin) {
         const [l, e, p, c] = await Promise.all([
           supabase.from("leads").select("*", { count: "exact", head: true }),
-          supabase.from("entities").select("id,slug"),
+          supabase.from("entities").select("id,slug,status"),
           supabase.from("programs").select("*", { count: "exact", head: true }),
           supabase.from("candidaturas" as any).select("entity_id").eq("edicion", 2026),
         ])
-        const ents = ((e.data ?? []) as any[]).filter((x) => x.slug !== "entidad-prueba-msn")
+        const ents = ((e.data ?? []) as any[]).filter((x) => x.slug !== "entidad-prueba-msn" && x.status !== "archived")
         const porEnt: Record<string, number> = {}
         for (const r of (c.data ?? []) as any[]) porEnt[r.entity_id] = (porEnt[r.entity_id] ?? 0) + 1
         setS({ leads: l.count ?? 0, entidades: ents.length, programas: p.count ?? 0, completas: ents.filter((x) => (porEnt[x.id] ?? 0) >= 2).length })

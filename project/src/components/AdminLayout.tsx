@@ -3,17 +3,37 @@ import { NavLink, Outlet, useNavigate, Link } from "react-router-dom"
 import { useAuth } from "../lib/auth"
 import { useEffect, useState } from "react"
 import TourEntidad from "./TourEntidad"
+import { supabase } from "../lib/supabase"
 
 export default function AdminLayout() {
   const { profile, loading, session, isSuperadmin, signOut } = useAuth()
   const nav = useNavigate()
   const [tour, setTour] = useState(false)
+  const [baja, setBaja] = useState<string | null>(null)
+  useEffect(() => {
+    if (!profile || profile.role === "superadmin" || !profile.entity_id) { setBaja(null); return }
+    supabase.rpc("mi_entidad_de_baja" as any).then(({ data }) => setBaja((data as any) || null))
+  }, [profile?.id])
   useEffect(() => {
     if (profile && profile.role !== "superadmin" && profile.entity_id && !profile.tour_visto_at) setTour(true)
   }, [profile?.id])
 
   if (loading) return <div className="grid min-h-screen place-items-center text-slate-400">Cargando…</div>
   if (!session) { nav("/admin/login"); return null }
+  if (baja) return (
+    <div className="grid min-h-screen place-items-center bg-slate-50 px-4">
+      <div className="card max-w-md p-8 text-center">
+        <img src={logoMSN} alt="MSN" className="mx-auto h-14 w-14 rounded-xl object-cover" />
+        <h1 className="mt-4 text-xl font-extrabold text-[#2C3959]">Acceso no disponible</h1>
+        <p className="mt-3 text-sm leading-relaxed text-slate-600">
+          {baja} no figura actualmente como entidad activa de Málaga Startup Network, por lo que el panel no está disponible para esta cuenta.
+        </p>
+        <p className="mt-3 text-sm leading-relaxed text-slate-600">Si crees que es un error o quieres volver a formar parte de la red, ponte en contacto con el equipo de Málaga Startup Network.</p>
+        <a href="https://malagastartupnetwork.com/#contacto" className="mt-5 inline-block rounded-full bg-[#4A5D8A] px-5 py-2.5 text-sm font-semibold text-white">Contactar con la red</a>
+        <button onClick={signOut} className="mt-4 block w-full text-sm text-slate-500 hover:underline">Cerrar sesión</button>
+      </div>
+    </div>
+  )
 
   const link = ({ isActive }: { isActive: boolean }) =>
     `block shrink-0 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium ${isActive ? (isSuperadmin ? "bg-brand-600 text-white" : "bg-[#4A5D8A] text-white") : "text-slate-600 hover:bg-slate-100"}`
