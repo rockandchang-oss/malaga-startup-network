@@ -15,6 +15,7 @@ import EntityDetail from "./pages/EntityDetail"
 import Blog from "./pages/Blog"
 import BlogPost from "./pages/BlogPost"
 import NotFound from "./pages/NotFound"
+import { Valoracion, Incidencia, Contactado } from "./pages/Seguimiento"
 import Login from "./pages/admin/Login"
 import Clave from "./pages/admin/Clave"
 import Dashboard from "./pages/admin/Dashboard"
@@ -81,6 +82,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <Route path="/entidades/:slug" element={<EntityDetail />} />
             <Route path="/noticias" element={<Blog />} />
             <Route path="/noticias/:slug" element={<BlogPost />} />
+            <Route path="/valoracion" element={<Valoracion />} />
+            <Route path="/incidencia" element={<Incidencia />} />
+            <Route path="/contactado" element={<Contactado />} />
           </Route>
 
           <Route path="/admin/login" element={<Login />} />
