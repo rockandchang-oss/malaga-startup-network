@@ -51,7 +51,7 @@ export default function Dashboard() {
     })()
   }, [loading, isSuperadmin, profile?.entity_id])
 
-  const nombre = profile?.full_name && !profile.full_name.includes("@") ? profile.full_name.split(" ")[0] : null
+  const nombre = profile?.full_name && !profile.full_name.includes("@") ? profile.full_name.replace(/\s*\(.*\)\s*$/, "").trim() : null
 
   return (
     <div>
