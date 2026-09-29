@@ -25,44 +25,62 @@ function useLead() {
   return { t, sp, info, cargando }
 }
 
+type Ent = { id: string; nombre: string; logo?: string | null }
+type Voto = { puntuacion: number | null; nadie: boolean }
 export function Valoracion() {
   const { t, sp, info, cargando } = useLead()
-  const [nota, setNota] = useState<number | null>(null)
-  const [nadie, setNadie] = useState(false)
+  const ents: Ent[] = ((info as any)?.entidades_det || []) as Ent[]
+  const [votos, setVotos] = useState<Record<string, Voto>>({})
   const [texto, setTexto] = useState("")
   const [estado, setEstado] = useState<"" | "enviando" | "ok" | "error">("")
   useEffect(() => {
-    const n = parseInt(sp.get("n") || "", 10); if (n >= 1 && n <= 5) setNota(n)
-    if (sp.get("nadie") === "1") setNadie(true)
-  }, [sp])
+    if (!ents.length) return
+    const n = parseInt(sp.get("n") || "", 10); const nadie = sp.get("nadie") === "1"
+    const v: Record<string, Voto> = {}
+    ents.forEach(e => { v[e.id] = { puntuacion: !nadie && n >= 1 && n <= 5 ? n : null, nadie } })
+    setVotos(v)
+  }, [info])
   if (cargando) return <Caja><p className="text-slate-500">Cargando…</p></Caja>
   if (!info) return <EnlaceInvalido />
+  const algunNadie = Object.values(votos).some(v => v.nadie)
   if (estado === "ok" || info.valorado) return <Caja>
     <h1 className="text-2xl font-extrabold text-brand-700">¡Gracias, {info.nombre}!</h1>
-    <p className="mt-3 text-slate-600">{nadie ? "Lo revisamos y hablamos con las entidades para que te contacten lo antes posible." : "Tu opinión nos ayuda a mejorar la red para las próximas startups."}</p>
+    <p className="mt-3 text-slate-600">{algunNadie ? "Hablaremos con las entidades que aún no te han contactado para que lo hagan lo antes posible." : "Tu opinión nos ayuda a mejorar la red para las próximas startups."}</p>
     <Link to="/entidades" className="btn-primary mt-6 inline-block">Ver entidades de la red</Link></Caja>
+  const poner = (id: string, cambio: Partial<Voto>) => setVotos(v => ({ ...v, [id]: { ...(v[id] || { puntuacion: null, nadie: false }), ...cambio } }))
+  const hayAlgo = Object.values(votos).some(v => v.puntuacion || v.nadie) || !!texto.trim()
   const enviar = async () => {
-    if (!nota && !nadie && !texto.trim()) return
+    if (!hayAlgo) return
     setEstado("enviando")
-    const { data, error } = await sb.rpc("lead_valorar", { t, puntuacion: nota, comentario: texto.trim() || null, nadie })
+    const items = Object.entries(votos).map(([entity_id, v]) => ({ entity_id, puntuacion: v.nadie ? null : v.puntuacion, nadie: v.nadie }))
+    const { data, error } = await sb.rpc("lead_valorar_entidades", { t, items, comentario: texto.trim() || null })
     setEstado(!error && data ? "ok" : "error")
   }
   return <Caja>
     <p className="text-xs font-bold uppercase tracking-wide text-brand-500">{info.proyecto}</p>
     <h1 className="mt-1 text-2xl font-extrabold text-brand-700">¿Cómo ha ido tu conexión, {info.nombre}?</h1>
-    <p className="mt-2 text-slate-600">Elegiste a <b>{info.entidades.join(", ") || "entidades de la red"}</b>.</p>
-    <div className="mt-6 flex justify-center gap-2" role="radiogroup" aria-label="Valoración de 1 a 5">
-      {[1, 2, 3, 4, 5].map(i => <button key={i} type="button" aria-label={`${i} de 5`} onClick={() => setNota(i)}
-        className={`text-4xl transition ${nota && i <= nota ? "text-amber-400" : "text-slate-300 hover:text-amber-300"}`}>★</button>)}
+    <p className="mt-2 text-slate-600">Valora a cada entidad que elegiste. Si alguna no te ha contactado, márcalo y la avisaremos.</p>
+    <div className="mt-5 space-y-3">
+      {ents.map(e => { const v = votos[e.id] || { puntuacion: null, nadie: false }; return (
+        <div key={e.id} className={`rounded-xl border p-4 ${v.nadie ? "border-orange-200 bg-orange-50" : "border-slate-200"}`}>
+          <div className="flex items-center gap-3">
+            {e.logo ? <img src={e.logo} alt="" className="h-9 w-9 rounded-lg object-contain bg-white" /> : null}
+            <p className="font-bold text-brand-700">{e.nombre}</p>
+          </div>
+          <div className={`mt-2 flex gap-1 ${v.nadie ? "opacity-30 pointer-events-none" : ""}`} role="radiogroup" aria-label={`Valoración de ${e.nombre}`}>
+            {[1, 2, 3, 4, 5].map(i => <button key={i} type="button" aria-label={`${i} de 5`} onClick={() => poner(e.id, { puntuacion: i, nadie: false })}
+              className={`text-3xl leading-none transition ${v.puntuacion && i <= v.puntuacion ? "text-amber-400" : "text-slate-300 hover:text-amber-300"}`}>★</button>)}
+          </div>
+          <label className="mt-2 flex items-center gap-2 text-sm text-orange-800">
+            <input type="checkbox" checked={v.nadie} onChange={ev => poner(e.id, { nadie: ev.target.checked, puntuacion: ev.target.checked ? null : v.puntuacion })} />
+            No me ha contactado
+          </label>
+        </div>) })}
     </div>
-    <label className="mt-6 flex items-start gap-2 rounded-xl border border-orange-200 bg-orange-50 p-3 text-sm text-orange-800">
-      <input type="checkbox" className="mt-1" checked={nadie} onChange={e => setNadie(e.target.checked)} />
-      <span><b>Nadie me ha contactado todavía.</b> Lo revisaremos con las entidades.</span>
-    </label>
-    <textarea className="input mt-4 min-h-[110px] w-full" placeholder="¿Algo que quieras contarnos? (opcional)" value={texto} onChange={e => setTexto(e.target.value)} maxLength={3000} />
+    <textarea className="input mt-4 min-h-[100px] w-full" placeholder="¿Algo que quieras contarnos? (opcional)" value={texto} onChange={e => setTexto(e.target.value)} maxLength={3000} />
     {estado === "error" && <p className="mt-2 text-sm text-red-600">No se pudo enviar. Inténtalo de nuevo.</p>}
-    <button className="btn-primary mt-4 w-full" disabled={estado === "enviando" || (!nota && !nadie && !texto.trim())} onClick={enviar}>
-      {estado === "enviando" ? "Enviando…" : "Enviar"}</button>
+    <button className="btn-primary mt-4 w-full" disabled={estado === "enviando" || !hayAlgo} onClick={enviar}>
+      {estado === "enviando" ? "Enviando…" : "Enviar valoración"}</button>
   </Caja>
 }
 
