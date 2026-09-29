@@ -23,7 +23,7 @@ const PASOS: Paso[] = [
   { icono: "📊", titulo: "Estadísticas", ir: "/admin/estadisticas", boton: "Ver estadísticas",
     texto: "Cuántos emprendedores os sugiere el buscador, cuántos os eligen, visitas a vuestra ficha y vuestra posición frente a la media de la red." },
   { icono: "✅", titulo: "¡Listo!", ir: "/admin/entidad", boton: "Empezar por mi ficha",
-    texto: "Podéis volver a ver este tour cuando queráis desde el menú (“Ver el tour”). ¿Dudas? Escribid al equipo de Málaga Startup Network." },
+    texto: "Podéis volver a verlo cuando queráis con el botón “🧭 Cómo funciona el panel” del menú. ¿Dudas? Escribid al equipo de Málaga Startup Network." },
 ]
 
 export default function TourEntidad({ userId, onClose }: { userId: string; onClose: () => void }) {
@@ -48,7 +48,9 @@ export default function TourEntidad({ userId, onClose }: { userId: string; onClo
           <h2 className="mt-3 text-xl font-extrabold text-[#2C3959]">{p.titulo}</h2>
           <p className="mt-3 text-[15px] leading-relaxed text-slate-600">{p.texto}</p>
           {p.ir && i > 0 && i < PASOS.length - 1 && (
-            <button onClick={() => cerrar(p.ir)} className="mt-4 text-sm font-semibold text-[#4A5D8A] hover:underline">{p.boton} ahora →</button>
+            <a href={`${import.meta.env.VITE_BASENAME || ""}${p.ir}`} target="_blank" rel="noopener"
+              title="Se abre en otra pestaña; el tour sigue aquí"
+              className="mt-4 inline-block text-sm font-semibold text-[#4A5D8A] hover:underline">{p.boton} ↗</a>
           )}
         </div>
         <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50 px-7 py-4">

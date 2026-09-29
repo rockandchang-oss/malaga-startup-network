@@ -9,6 +9,11 @@ export default function AdminLayout() {
   const { profile, loading, session, isSuperadmin, signOut } = useAuth()
   const nav = useNavigate()
   const [tour, setTour] = useState(false)
+  useEffect(() => {
+    const abrir = () => setTour(true)
+    window.addEventListener("msn-abrir-tour", abrir)
+    return () => window.removeEventListener("msn-abrir-tour", abrir)
+  }, [])
   const [baja, setBaja] = useState<string | null>(null)
   useEffect(() => {
     if (!profile || profile.role === "superadmin" || !profile.entity_id) { setBaja(null); return }
@@ -47,6 +52,11 @@ export default function AdminLayout() {
           <span className="text-sm font-extrabold leading-tight">MSN Panel{!isSuperadmin && <span className="block text-[11px] font-semibold text-[#4A5D8A]">Entidades</span>}</span>
         </Link>
         <nav className="flex-1 space-y-1">
+          {!isSuperadmin && (
+            <button onClick={() => setTour(true)} className="mb-3 flex w-full items-center gap-2 rounded-lg border border-[#4A5D8A]/30 bg-[#4A5D8A]/5 px-3 py-2 text-left text-sm font-semibold text-[#4A5D8A] hover:bg-[#4A5D8A]/10">
+              <span aria-hidden>🧭</span> Cómo funciona el panel
+            </button>
+          )}
           <NavLink to="/admin" end className={link}>Inicio</NavLink>
           <NavLink to="/admin/entidad" className={link}>{isSuperadmin ? "Editar entidades" : "Mi entidad"}</NavLink>
           <NavLink to="/admin/programas" className={link}>{isSuperadmin ? "Programas" : "Mis programas"}</NavLink>
@@ -70,7 +80,6 @@ export default function AdminLayout() {
         <div className="mt-4 border-t border-slate-100 pt-4">
           <p className="truncate text-xs text-slate-500">{profile?.full_name}</p>
           <p className="mb-2 text-xs text-slate-400">{isSuperadmin ? "Superadmin" : "Entidad"}</p>
-          {!isSuperadmin && <button onClick={() => setTour(true)} className="mb-2 block text-sm font-medium text-[#4A5D8A] hover:underline">Ver el tour</button>}
           <button onClick={signOut} className="text-sm font-medium text-red-600 hover:underline">Cerrar sesión</button>
         </div>
       </aside>
@@ -81,6 +90,7 @@ export default function AdminLayout() {
           <NavLink to="/admin/programas" className={link}>Programas</NavLink>
           <NavLink to="/admin/noticias" className={link}>Noticias</NavLink>
           <NavLink to="/admin/candidaturas" className={link}>Candidaturas</NavLink>
+          {!isSuperadmin && <button onClick={() => setTour(true)} className="shrink-0 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold text-[#4A5D8A]">🧭 Cómo funciona</button>}
           <NavLink to="/admin/avisos" className={link}>Avisos</NavLink>
           <NavLink to="/admin/emprendedores" className={link}>Emprendedores</NavLink>
           {isSuperadmin && <NavLink to="/admin/revision" className={link}>Revisión</NavLink>}

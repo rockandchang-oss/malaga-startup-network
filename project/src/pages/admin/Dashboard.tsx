@@ -60,6 +60,13 @@ export default function Dashboard() {
         {isSuperadmin ? "Panel de administración de la red." : entidad ? `Panel de ${entidad.name} en Málaga Startup Network.` : "Panel de tu entidad."}
       </p>
 
+      {!isSuperadmin && profile?.entity_id && (
+        <button onClick={() => window.dispatchEvent(new Event("msn-abrir-tour"))}
+          className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#4A5D8A]/30 bg-white px-4 py-2 text-sm font-semibold text-[#4A5D8A] shadow-sm hover:bg-[#4A5D8A]/5">
+          🧭 ¿Primera vez aquí? Ver cómo funciona el panel (1 minuto)
+        </button>
+      )}
+
       {!profile?.entity_id && !isSuperadmin && !loading && (
         <p className="mt-6 rounded-lg bg-amber-50 p-4 text-sm text-amber-700">Tu usuario aún no está vinculado a ninguna entidad. Contacta con el equipo de la red.</p>
       )}
