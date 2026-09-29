@@ -125,8 +125,8 @@ export default function Onboarding() {
         <ProgressBar progress={progress} label="Tus encajes" />
         <h1 className="text-3xl font-extrabold tracking-tight">Esto es lo que encaja contigo</h1>
         <p className="mt-2 text-slate-600">
-          Estas entidades y programas pueden ayudarte según tu momento. Marca de cuáles quieres recibir
-          información o que te contacten — puedes elegir <b>uno o varios</b>.
+          Estas entidades y programas pueden ayudarte según tu momento. <b>Pulsa en las tarjetas</b> que te interesen
+          para que te contacten — puedes elegir <b>uno o varios</b>. "Más información" abre la ficha en otra pestaña.
         </p>
 
         <div className="mt-8 grid gap-5 sm:grid-cols-2">
@@ -157,21 +157,23 @@ export default function Onboarding() {
               </>
             )
             return (
-              <div key={i}
-                className={`group relative flex flex-col overflow-hidden rounded-2xl border text-left transition ${selected ? "border-brand-500 ring-2 ring-brand-400" : "border-slate-200 hover:border-brand-300 hover:shadow-md"}`}>
-                {href ? <Link to={href} target="_blank" rel="noopener" className="block">{header}</Link> : header}
-                <button type="button" onClick={toggle} aria-label={selected ? "Quitar selección" : "Me interesa"} title={selected ? "Quitar de mi selección" : "Añadir a mi selección para que te contacten"}
+              <div key={i} role="button" tabIndex={0} onClick={toggle}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle() } }}
+                aria-pressed={selected}
+                className={`group relative flex cursor-pointer select-none flex-col overflow-hidden rounded-2xl border text-left transition ${selected ? "border-brand-500 ring-2 ring-brand-400" : "border-slate-200 hover:border-brand-300 hover:shadow-md"}`}>
+                {header}
+                <button type="button" onClick={(e) => { e.stopPropagation(); toggle() }} aria-label={selected ? "Quitar selección" : "Me interesa"} title={selected ? "Quitar de mi selección" : "Añadir a mi selección para que te contacten"}
                   className={`absolute right-3 top-3 flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold shadow-sm transition ${selected ? "bg-brand-500 text-brand-950" : "bg-white text-brand-700 hover:bg-brand-50"}`}>
                   {selected ? "✓ Seleccionado" : "+ Me interesa"}
                 </button>
                 <div className="flex flex-1 flex-col p-5">
-                  {href ? <Link to={href} target="_blank" rel="noopener" className="block">{body}</Link> : <div>{body}</div>}
+                  <div>{body}</div>
                   <div className="mt-3 flex items-center gap-3">
-                    <button type="button" onClick={toggle}
+                    <button type="button" onClick={(e) => { e.stopPropagation(); toggle() }}
                       className={`rounded-full px-3 py-1 text-xs font-semibold transition ${selected ? "bg-brand-500 text-brand-950" : "bg-slate-100 text-slate-500 hover:bg-brand-100 hover:text-brand-700"}`}>
                       {selected ? "Seleccionado ✓" : "Quiero información"}
                     </button>
-                    {href && <Link to={href} target="_blank" rel="noopener" className="text-xs font-semibold text-brand-700 hover:underline">Ver ficha ↗</Link>}
+                    {href && <Link to={href} target="_blank" rel="noopener" onClick={(e) => e.stopPropagation()} title="Se abre en una pestaña nueva; no pierdes tu selección" className="ml-auto text-xs font-semibold text-brand-700 hover:underline">Más información ↗</Link>}
                   </div>
                 </div>
               </div>
