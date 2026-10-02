@@ -133,11 +133,21 @@ export default function EntityDetail() {
           <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {cases.map((c) => (
               <div key={c.id} className="card p-5">
-                {c.image_url && <img src={c.image_url} alt={c.title} className="mb-3 h-24 w-full rounded-lg object-cover" />}
-                {c.startup_name && c.startup_name.trim() !== c.title.trim() && <p className="text-xs font-bold uppercase tracking-wide text-brand-600">{c.startup_name}</p>}
-                <h3 className="font-bold text-brand-800">{c.title}</h3>
+                {(() => {
+                  const nombre = c.startup_name && c.startup_name.trim() !== c.title.trim() ? c.startup_name : null
+                  const Enl = ({ children, className }: { children: React.ReactNode; className: string }) => c.url
+                    ? <a href={c.url} target="_blank" rel="noopener noreferrer" className={className + " hover:underline"}>{children}</a>
+                    : <span className={className}>{children}</span>
+                  return <>
+                    {c.image_url && (c.url
+                      ? <a href={c.url} target="_blank" rel="noopener noreferrer"><img src={c.image_url} alt={c.startup_name || c.title} className="mb-3 h-14 max-w-[160px] object-contain" loading="lazy" /></a>
+                      : <img src={c.image_url} alt={c.startup_name || c.title} className="mb-3 h-14 max-w-[160px] object-contain" loading="lazy" />)}
+                    {nombre && <Enl className="block text-xs font-bold uppercase tracking-wide text-brand-600">{nombre}</Enl>}
+                    <h3 className="font-bold text-brand-800"><Enl className="">{c.title}</Enl></h3>
+                  </>
+                })()}
                 <div className="mt-1 text-sm text-slate-600"><Parrafos texto={c.description} /></div>
-                {c.url && <a href={c.url} target="_blank" rel="noreferrer" className="mt-2 inline-block text-xs font-semibold text-brand-700 hover:underline">Visitar web{c.startup_name ? " de " + c.startup_name : ""} ↗</a>}
+                {c.url && <a href={c.url} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-xs font-semibold text-brand-700 hover:underline">Visitar web{c.startup_name ? " de " + c.startup_name : ""} ↗</a>}
               </div>
             ))}
           </div>

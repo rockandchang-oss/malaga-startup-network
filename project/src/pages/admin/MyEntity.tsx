@@ -121,7 +121,17 @@ function Area({ label, value, onChange, rows = 3 }: { label: string; value: any;
 // ---- Success cases ----
 function SuccessCases({ entityId }: { entityId: string }) {
   const [items, setItems] = useState<any[]>([])
-  const [form, setForm] = useState({ title: "", startup_name: "", description: "", url: "" })
+  const [form, setForm] = useState({ title: "", startup_name: "", description: "", url: "", image_url: "" })
+  const [subiendo, setSubiendo] = useState("")
+  async function subirLogo(file: File | undefined, id?: string) {
+    if (!file) return
+    if (file.size > 2 * 1024 * 1024) { alert("El logo debe pesar menos de 2 MB"); return }
+    setSubiendo(id || "nuevo")
+    try {
+      const u = await uploadImage(file, "casos")
+      if (id) { await supabase.from("entity_success_cases").update({ image_url: u }).eq("id", id); load() } else setForm(f => ({ ...f, image_url: u }))
+    } catch (e: any) { alert("No se pudo subir el logo: " + (e?.message || e)) } finally { setSubiendo("") }
+  }
   const normUrl = (u: string) => { const t = (u || "").trim(); return !t ? null : (/^https?:\/\//i.test(t) ? t : "https://" + t) }
   async function guardarUrl(id: string, u: string) { await supabase.from("entity_success_cases").update({ url: normUrl(u) }).eq("id", id); load() }
   async function load() {
@@ -132,7 +142,7 @@ function SuccessCases({ entityId }: { entityId: string }) {
   async function add() {
     if (!form.title) return
     await supabase.from("entity_success_cases").insert({ entity_id: entityId, ...form, url: normUrl(form.url) })
-    setForm({ title: "", startup_name: "", description: "", url: "" }); load()
+    setForm({ title: "", startup_name: "", description: "", url: "", image_url: "" }); load()
   }
   async function del(id: string) { await supabase.from("entity_success_cases").delete().eq("id", id); load() }
   return (
@@ -141,7 +151,13 @@ function SuccessCases({ entityId }: { entityId: string }) {
       <div className="mt-3 space-y-2">
         {items.map((it) => (
           <div key={it.id} className="flex items-center justify-between rounded-lg border border-slate-200 px-4 py-2">
-            <span className="text-sm"><b>{it.title}</b>{it.startup_name ? ` — ${it.startup_name}` : ""}</span>
+            <span className="flex items-center gap-2 text-sm">
+              <label className="relative grid h-10 w-10 shrink-0 cursor-pointer place-items-center overflow-hidden rounded-lg border border-dashed border-slate-300 bg-white text-[10px] text-slate-400" title="Subir / cambiar logo">
+                {it.image_url ? <img src={it.image_url} alt="" className="h-full w-full object-contain" /> : (subiendo === it.id ? "…" : "Logo")}
+                <input type="file" accept="image/*" className="hidden" onChange={(e) => subirLogo(e.target.files?.[0], it.id)} />
+              </label>
+              <span><b>{it.title}</b>{it.startup_name ? ` — ${it.startup_name}` : ""}</span>
+            </span>
             <span className="flex items-center gap-3">
               <input key={it.url || "sin"} defaultValue={it.url || ""} placeholder="Web de la startup" title="Se guarda al salir del campo"
                 onBlur={(e) => { if ((e.target.value.trim() || null) !== (it.url || null)) guardarUrl(it.id, e.target.value) }}
@@ -155,7 +171,12 @@ function SuccessCases({ entityId }: { entityId: string }) {
         <input placeholder="Título" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" />
         <input placeholder="Startup" value={form.startup_name} onChange={(e) => setForm({ ...form, startup_name: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" />
         <input placeholder="Descripción" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" />
-        <input placeholder="Web de la startup (opcional)" value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+        <input placeholder="Web de la startup" value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+        <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-slate-300 px-3 py-2 text-sm text-slate-500 sm:col-span-4">
+          {form.image_url ? <img src={form.image_url} alt="" className="h-8 w-8 object-contain" /> : null}
+          {subiendo === "nuevo" ? "Subiendo logo…" : form.image_url ? "Logo listo (pulsa para cambiarlo)" : "📷 Logo de la startup (PNG o JPG, máx. 2 MB)"}
+          <input type="file" accept="image/*" className="hidden" onChange={(e) => subirLogo(e.target.files?.[0])} />
+        </label>
       </div>
       <button onClick={add} className="btn-ghost mt-2 text-sm">+ Añadir caso</button>
     </section>
