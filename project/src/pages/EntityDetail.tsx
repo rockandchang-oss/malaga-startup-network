@@ -134,6 +134,7 @@ export default function EntityDetail() {
             {cases.map((c) => (
               <div key={c.id} className="card p-5">
                 {c.image_url && <img src={c.image_url} alt={c.title} className="mb-3 h-24 w-full rounded-lg object-cover" />}
+                {c.startup_name && c.startup_name.trim() !== c.title.trim() && <p className="text-xs font-bold uppercase tracking-wide text-brand-600">{c.startup_name}</p>}
                 <h3 className="font-bold text-brand-800">{c.title}</h3>
                 <div className="mt-1 text-sm text-slate-600"><Parrafos texto={c.description} /></div>
                 {c.url && <a href={c.url} target="_blank" rel="noreferrer" className="mt-2 inline-block text-xs font-semibold text-brand-700 hover:underline">Ver más →</a>}
