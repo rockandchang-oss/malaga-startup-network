@@ -59,10 +59,10 @@ export default function Home() {
                   "Tengo más de 10 clientes que me pagan",
                   "Estoy levantando una ronda de inversión",
                 ].map((t) => (
-                  <div key={t} className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white/70 px-4 py-3 text-sm">
+                  <Link key={t} to="/empezar" className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white/70 px-4 py-3 text-sm transition hover:border-brand-400 hover:bg-white">
                     <span className="h-4 w-4 rounded-md border-2 border-brand-400" />
                     {t}
-                  </div>
+                  </Link>
                 ))}
               </div>
               <Link to="/empezar" className="btn-primary mt-5 w-full">Descubrir mis programas</Link>
