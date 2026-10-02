@@ -121,7 +121,9 @@ function Area({ label, value, onChange, rows = 3 }: { label: string; value: any;
 // ---- Success cases ----
 function SuccessCases({ entityId }: { entityId: string }) {
   const [items, setItems] = useState<any[]>([])
-  const [form, setForm] = useState({ title: "", startup_name: "", description: "" })
+  const [form, setForm] = useState({ title: "", startup_name: "", description: "", url: "" })
+  const normUrl = (u: string) => { const t = (u || "").trim(); return !t ? null : (/^https?:\/\//i.test(t) ? t : "https://" + t) }
+  async function guardarUrl(id: string, u: string) { await supabase.from("entity_success_cases").update({ url: normUrl(u) }).eq("id", id); load() }
   async function load() {
     const { data } = await supabase.from("entity_success_cases").select("*").eq("entity_id", entityId).order("sort_order")
     setItems(data ?? [])
@@ -129,8 +131,8 @@ function SuccessCases({ entityId }: { entityId: string }) {
   useEffect(() => { load() }, [entityId])
   async function add() {
     if (!form.title) return
-    await supabase.from("entity_success_cases").insert({ entity_id: entityId, ...form })
-    setForm({ title: "", startup_name: "", description: "" }); load()
+    await supabase.from("entity_success_cases").insert({ entity_id: entityId, ...form, url: normUrl(form.url) })
+    setForm({ title: "", startup_name: "", description: "", url: "" }); load()
   }
   async function del(id: string) { await supabase.from("entity_success_cases").delete().eq("id", id); load() }
   return (
@@ -140,14 +142,20 @@ function SuccessCases({ entityId }: { entityId: string }) {
         {items.map((it) => (
           <div key={it.id} className="flex items-center justify-between rounded-lg border border-slate-200 px-4 py-2">
             <span className="text-sm"><b>{it.title}</b>{it.startup_name ? ` — ${it.startup_name}` : ""}</span>
-            <button onClick={() => del(it.id)} className="text-xs text-red-600 hover:underline">Eliminar</button>
+            <span className="flex items-center gap-3">
+              <input key={it.url || "sin"} defaultValue={it.url || ""} placeholder="Web de la startup" title="Se guarda al salir del campo"
+                onBlur={(e) => { if ((e.target.value.trim() || null) !== (it.url || null)) guardarUrl(it.id, e.target.value) }}
+                className="w-48 rounded-lg border border-slate-200 px-2 py-1 text-xs" />
+              <button onClick={() => del(it.id)} className="text-xs text-red-600 hover:underline">Eliminar</button>
+            </span>
           </div>
         ))}
       </div>
-      <div className="mt-3 grid gap-2 sm:grid-cols-3">
+      <div className="mt-3 grid gap-2 sm:grid-cols-4">
         <input placeholder="Título" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" />
         <input placeholder="Startup" value={form.startup_name} onChange={(e) => setForm({ ...form, startup_name: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" />
         <input placeholder="Descripción" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+        <input placeholder="Web de la startup (opcional)" value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" />
       </div>
       <button onClick={add} className="btn-ghost mt-2 text-sm">+ Añadir caso</button>
     </section>

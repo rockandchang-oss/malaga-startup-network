@@ -137,7 +137,7 @@ export default function EntityDetail() {
                 {c.startup_name && c.startup_name.trim() !== c.title.trim() && <p className="text-xs font-bold uppercase tracking-wide text-brand-600">{c.startup_name}</p>}
                 <h3 className="font-bold text-brand-800">{c.title}</h3>
                 <div className="mt-1 text-sm text-slate-600"><Parrafos texto={c.description} /></div>
-                {c.url && <a href={c.url} target="_blank" rel="noreferrer" className="mt-2 inline-block text-xs font-semibold text-brand-700 hover:underline">Ver más →</a>}
+                {c.url && <a href={c.url} target="_blank" rel="noreferrer" className="mt-2 inline-block text-xs font-semibold text-brand-700 hover:underline">Visitar web{c.startup_name ? " de " + c.startup_name : ""} ↗</a>}
               </div>
             ))}
           </div>
