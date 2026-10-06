@@ -25,11 +25,12 @@ function useLead() {
   return { t, sp, info, cargando }
 }
 
-type Ent = { id: string; nombre: string; logo?: string | null }
+type Ent = { id: string; nombre: string; logo?: string | null; valorada?: boolean }
 type Voto = { puntuacion: number | null; nadie: boolean }
 export function Valoracion() {
   const { t, sp, info, cargando } = useLead()
-  const ents: Ent[] = ((info as any)?.entidades_det || []) as Ent[]
+  const soloE = sp.get("e")
+  const ents: Ent[] = (((info as any)?.entidades_det || []) as Ent[]).filter(x => !x.valorada && (!soloE || x.id === soloE))
   const [votos, setVotos] = useState<Record<string, Voto>>({})
   const [texto, setTexto] = useState("")
   const [estado, setEstado] = useState<"" | "enviando" | "ok" | "error">("")
@@ -43,7 +44,7 @@ export function Valoracion() {
   if (cargando) return <Caja><p className="text-slate-500">Cargando…</p></Caja>
   if (!info) return <EnlaceInvalido />
   const algunNadie = Object.values(votos).some(v => v.nadie)
-  if (estado === "ok" || info.valorado) return <Caja>
+  if (estado === "ok" || info.valorado || ents.length === 0) return <Caja>
     <h1 className="text-2xl font-extrabold text-brand-700">¡Gracias, {info.nombre}!</h1>
     <p className="mt-3 text-slate-600">{algunNadie ? "Hablaremos con las entidades que aún no te han contactado para que lo hagan lo antes posible." : "Tu opinión nos ayuda a mejorar la red para las próximas startups."}</p>
     <Link to="/entidades" className="btn-primary mt-6 inline-block">Ver entidades de la red</Link></Caja>
@@ -59,7 +60,7 @@ export function Valoracion() {
   return <Caja>
     <p className="text-xs font-bold uppercase tracking-wide text-brand-500">{info.proyecto}</p>
     <h1 className="mt-1 text-2xl font-extrabold text-brand-700">¿Cómo ha ido tu conexión, {info.nombre}?</h1>
-    <p className="mt-2 text-slate-600">Valora a cada entidad que elegiste. Si alguna no te ha contactado, márcalo y la avisaremos.</p>
+    <p className="mt-2 text-slate-600">{soloE ? "Valora el primer contacto con esta entidad." : "Valora a cada entidad que elegiste. Si alguna no te ha contactado, márcalo y la avisaremos."}</p>
     <div className="mt-5 space-y-3">
       {ents.map(e => { const v = votos[e.id] || { puntuacion: null, nadie: false }; return (
         <div key={e.id} className={`rounded-xl border p-4 ${v.nadie ? "border-orange-200 bg-orange-50" : "border-slate-200"}`}>
@@ -116,15 +117,29 @@ export function Incidencia() {
 export function Contactado() {
   const [sp] = useSearchParams()
   const t = sp.get("t") || ""
-  const [r, setR] = useState<{ entidad: string; proyecto: string } | null | undefined>(undefined)
+  const [info, setInfo] = useState<{ entidad: string; proyecto: string; contacto: string; ya: boolean } | null | undefined>(undefined)
+  const [estado, setEstado] = useState<"" | "enviando" | "ok" | "error">("")
   useEffect(() => {
-    if (!/^[0-9a-f-]{36}$/i.test(t)) { setR(null); return }
-    sb.rpc("entidad_marcar_contactado", { t }).then(({ data }: any) => setR(data || null))
+    if (!/^[0-9a-f-]{36}$/i.test(t)) { setInfo(null); return }
+    sb.rpc("entidad_contactado_info", { t }).then(({ data }: any) => setInfo(data || null))
   }, [t])
-  if (r === undefined) return <Caja><p className="text-slate-500">Guardando…</p></Caja>
-  if (!r) return <EnlaceInvalido />
-  return <Caja>
-    <h1 className="text-2xl font-extrabold text-brand-700">¡Gracias, {r.entidad}!</h1>
-    <p className="mt-3 text-slate-600">Hemos anotado que ya habéis contactado con <b>{r.proyecto}</b>. No os volveremos a recordar este contacto.</p>
+  if (info === undefined) return <Caja><p className="text-slate-500">Cargando…</p></Caja>
+  if (!info) return <EnlaceInvalido />
+  if (info.ya || estado === "ok") return <Caja>
+    <h1 className="text-2xl font-extrabold text-brand-700">¡Gracias, {info.entidad}!</h1>
+    <p className="mt-3 text-slate-600">Hemos anotado que ya habéis contactado con <b>{info.proyecto}</b>. No os volveremos a recordar este contacto.</p>
     <a href="/startups/admin/emprendedores" className="btn-primary mt-6 inline-block">Ir al panel</a></Caja>
+  const confirmar = async () => {
+    setEstado("enviando")
+    const { data, error } = await sb.rpc("entidad_marcar_contactado", { t })
+    setEstado(!error && data ? "ok" : "error")
+  }
+  return <Caja>
+    <p className="text-xs font-bold uppercase tracking-wide text-brand-500">{info.entidad}</p>
+    <h1 className="mt-1 text-2xl font-extrabold text-brand-700">¿Ya habéis contactado con {info.proyecto}?</h1>
+    <p className="mt-2 text-slate-600">Confirmadlo y dejaremos de recordároslo. Pediremos a {info.contacto?.split(" ")[0] || "la startup"} que valore ese primer contacto.</p>
+    {estado === "error" && <p className="mt-2 text-sm text-red-600">No se pudo guardar. Inténtalo de nuevo.</p>}
+    <button className="btn-primary mt-6 w-full" disabled={estado === "enviando"} onClick={confirmar}>{estado === "enviando" ? "Guardando…" : "✓ Sí, ya le hemos contactado"}</button>
+    <a href="/startups/admin/emprendedores" className="mt-3 block text-center text-sm text-slate-500 hover:underline">Todavía no — ver sus datos en el panel</a>
+  </Caja>
 }
