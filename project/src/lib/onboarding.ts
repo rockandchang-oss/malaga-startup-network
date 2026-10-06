@@ -14,7 +14,7 @@ export type Contact = { contact_name: string; project_name: string; email: strin
 export type Suggestion = {
   program_id: string | null; entity_id: string | null; name: string; entity_name: string
   logo_url: string | null; photo_url: string | null; description: string | null; score: number; reason: string | null
-  cases?: string[]; entity_slug?: string | null; extra?: boolean
+  cases?: string[]; entity_slug?: string | null; extra?: boolean; responde_rapido?: boolean
 }
 export type Selection = {
   stageId: string | null; tagIds: string[]; values: string[]

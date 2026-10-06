@@ -27,6 +27,14 @@ export default function EntityDetail() {
   const [loading, setLoading] = useState(true)
   const [abierto, setAbierto] = useState<string | null>(null)
 
+  const [rapida, setRapida] = useState(false)
+  useEffect(() => {
+    if (!entity?.id) return
+    ;(supabase as any).rpc("entidades_responden_rapido").then(({ data }: any) => {
+      const ids = (data ?? []).map((r: any) => typeof r === "string" ? r : Object.values(r)[0])
+      setRapida(ids.includes(entity.id))
+    })
+  }, [entity?.id])
   useEffect(() => {
     if (!slug) return
     supabase.from("entities")
@@ -67,6 +75,7 @@ export default function EntityDetail() {
         </div>
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight">{entity.name}</h1>
+          {rapida && <span title="Suele contactar con las startups que la eligen en pocos días" className="mt-2 inline-flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800">⚡ Responde rápido a las startups</span>}
           <p className="mt-1 text-slate-500">{entity.location_city}</p>
           {entity.website && (
             <a href={entity.website} target="_blank" rel="noreferrer" className="mt-2 inline-block text-sm font-semibold text-brand-700 hover:underline">

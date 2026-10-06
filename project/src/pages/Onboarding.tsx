@@ -148,6 +148,7 @@ export default function Onboarding() {
             )
             const body = (
               <>
+                {s.responde_rapido && <span title="Esta entidad suele contactar con las startups en pocos días" className="mb-1 inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-bold text-emerald-800">⚡ Responde rápido</span>}
                 <h3 className="font-bold leading-snug">{s.name}</h3>
                 <p className="mt-1 text-sm text-slate-600">{s.description}</p>
                 {s.reason && <p className="mt-2 text-xs font-medium text-brand-700">Por qué encaja: {s.reason}</p>}
