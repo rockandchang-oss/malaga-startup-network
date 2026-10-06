@@ -124,9 +124,9 @@ export default function Onboarding() {
     return (
       <div className="container-x max-w-5xl py-12">
         <ProgressBar progress={progress} label="Tus encajes" />
-        <h1 className="text-3xl font-extrabold tracking-tight">Esto es lo que encaja contigo</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight">Programas que mejor se ajustan a tu perfil</h1>
         <p className="mt-2 text-slate-600">
-          Estas entidades y programas pueden ayudarte según tu momento. <b>Pulsa en las tarjetas</b> que te interesen
+          Ordenados de mayor a menor encaje con tus respuestas. <b>Pulsa en las tarjetas</b> que te interesen
           para que te contacten — puedes elegir <b>uno o varios</b>. "Más información" abre la ficha en otra pestaña.
         </p>
 
@@ -208,10 +208,10 @@ export default function Onboarding() {
         {!verMas && suggestions.some((s) => s.extra) && (
           <div className="mt-6 text-center">
             <button type="button" onClick={() => { setVerMas(true); registrar("onboarding_ver_mas", { n: suggestions.filter((s) => s.extra).length }, true) }}
-              className="rounded-full border border-brand-300 bg-white px-5 py-2 text-sm font-semibold text-brand-700 transition hover:bg-brand-50">
+              className="rounded-full border-2 border-brand-500 bg-white px-6 py-2.5 text-sm font-bold text-brand-700 shadow-sm transition hover:bg-brand-50">
               Ver más sugerencias ({suggestions.filter((s) => s.extra).length})
             </button>
-            <p className="mt-2 text-xs text-slate-400">Otros programas que también encajan contigo, ordenados por interés.</p>
+            <p className="mt-2 text-xs text-slate-400">Más programas de la red que también encajan contigo, ordenados por encaje.</p>
           </div>
         )}
 
