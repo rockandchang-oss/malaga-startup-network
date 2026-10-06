@@ -19,6 +19,7 @@ export default function Onboarding() {
   const [selection, setSelection] = useState<Selection | null>(null)
   const [suggestions, setSuggestions] = useState<Suggestion[]>([])
   const [picks, setPicks] = useState<Set<number>>(new Set())
+  const [verMas, setVerMas] = useState(false)
   const [contact, setContact] = useState<Contact>({ contact_name: "", project_name: "", email: "", whatsapp: "", es_whatsapp: true, web: "", consent: false })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -84,7 +85,7 @@ export default function Onboarding() {
     setSubmitting(true); setError(null)
     try {
       const chosen = Array.from(picks).map((i) => suggestions[i])
-      await submitLead(selection, contact, chosen, suggestions)
+      await submitLead(selection, contact, chosen, suggestions.filter((s, i) => !s.extra || verMas || picks.has(i)))
       registrar("onboarding_enviado", { elegidas: chosen.length, entidades: chosen.map((c) => c.entity_id) }, true)
       setPhase("done")
     } catch (e: any) { setError(e.message ?? "No se pudo enviar. Inténtalo de nuevo.") }
@@ -132,6 +133,7 @@ export default function Onboarding() {
         <div className="mt-8 grid gap-5 sm:grid-cols-2">
           {suggestions.map((s, i) => {
             const selected = picks.has(i)
+            if (s.extra && !verMas && !selected) return null
             const toggle = () => setPicks((p) => { const n = new Set(p); n.has(i) ? n.delete(i) : n.add(i); return n })
             const href = s.entity_slug ? `/entidades/${s.entity_slug}` : null
             const header = (
@@ -202,6 +204,16 @@ export default function Onboarding() {
             </Link>
           )}
         </div>
+
+        {!verMas && suggestions.some((s) => s.extra) && (
+          <div className="mt-6 text-center">
+            <button type="button" onClick={() => { setVerMas(true); registrar("onboarding_ver_mas", { n: suggestions.filter((s) => s.extra).length }, true) }}
+              className="rounded-full border border-brand-300 bg-white px-5 py-2 text-sm font-semibold text-brand-700 transition hover:bg-brand-50">
+              Ver más sugerencias ({suggestions.filter((s) => s.extra).length})
+            </button>
+            <p className="mt-2 text-xs text-slate-400">Otros programas que también encajan contigo, ordenados por interés.</p>
+          </div>
+        )}
 
         <div className="mt-8 flex items-center justify-between">
           <span className="text-sm text-slate-400">{picks.size} seleccionado{picks.size === 1 ? "" : "s"}</span>

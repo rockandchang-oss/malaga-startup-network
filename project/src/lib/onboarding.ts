@@ -14,7 +14,7 @@ export type Contact = { contact_name: string; project_name: string; email: strin
 export type Suggestion = {
   program_id: string | null; entity_id: string | null; name: string; entity_name: string
   logo_url: string | null; photo_url: string | null; description: string | null; score: number; reason: string | null
-  cases?: string[]; entity_slug?: string | null
+  cases?: string[]; entity_slug?: string | null; extra?: boolean
 }
 export type Selection = {
   stageId: string | null; tagIds: string[]; values: string[]
@@ -80,7 +80,7 @@ export async function matchByAnswers(questions: Question[], answers: Answers): P
     const { data, error } = await supabase.functions.invoke("match-programs", {
       body: { tag_ids: selection.tagIds, stage_id: selection.stageId },
     })
-    if (!error && data?.suggestions) suggestions = data.suggestions
+    if (!error && data?.suggestions) suggestions = [...data.suggestions, ...((data.mas ?? []) as Suggestion[]).map((x) => ({ ...x, extra: true }))]
   } catch { /* fallback */ }
   if (suggestions.length === 0) suggestions = await fallbackMatch()
   await attachSuccessCases(suggestions)
