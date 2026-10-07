@@ -15,6 +15,7 @@ import EntityDetail from "./pages/EntityDetail"
 import Blog from "./pages/Blog"
 import BlogPost from "./pages/BlogPost"
 import NotFound from "./pages/NotFound"
+import Agenda from "./pages/Agenda"
 import { Valoracion, Incidencia, Contactado } from "./pages/Seguimiento"
 import Login from "./pages/admin/Login"
 import Clave from "./pages/admin/Clave"
@@ -80,6 +81,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <Route path="/empezar" element={<Onboarding />} />
             <Route path="/entidades" element={<Directory />} />
             <Route path="/entidades/:slug" element={<EntityDetail />} />
+            <Route path="/agenda" element={<Agenda />} />
             <Route path="/noticias" element={<Blog />} />
             <Route path="/noticias/:slug" element={<BlogPost />} />
             <Route path="/valoracion" element={<Valoracion />} />
