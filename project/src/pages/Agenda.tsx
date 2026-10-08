@@ -20,7 +20,7 @@ const COLOR: Record<string, string> = {
   "Feria / congreso": "bg-violet-100 text-violet-700",
   "Evento": "bg-slate-100 text-slate-600",
 }
-const PROVINCIAS = ["Málaga", "Sevilla", "Granada", "Córdoba", "Cádiz", "Almería", "Huelva", "Jaén"]
+const PROVINCIAS = ["Málaga", "Sevilla", "Granada", "Córdoba", "Cádiz", "Almería", "Huelva", "Jaén", "Online"]
 
 function fmtFecha(ini: string, fin: string | null) {
   const d = new Date(ini + "T00:00:00")
@@ -81,7 +81,7 @@ export default function Agenda() {
       <div className="mt-3 flex flex-wrap gap-2">
         <button onClick={() => setProv("")} className={`rounded-full px-3 py-1 text-xs ${!prov ? "bg-sun-500 text-brand-950 font-semibold" : "border border-slate-200 text-slate-500"}`}>Toda Andalucía</button>
         {PROVINCIAS.map(p => (
-          <button key={p} onClick={() => setProv(p)} className={`rounded-full px-3 py-1 text-xs ${prov === p ? "bg-sun-500 text-brand-950 font-semibold" : p === "Málaga" ? "border border-brand-400 text-brand-700 font-semibold" : "border border-slate-200 text-slate-500"}`}>{p === "Málaga" ? "★ Málaga" : p}</button>
+          <button key={p} onClick={() => setProv(p)} className={`rounded-full px-3 py-1 text-xs ${prov === p ? "bg-sun-500 text-brand-950 font-semibold" : p === "Málaga" ? "border border-brand-400 text-brand-700 font-semibold" : "border border-slate-200 text-slate-500"}`}>{p === "Málaga" ? "★ Málaga" : p === "Online" ? "💻 Online" : p}</button>
         ))}
       </div>
 
@@ -103,7 +103,7 @@ export default function Agenda() {
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
                           {e.categoria && <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${COLOR[e.categoria] ?? "bg-slate-100 text-slate-600"}`}>{e.categoria}</span>}
-                          <span className={`text-[11px] ${e.provincia === "Málaga" ? "font-semibold text-brand-600" : "text-slate-400"}`}>{e.provincia === "Málaga" ? "★ Málaga" : (e.provincia ?? "Andalucía")}{e.hora ? ` · ${e.hora}` : ""}</span>
+                          <span className={`text-[11px] ${e.provincia === "Málaga" ? "font-semibold text-brand-600" : "text-slate-400"}`}>{e.provincia === "Málaga" ? "★ Málaga" : e.provincia === "Online" ? "💻 Online" : (e.provincia ?? "Andalucía")}{e.hora ? ` · ${e.hora}` : ""}</span>
                         </div>
                         <h3 className="mt-1 font-semibold text-slate-800">{e.titulo}</h3>
                         {e.descripcion && <p className="mt-0.5 line-clamp-2 text-sm text-slate-500">{e.descripcion}</p>}
