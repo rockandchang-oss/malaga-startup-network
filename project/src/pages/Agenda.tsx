@@ -6,6 +6,7 @@ type Evento = {
   fecha_inicio: string; fecha_fin: string | null; hora: string | null
   ciudad: string | null; provincia: string | null; online: boolean
   categoria: string | null; url: string | null; fuente: string | null; organizador: string | null
+  origen: string | null; inscripcion_inicio: string | null; inscripcion_fin: string | null
 }
 
 const COLOR: Record<string, string> = {
@@ -59,7 +60,7 @@ export default function Agenda() {
   const porMes = useMemo(() => {
     const m: Record<string, Evento[]> = {}
     for (const e of filtrados) { const k = e.fecha_inicio.slice(0, 7); (m[k] ??= []).push(e) }
-    const rank = (e: Evento) => (!prov && e.provincia === "Málaga") ? 0 : 1
+    const rank = (e: Evento) => (e.origen === "entidad" ? 0 : 2) + ((!prov && e.provincia === "Málaga") ? 0 : 1)
     for (const k in m) m[k].sort((a, b) => rank(a) - rank(b) || a.fecha_inicio.localeCompare(b.fecha_inicio))
     return Object.entries(m).sort(([a], [b]) => a.localeCompare(b))
   }, [filtrados])
@@ -102,10 +103,12 @@ export default function Agenda() {
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
+                          {e.origen === "entidad" && <span className="rounded-full bg-brand-600 px-2 py-0.5 text-[11px] font-semibold text-white">Entidad de la red</span>}
                           {e.categoria && <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${COLOR[e.categoria] ?? "bg-slate-100 text-slate-600"}`}>{e.categoria}</span>}
                           <span className={`text-[11px] ${e.provincia === "Málaga" ? "font-semibold text-brand-600" : "text-slate-400"}`}>{e.provincia === "Málaga" ? "★ Málaga" : e.provincia === "Online" ? "💻 Online" : (e.provincia ?? "Andalucía")}{e.hora ? ` · ${e.hora}` : ""}</span>
                         </div>
                         <h3 className="mt-1 font-semibold text-slate-800">{e.titulo}</h3>
+                        {e.inscripcion_fin && <p className="mt-0.5 inline-block rounded bg-amber-50 px-1.5 py-0.5 text-[11px] font-semibold text-amber-800">📝 Inscripción {e.inscripcion_inicio ? `del ${new Date(e.inscripcion_inicio+"T00:00:00").toLocaleDateString("es-ES",{day:"numeric",month:"short"})} al ${new Date(e.inscripcion_fin+"T00:00:00").toLocaleDateString("es-ES",{day:"numeric",month:"short"})}` : `hasta el ${new Date(e.inscripcion_fin+"T00:00:00").toLocaleDateString("es-ES",{day:"numeric",month:"short"})}`}</p>}
                         {e.descripcion && <p className="mt-0.5 line-clamp-2 text-sm text-slate-500">{e.descripcion}</p>}
                         <p className="mt-1 text-[11px] text-slate-400">{fmtFecha(e.fecha_inicio, e.fecha_fin)} · {e.fuente}{e.url ? " · ver detalle ↗" : ""}</p>
                       </div>

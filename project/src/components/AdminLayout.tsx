@@ -61,6 +61,7 @@ export default function AdminLayout() {
           <NavLink to="/admin/entidad" className={link}>{isSuperadmin ? "Editar entidades" : "Mi entidad"}</NavLink>
           <NavLink to="/admin/programas" className={link}>{isSuperadmin ? "Programas" : "Mis programas"}</NavLink>
           <NavLink to="/admin/noticias" className={link}>Noticias</NavLink>
+          <NavLink to="/admin/eventos" className={link}>Eventos</NavLink>
           <NavLink to="/admin/candidaturas" className={link}>Candidaturas 2026</NavLink>
           <NavLink to="/admin/avisos" className={link}>Avisos y reuniones</NavLink>
           <NavLink to="/admin/emprendedores" className={link}>Emprendedores</NavLink>
@@ -89,6 +90,7 @@ export default function AdminLayout() {
           <NavLink to="/admin/entidad" className={link}>{isSuperadmin ? "Editar entidades" : "Mi entidad"}</NavLink>
           <NavLink to="/admin/programas" className={link}>Programas</NavLink>
           <NavLink to="/admin/noticias" className={link}>Noticias</NavLink>
+          <NavLink to="/admin/eventos" className={link}>Eventos</NavLink>
           <NavLink to="/admin/candidaturas" className={link}>Candidaturas</NavLink>
           {!isSuperadmin && <button onClick={() => setTour(true)} className="shrink-0 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold text-[#4A5D8A]">🧭 Cómo funciona</button>}
           <NavLink to="/admin/avisos" className={link}>Avisos</NavLink>

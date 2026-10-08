@@ -23,6 +23,7 @@ import Dashboard from "./pages/admin/Dashboard"
 import MyEntity from "./pages/admin/MyEntity"
 import MyPrograms from "./pages/admin/MyPrograms"
 import MyPosts from "./pages/admin/MyPosts"
+import MyEventos from "./pages/admin/MyEventos"
 import Leads from "./pages/admin/Leads"
 import Stats from "./pages/admin/Stats"
 import AdminEntities from "./pages/admin/AdminEntities"
@@ -96,6 +97,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <Route path="entidad" element={<MyEntity />} />
             <Route path="programas" element={<MyPrograms />} />
             <Route path="noticias" element={<MyPosts />} />
+            <Route path="eventos" element={<MyEventos />} />
             <Route path="candidaturas" element={<Candidaturas />} />
             <Route path="avisos" element={<Avisos />} />
             <Route path="emprendedores" element={<MisLeads />} />
