@@ -44,6 +44,29 @@ function gcalUrl(e: Evento) {
   return "https://calendar.google.com/calendar/render?" + p.toString()
 }
 
+function icsText(e: Evento) {
+  const d = (s: string) => s.replace(/-/g, "")
+  const fin = new Date((e.fecha_fin || e.fecha_inicio) + "T00:00:00"); fin.setDate(fin.getDate() + 1)
+  const endExcl = `${fin.getFullYear()}${String(fin.getMonth() + 1).padStart(2, "0")}${String(fin.getDate()).padStart(2, "0")}`
+  const esc = (s: string) => (s || "").replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n")
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z")
+  const desc = [e.descripcion ? esc(e.descripcion.replace(/\s+/g, " ").trim()) : "", e.url ? "Mas info: " + e.url : "", "Via Malaga Startup Network"].filter(Boolean).join("\\n\\n")
+  return ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Malaga Startup Network//Agenda//ES", "CALSCALE:GREGORIAN",
+    "BEGIN:VEVENT", "UID:" + e.id + "@malagastartupnetwork",
+    "DTSTAMP:" + stamp, "DTSTART;VALUE=DATE:" + d(e.fecha_inicio), "DTEND;VALUE=DATE:" + endExcl,
+    "SUMMARY:" + esc(e.titulo), "DESCRIPTION:" + desc,
+    "LOCATION:" + esc(e.online ? "Online" : (e.provincia || "Andalucia")),
+    e.url ? "URL:" + e.url : "", "END:VEVENT", "END:VCALENDAR"].filter(Boolean).join("\r\n")
+}
+function descargaIcs(e: Evento) {
+  const blob = new Blob([icsText(e)], { type: "text/calendar;charset=utf-8" })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement("a"); a.href = url
+  a.download = (e.titulo || "evento").replace(/[^a-z0-9]+/gi, "-").slice(0, 40).toLowerCase() + ".ics"
+  document.body.appendChild(a); a.click(); a.remove()
+  setTimeout(() => URL.revokeObjectURL(url), 1500)
+}
+
 export default function Agenda() {
   const [eventos, setEventos] = useState<Evento[]>([])
   const [loading, setLoading] = useState(true)
@@ -125,6 +148,7 @@ export default function Agenda() {
                         <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-slate-400">
                           <span>{fmtFecha(e.fecha_inicio, e.fecha_fin)} · {e.fuente}{e.url ? " · ver detalle ↗" : ""}</span>
                           <button type="button" onClick={(ev) => { ev.preventDefault(); ev.stopPropagation(); window.open(gcalUrl(e), "_blank", "noopener") }} className="inline-flex items-center gap-1 rounded-full border border-slate-200 px-2 py-0.5 font-semibold text-brand-700 transition hover:border-brand-400 hover:bg-brand-50">📅 Agendar</button>
+                          <button type="button" title="Descargar .ics (Apple Calendar, Outlook)" onClick={(ev) => { ev.preventDefault(); ev.stopPropagation(); descargaIcs(e) }} className="inline-flex items-center gap-1 rounded-full border border-slate-200 px-2 py-0.5 font-semibold text-slate-500 transition hover:border-brand-400 hover:bg-brand-50">⬇ .ics</button>
                         </div>
                       </div>
                     </div>
@@ -136,7 +160,7 @@ export default function Agenda() {
               </div>
             </section>
           ))}
-          <p className="mt-10 text-xs text-slate-400">Fuentes: Portal Andaluz de Emprendimiento (Junta de Andalucía). Próximamente más fuentes y envío de eventos por las entidades.</p>
+          <p className="mt-10 text-xs text-slate-400">Fuentes automáticas: Portal Andaluz de Emprendimiento (Junta), Cámara de Comercio de Málaga, Polo Digital, FYCMA, Universidad de Málaga, CTA, EOI, El Referente y más. Las entidades de la red también publican sus propios eventos y convocatorias, que salen destacados.</p>
         </>
       )}
     </div>
