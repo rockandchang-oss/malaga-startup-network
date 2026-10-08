@@ -21,6 +21,7 @@ const COLOR: Record<string, string> = {
   "Feria / congreso": "bg-violet-100 text-violet-700",
   "Evento": "bg-slate-100 text-slate-600",
 }
+const EMOJI: Record<string,string> = {"Hackatón":"💡","Financiación / subvención":"💶","Convocatoria / concurso":"🏆","Inversión":"📈","Aceleración / incubación":"🚀","Networking / encuentro":"🤝","Formación / taller":"🎓","Jornada":"🗓️","Feria / congreso":"🎪","Evento":"📌"}
 const PROVINCIAS = ["Málaga", "Sevilla", "Granada", "Córdoba", "Cádiz", "Almería", "Huelva", "Jaén", "Online"]
 
 function fmtFecha(ini: string, fin: string | null) {
@@ -107,7 +108,7 @@ export default function Agenda() {
                     <div className="flex items-start gap-4 p-4 transition hover:bg-slate-50">
                       {e.imagen_url
                         ? <img src={e.imagen_url} alt="" loading="lazy" onError={(ev) => { (ev.currentTarget as HTMLImageElement).style.display = "none" }} className="h-14 w-20 shrink-0 rounded-lg object-cover sm:h-16 sm:w-24" />
-                        : <div className="h-14 w-20 shrink-0 rounded-lg bg-gradient-to-br from-brand-400 to-brand-600 sm:h-16 sm:w-24" />}
+                        : <div className="flex h-14 w-20 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-2xl sm:h-16 sm:w-24">{e.categoria ? (EMOJI[e.categoria] ?? "📌") : "📌"}</div>}
                       <div className="w-14 shrink-0 text-center">
                         <div className="text-lg font-extrabold leading-none text-brand-700">{new Date(e.fecha_inicio + "T00:00:00").getDate()}</div>
                         <div className="text-[11px] uppercase text-slate-400">{new Date(e.fecha_inicio + "T00:00:00").toLocaleDateString("es-ES", { month: "short" })}</div>
@@ -120,7 +121,7 @@ export default function Agenda() {
                         </div>
                         <h3 className="mt-1 font-semibold text-slate-800">{e.titulo}</h3>
                         {e.inscripcion_fin && <p className="mt-0.5 inline-block rounded bg-amber-50 px-1.5 py-0.5 text-[11px] font-semibold text-amber-800">📝 Inscripción {e.inscripcion_inicio ? `del ${new Date(e.inscripcion_inicio+"T00:00:00").toLocaleDateString("es-ES",{day:"numeric",month:"short"})} al ${new Date(e.inscripcion_fin+"T00:00:00").toLocaleDateString("es-ES",{day:"numeric",month:"short"})}` : `hasta el ${new Date(e.inscripcion_fin+"T00:00:00").toLocaleDateString("es-ES",{day:"numeric",month:"short"})}`}</p>}
-                        {e.descripcion && <p className="mt-0.5 line-clamp-2 text-sm text-slate-500">{e.descripcion}</p>}
+                        {e.descripcion && <p className="mt-0.5 line-clamp-2 text-sm text-slate-500">{e.descripcion.replace(/\\n|\s+/g, " ").trim()}</p>}
                         <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-slate-400">
                           <span>{fmtFecha(e.fecha_inicio, e.fecha_fin)} · {e.fuente}{e.url ? " · ver detalle ↗" : ""}</span>
                           <button type="button" onClick={(ev) => { ev.preventDefault(); ev.stopPropagation(); window.open(gcalUrl(e), "_blank", "noopener") }} className="inline-flex items-center gap-1 rounded-full border border-slate-200 px-2 py-0.5 font-semibold text-brand-700 transition hover:border-brand-400 hover:bg-brand-50">📅 Agendar</button>
