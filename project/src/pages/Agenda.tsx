@@ -34,6 +34,14 @@ function fmtFecha(ini: string, fin: string | null) {
   return s
 }
 const MES = (s: string) => new Date(s + "T00:00:00").toLocaleDateString("es-ES", { month: "long", year: "numeric" })
+function gcalUrl(e: Evento) {
+  const d = (s: string) => s.replace(/-/g, "")
+  const fin = new Date((e.fecha_fin || e.fecha_inicio) + "T00:00:00"); fin.setDate(fin.getDate() + 1)
+  const endExcl = `${fin.getFullYear()}${String(fin.getMonth() + 1).padStart(2, "0")}${String(fin.getDate()).padStart(2, "0")}`
+  const det = [e.descripcion || "", e.url ? `Más info: ${e.url}` : "", "Vía Málaga Startup Network"].filter(Boolean).join("\n\n")
+  const p = new URLSearchParams({ action: "TEMPLATE", text: e.titulo, dates: `${d(e.fecha_inicio)}/${endExcl}`, details: det, location: e.online ? "Online" : (e.provincia || "Andalucía") })
+  return "https://calendar.google.com/calendar/render?" + p.toString()
+}
 
 export default function Agenda() {
   const [eventos, setEventos] = useState<Evento[]>([])
@@ -113,7 +121,10 @@ export default function Agenda() {
                         <h3 className="mt-1 font-semibold text-slate-800">{e.titulo}</h3>
                         {e.inscripcion_fin && <p className="mt-0.5 inline-block rounded bg-amber-50 px-1.5 py-0.5 text-[11px] font-semibold text-amber-800">📝 Inscripción {e.inscripcion_inicio ? `del ${new Date(e.inscripcion_inicio+"T00:00:00").toLocaleDateString("es-ES",{day:"numeric",month:"short"})} al ${new Date(e.inscripcion_fin+"T00:00:00").toLocaleDateString("es-ES",{day:"numeric",month:"short"})}` : `hasta el ${new Date(e.inscripcion_fin+"T00:00:00").toLocaleDateString("es-ES",{day:"numeric",month:"short"})}`}</p>}
                         {e.descripcion && <p className="mt-0.5 line-clamp-2 text-sm text-slate-500">{e.descripcion}</p>}
-                        <p className="mt-1 text-[11px] text-slate-400">{fmtFecha(e.fecha_inicio, e.fecha_fin)} · {e.fuente}{e.url ? " · ver detalle ↗" : ""}</p>
+                        <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-slate-400">
+                          <span>{fmtFecha(e.fecha_inicio, e.fecha_fin)} · {e.fuente}{e.url ? " · ver detalle ↗" : ""}</span>
+                          <button type="button" onClick={(ev) => { ev.preventDefault(); ev.stopPropagation(); window.open(gcalUrl(e), "_blank", "noopener") }} className="inline-flex items-center gap-1 rounded-full border border-slate-200 px-2 py-0.5 font-semibold text-brand-700 transition hover:border-brand-400 hover:bg-brand-50">📅 Agendar</button>
+                        </div>
                       </div>
                     </div>
                   )
