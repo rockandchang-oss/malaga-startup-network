@@ -42,9 +42,14 @@ export default function Agenda() {
 
   useEffect(() => {
     const hoy = new Date(Date.now() - 86400000).toISOString().slice(0, 10)
-    supabase.from("eventos").select("*").eq("estado", "publicado")
-      .gte("fecha_inicio", hoy).order("fecha_inicio", { ascending: true }).limit(300)
-      .then(({ data }) => { setEventos((data ?? []) as Evento[]); setLoading(false) })
+    ;(async () => {
+      try {
+        const { data } = await supabase.from("eventos").select("*").eq("estado", "publicado")
+          .gte("fecha_inicio", hoy).order("fecha_inicio", { ascending: true }).limit(300)
+        setEventos((data ?? []) as Evento[])
+      } catch { /* dejamos lista vacia */ }
+      finally { setLoading(false) }
+    })()
   }, [])
 
   const tipos = useMemo(() => Array.from(new Set(eventos.map(e => e.categoria).filter(Boolean))) as string[], [eventos])
@@ -54,6 +59,8 @@ export default function Agenda() {
   const porMes = useMemo(() => {
     const m: Record<string, Evento[]> = {}
     for (const e of filtrados) { const k = e.fecha_inicio.slice(0, 7); (m[k] ??= []).push(e) }
+    const rank = (e: Evento) => (!prov && e.provincia === "Málaga") ? 0 : 1
+    for (const k in m) m[k].sort((a, b) => rank(a) - rank(b) || a.fecha_inicio.localeCompare(b.fecha_inicio))
     return Object.entries(m).sort(([a], [b]) => a.localeCompare(b))
   }, [filtrados])
 
@@ -62,7 +69,7 @@ export default function Agenda() {
       <h1 className="text-4xl font-extrabold tracking-tight">Agenda de eventos</h1>
       <p className="mt-2 max-w-2xl text-slate-600">
         Eventos, jornadas, convocatorias y ayudas para emprender en toda Andalucía. Recopilados y
-        clasificados automáticamente; pulsa cualquiera para ver el detalle original.
+        clasificados automáticamente; pulsa cualquiera para ver el detalle original. <b class="text-brand-700">Destacamos los de Málaga</b>, pero puedes ver los de toda Andalucía.
       </p>
 
       <div className="mt-6 flex flex-wrap gap-2">
@@ -74,7 +81,7 @@ export default function Agenda() {
       <div className="mt-3 flex flex-wrap gap-2">
         <button onClick={() => setProv("")} className={`rounded-full px-3 py-1 text-xs ${!prov ? "bg-sun-500 text-brand-950 font-semibold" : "border border-slate-200 text-slate-500"}`}>Toda Andalucía</button>
         {PROVINCIAS.map(p => (
-          <button key={p} onClick={() => setProv(p)} className={`rounded-full px-3 py-1 text-xs ${prov === p ? "bg-sun-500 text-brand-950 font-semibold" : "border border-slate-200 text-slate-500"}`}>{p}</button>
+          <button key={p} onClick={() => setProv(p)} className={`rounded-full px-3 py-1 text-xs ${prov === p ? "bg-sun-500 text-brand-950 font-semibold" : p === "Málaga" ? "border border-brand-400 text-brand-700 font-semibold" : "border border-slate-200 text-slate-500"}`}>{p === "Málaga" ? "★ Málaga" : p}</button>
         ))}
       </div>
 
@@ -96,7 +103,7 @@ export default function Agenda() {
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
                           {e.categoria && <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${COLOR[e.categoria] ?? "bg-slate-100 text-slate-600"}`}>{e.categoria}</span>}
-                          <span className="text-[11px] text-slate-400">{e.provincia ?? "Andalucía"}{e.hora ? ` · ${e.hora}` : ""}</span>
+                          <span className={`text-[11px] ${e.provincia === "Málaga" ? "font-semibold text-brand-600" : "text-slate-400"}`}>{e.provincia === "Málaga" ? "★ Málaga" : (e.provincia ?? "Andalucía")}{e.hora ? ` · ${e.hora}` : ""}</span>
                         </div>
                         <h3 className="mt-1 font-semibold text-slate-800">{e.titulo}</h3>
                         {e.descripcion && <p className="mt-0.5 line-clamp-2 text-sm text-slate-500">{e.descripcion}</p>}
