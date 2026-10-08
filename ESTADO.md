@@ -10,6 +10,21 @@
 
 ## Registro
 
+### 2026-10-08 (i) — Informe quincenal de leads a las entidades (OK de Isaac: quincenal, 1º el 9-oct)
+- RPC `robot_resumen_red(token)` (security definer, token robot): leads anónimos (fase, punto, zona, necesidades,
+  sectores, nº de elecciones), por entidad publicada [nombre, recomendada, elegida, programas, contactadas] y
+  destinatarios (solo `entity_admin`, sin superadmin). Hoy: 11 leads, 17 entidades, 47 destinatarios.
+- Droplet /opt/msn-avisos/: `resumen.sh` (carga secretos) → `resumen_envio.py` (--prueba EMAIL [entidades] |
+  --si-toca | --forzar) → plantilla `resumen_red.py` → `enviar.sh` (SES, remitente info@rockandchange.es).
+  Un correo por entidad con su bloque personal. Log en resumen.log; marca del último envío en resumen-ultimo.txt
+  (se escribe ANTES de enviar para no repetir en bucle si falla a medias).
+- Cron: `0 7 * * * resumen.sh --si-toca` (el droplet va en UTC → 9:00 Madrid en verano, 8:00 en invierno). Envía si
+  han pasado ≥14 días: 1º el vie 9-oct, luego cada 2 viernes. Para PARAR: borrar esa línea del crontab.
+- Pruebas 8-oct a rockandchang@gmail.com: BIC, Teamlabs, Ayuntamiento (3/3 OK). Copia del código en scripts/robot/.
+
+### 2026-10-08 (h) — Recolector: 1 vez al día
+- Cron del droplet: `17 7 * * * /opt/msn-eventos/eventos.sh` (antes 7, 13 y 19 h), a petición de Isaac. Backup del crontab en /opt/msn-eventos/crontab.bak-*. Solo se tocó esa línea (16 líneas antes y después).
+
 ### 2026-10-08 (g) — Recolector v3: Polo Digital, CTA, EOI, El Referente + fusión difusa
 - **Polo Digital**: API WP `/wp/v2/evento` y `/formacion` + ficha (`div.meta date` "16 Octubre, 2026", `meta place`).
 - **CTA**: API WP `/wp/v2/eventos` + ficha ("Fecha: 21 de octubre", año deducido de la fecha de publicación);
