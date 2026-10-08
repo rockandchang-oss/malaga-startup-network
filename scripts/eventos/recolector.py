@@ -21,7 +21,7 @@ def rpc(nombre,datos):
     with urllib.request.urlopen(req,timeout=60) as r:
         t=r.read().decode(); return json.loads(t) if t else None
 
-def limpia(s): return re.sub(r"\s+"," ", re.sub(r"<[^>]+>","",s or "")).strip()
+def limpia(s): return re.sub(r"\s+"," ", html.unescape(re.sub(r"<[^>]+>","",html.unescape(s or "")))).strip()
 def norm(s):
     s=unicodedata.normalize("NFD",(s or "").lower()); s="".join(c for c in s if unicodedata.category(c)!="Mn")
     return re.sub(r"[^a-z0-9]+"," ",s).strip()
@@ -48,15 +48,19 @@ TIPOS=[("Hackatón",["hackaton","hackathon","datathon"]),
  ("Jornada",["jornada","jornadas"]),
  ("Feria / congreso",["feria","congreso","summit","foro","expo","fest","conferencia"])]
 ONLINE_RE=re.compile(r"\bonline\b|webinar|virtual|en linea|telem|streaming|zoom|teams|meet")
-# Relevancia (solo para fuentes amplias: universidades, FYCMA)
-REL=["emprend","startup","start up","innovac","inversion","inversor","business angel","acelerad","incubad",
- "lanzadera","vivero","financiacion","subvencion","convocatoria","concurso","premio","certamen","hackaton",
- "hackathon","pitch","venture","scaleup","spin off","spinoff","demo day","transferencia","otri","fintech",
- "deeptech","foro de inversion","networking","pyme","autonomo","negocio","transfiere","greencities",
- "digital enterprise","impact hub","propiedad intelectual","patente","comercializa","mentoriz","aceleracion",
- "financia","ayudas","industria 4","tech","tecnolog","digitaliza"]
-def relevante(txt):
-    n=norm(txt); return any(k in n for k in REL)
+# Relevancia (solo fuentes amplias: universidades, FYCMA). Palabras FUERTES, se miran en el TITULO;
+# en la descripcion solo las inequivocas. Evita conciertos, cine, congresos academicos, etc.
+REL_TIT=["emprend","startup","start up","inversion","inversor","business angel","acelerad","incubad",
+ "lanzadera","venture","scaleup","scale up","spin off","spinoff","demo day","transferencia","transfiere",
+ "otri","fintech","deeptech","hackaton","hackathon","pitch","idea de negocio","ideas de negocio",
+ "modelo de negocio","plan de negocio","financiacion","subvencion","ayudas a","convocatoria","innovacion abierta",
+ "andalucia trade","biznaga fest","wordcamp","talent land","digital enterprise","greencities","impact hub",
+ "autonomo","pyme","propiedad industrial","patente"]
+REL_DES=["emprendedor","emprendimiento","startup","business angel","inversores","aceleradora","incubadora",
+ "spin off","transferencia de tecnologia","capital riesgo"]
+def relevante(tit, des=""):
+    t=norm(tit); d=norm(des or "")
+    return any(k in t for k in REL_TIT)
 
 def clasifica(txt):
     n=norm(txt)
@@ -162,7 +166,7 @@ def tribe_source(base, fuente, prov_default=None, solo_relevante=True, organizad
         img=e.get("image"); img=(img.get("url") if isinstance(img,dict) else img) or None
         v=e.get("venue") or {}; city=(v.get("city") if isinstance(v,dict) else "") or ""
         txt=tit+" "+(des or "")
-        if solo_relevante and not relevante(txt): continue
+        if solo_relevante and not relevante(tit, des): continue
         prov=provincia_txt(city+" "+tit+" "+(des or "")) or prov_default
         hm=re.search(r"T(\d{2}):(\d{2})",e.get("start_date") or ""); hora=f"{hm.group(1)}:{hm.group(2)}" if hm else None
         if hora=="00:00": hora=None
@@ -185,7 +189,7 @@ def symposium_rss(url, fuente, prov_default=None):
         link=limpia(html.unescape(g("link"))) or None
         des=re.sub(r"\s+"," ",re.sub(r"<[^>]+>"," ",html.unescape(g("description")))).strip()[:500] or None
         txt=tit+" "+(des or "")
-        if not relevante(txt): continue
+        if not relevante(tit, des): continue
         online=bool(ONLINE_RE.search(norm(des or "")))
         prov=provincia_txt(txt) or prov_default
         hora=dt.strftime("%H:%M") if (dt.hour or dt.minute) else None
