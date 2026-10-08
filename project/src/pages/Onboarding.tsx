@@ -139,7 +139,7 @@ export default function Onboarding() {
             const header = (
               <div className="relative h-32 w-full overflow-hidden bg-gradient-to-br from-brand-400 to-brand-600">
                 {s.photo_url && <img src={s.photo_url} alt="" loading="lazy" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }} className="h-full w-full object-cover" />}
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-700/85 via-brand-600/35 to-brand-500/10" />
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-700/55 via-brand-600/15 to-transparent" />
                 <div className="absolute left-3 top-3 flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 shadow-sm">
                   {s.logo_url && <img src={s.logo_url} alt="" className="h-5 w-5 object-contain" />}
                   <span className="text-xs font-semibold text-slate-700">{s.entity_name}</span>
