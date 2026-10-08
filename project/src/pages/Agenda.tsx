@@ -311,7 +311,7 @@ export default function Agenda() {
           </aside>
         </div>
       )}
-      <p className="mt-10 text-xs text-slate-400">Fuentes automáticas: Portal Andaluz de Emprendimiento (Junta), Cámara de Comercio de Málaga, FYCMA, universidades andaluzas (UMA, US, UCO, UHU, UJA, UCA) y comunidades tech. Las entidades de la red publican sus propios eventos y convocatorias, que salen destacados.</p>
+      <p className="mt-10 text-xs text-slate-400">Fuentes automáticas: Portal Andaluz de Emprendimiento (Junta), Polo de Contenidos Digitales, Cámara de Comercio de Málaga, FYCMA, EOI, CTA, El Referente, universidades andaluzas y comunidades tech. Las entidades de la red publican sus propios eventos y convocatorias, que salen destacados.</p>
     </div>
   )
 }
