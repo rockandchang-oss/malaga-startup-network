@@ -59,11 +59,16 @@ export default function Layout() {
               Una iniciativa colaborativa de las entidades públicas y privadas que impulsan el
               emprendimiento en Málaga.
             </p>
+            <p className="mt-3 text-xs text-slate-400">Proveedor tecnológico: <a href="https://xrc.es" target="_blank" rel="noopener" className="font-semibold text-[#d4145a] hover:underline">XRC Experiencias Inmersivas</a>, empresa tecnológica malagueña.</p>
           </div>
         </div>
         <div className="border-t border-slate-200 py-5">
-          <div className="container-x flex items-center justify-between text-xs text-slate-400">
+          <div className="container-x flex flex-col items-center justify-between gap-3 text-xs text-slate-400 sm:flex-row">
             <span>© {new Date().getFullYear()} Málaga Startup Network. Todos los derechos reservados.</span>
+            <a href="https://xrc.es" target="_blank" rel="noopener" className="group inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-500 transition hover:border-[#d4145a] hover:text-[#d4145a]">
+              Desarrollado por <span className="font-bold text-[#d4145a]">XRC Experiencias Inmersivas</span>
+              <span className="transition group-hover:translate-x-0.5">↗</span>
+            </a>
             <Link to="/admin/login" className="hover:text-brand-700">Acceso entidades</Link>
           </div>
         </div>
