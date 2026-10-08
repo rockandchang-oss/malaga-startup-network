@@ -25,10 +25,13 @@ export default function Layout() {
           <Logo />
           <nav className="hidden items-center gap-7 md:flex">
             <NavLink to="/entidades" className={navClass}>Entidades</NavLink>
-            <NavLink to="/agenda" className={navClass}>Agenda</NavLink>
+            <NavLink to="/agenda" className={navClass}>Agenda <span className="ml-1 rounded-full bg-brand-500 px-1.5 py-px text-[10px] font-bold text-brand-950">Nuevo</span></NavLink>
             <a href={SITE + "/pages/actualidad.html"} target="_blank" rel="noopener" className="text-sm font-medium text-slate-600 hover:text-brand-700">Actualidad</a>
           </nav>
-          <Link to="/empezar" className="btn-primary !px-4 !py-2 text-sm">Empezar</Link>
+          <div className="flex items-center gap-3">
+            <Link to="/agenda" className="text-sm font-semibold text-brand-700 md:hidden">📅 Agenda</Link>
+            <Link to="/empezar" className="btn-primary !px-4 !py-2 text-sm">Empezar</Link>
+          </div>
         </div>
       </header>
 

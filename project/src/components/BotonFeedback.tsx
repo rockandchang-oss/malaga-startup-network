@@ -8,7 +8,8 @@ export default function BotonFeedback() {
   const { profile, isSuperadmin } = useAuth()
   const loc = useLocation()
   const [abierto, setAbierto] = useState(false)
-  const [tipo, setTipo] = useState<"error" | "mejora" | "otro">("mejora")
+  const loc0 = useLocation()
+  const [tipo, setTipo] = useState<"error" | "mejora" | "otro">(loc0.pathname.startsWith("/admin") ? "mejora" : "otro")
   const [texto, setTexto] = useState("")
   const [email, setEmail] = useState("")
   const [estado, setEstado] = useState<"idle" | "enviando" | "ok" | "error">("idle")
@@ -33,7 +34,7 @@ export default function BotonFeedback() {
     <>
       <button onClick={() => setAbierto(true)} aria-label="Enviar feedback"
         className={`fixed bottom-4 right-4 z-40 flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold shadow-lg transition ${color}`}>
-        <span aria-hidden>💬</span><span className="hidden sm:inline">¿Algo falla o se puede mejorar?</span><span className="sm:hidden">Feedback</span>
+        <span aria-hidden>{esPanel ? "💬" : "🙋"}</span><span className="hidden sm:inline">{esPanel ? "¿Algo falla o se puede mejorar?" : "¿Necesitas ayuda?"}</span><span className="sm:hidden">{esPanel ? "Feedback" : "Ayuda"}</span>
       </button>
       {abierto && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4" onClick={() => setAbierto(false)}>
@@ -42,15 +43,15 @@ export default function BotonFeedback() {
               <div className="py-6 text-center"><p className="text-3xl">🙌</p><p className="mt-2 font-bold text-[#2C3959]">¡Gracias! Lo hemos recibido.</p></div>
             ) : (
               <>
-                <h2 className="text-lg font-extrabold text-[#2C3959]">Cuéntanos</h2>
-                <p className="mt-1 text-sm text-slate-500">Un error, algo que no entiendes o una mejora que te gustaría. Lo lee el equipo de la red.</p>
+                <h2 className="text-lg font-extrabold text-[#2C3959]">{esPanel ? "Cuéntanos" : "¿En qué te podemos ayudar?"}</h2>
+                <p className="mt-1 text-sm text-slate-500">{esPanel ? "Un error, algo que no entiendes o una mejora que te gustaría. Lo lee el equipo de la red." : "Escríbenos tu duda o sugerencia y el equipo de Málaga Startup Network te responde."}</p>
                 <div className="mt-4 flex gap-2 text-sm">
-                  {([["error", "🐞 Error"], ["mejora", "💡 Mejora"], ["otro", "💬 Otro"]] as const).map(([v, l]) => (
+                  {(esPanel ? ([["error", "🐞 Error"], ["mejora", "💡 Mejora"], ["otro", "💬 Otro"]] as const) : ([["otro", "🙋 Tengo una duda"], ["mejora", "💡 Sugerencia"], ["error", "🔧 Algo no me funciona"]] as const)).map(([v, l]) => (
                     <button key={v} onClick={() => setTipo(v)} className={`rounded-full px-3 py-1 font-semibold ${tipo === v ? "bg-[#2C3959] text-white" : "bg-slate-100 text-slate-600"}`}>{l}</button>
                   ))}
                 </div>
                 <textarea autoFocus value={texto} onChange={(e) => setTexto(e.target.value)} maxLength={3000}
-                  placeholder={tipo === "error" ? "¿Qué estabas haciendo y qué ha pasado?" : "¿Qué mejorarías?"}
+                  placeholder={tipo === "error" ? "¿Qué estabas haciendo y qué ha pasado?" : tipo === "otro" && !esPanel ? "Cuéntanos en qué podemos ayudarte" : "¿Qué mejorarías?"}
                   className="mt-3 min-h-[120px] w-full rounded-xl border border-slate-200 p-3 text-sm outline-none focus:border-[#4A5D8A]" />
                 {!profile && (
                   <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Tu email (opcional, por si necesitamos preguntarte)"

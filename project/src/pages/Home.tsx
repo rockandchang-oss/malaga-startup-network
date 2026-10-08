@@ -5,16 +5,28 @@ import heroBg from "../assets/hero-bg.jpg"
 
 type Entity = { id: string; name: string; slug: string; logo_url: string | null }
 type Category = { id: string; name: string; slug: string; description: string | null }
+type Ev = { id: string; titulo: string; fecha_inicio: string; fecha_fin: string | null; provincia: string | null; online: boolean; categoria: string | null; url: string | null; imagen_url: string | null; origen: string | null }
+const fC = (s: string) => new Date(s + "T00:00:00").toLocaleDateString("es-ES", { day: "numeric", month: "short" })
 
 export default function Home() {
   const [entities, setEntities] = useState<Entity[]>([])
   const [categories, setCategories] = useState<Category[]>([])
+  const [eventos, setEventos] = useState<Ev[]>([])
 
   useEffect(() => {
     supabase.from("entities").select("id,name,slug,logo_url").eq("status", "published").order("sort_order")
       .then(({ data }) => setEntities(data ?? []))
     supabase.from("entity_categories").select("id,name,slug,description").order("sort_order")
       .then(({ data }) => setCategories(data ?? []))
+    const hoy = new Date().toISOString().slice(0, 10)
+    supabase.from("eventos").select("id,titulo,fecha_inicio,fecha_fin,provincia,online,categoria,url,imagen_url,origen")
+      .eq("estado", "publicado").or(`fecha_inicio.gte.${hoy},fecha_fin.gte.${hoy}`).order("fecha_inicio").limit(80)
+      .then(({ data }) => {
+        const l = ((data ?? []) as Ev[]).slice()
+        const r = (e: Ev) => (e.origen === "entidad" ? 0 : 2) + (e.provincia === "Málaga" && !e.online ? 0 : 1)
+        l.sort((a, b) => r(a) - r(b) || a.fecha_inicio.localeCompare(b.fecha_inicio))
+        setEventos(l.slice(0, 4).sort((a, b) => a.fecha_inicio.localeCompare(b.fecha_inicio)))
+      })
   }, [])
 
   return (
@@ -106,6 +118,38 @@ export default function Home() {
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* PRÓXIMOS EVENTOS */}
+      {eventos.length > 0 && (
+        <section className="container-x py-16">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wide text-brand-700">Agenda del ecosistema</p>
+              <h2 className="text-3xl font-extrabold tracking-tight">Próximos eventos</h2>
+              <p className="mt-1 text-slate-600">Jornadas, convocatorias, ayudas e inversión en Málaga y Andalucía.</p>
+            </div>
+            <Link to="/agenda" className="shrink-0 text-sm font-semibold text-brand-700 hover:underline">Ver agenda completa →</Link>
+          </div>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {eventos.map((e) => (
+              <a key={e.id} href={e.url ?? undefined} target="_blank" rel="noopener noreferrer" className="card group overflow-hidden p-0 hover:shadow-md">
+                {e.imagen_url
+                  ? <img src={e.imagen_url} alt="" loading="lazy" className="h-32 w-full object-cover" />
+                  : <div className="h-32 w-full bg-gradient-to-br from-brand-100 to-brand-50" />}
+                <div className="p-4">
+                  <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
+                    {e.origen === "entidad" && <span className="rounded-full bg-brand-600 px-2 py-0.5 font-semibold text-white">Entidad de la red</span>}
+                    <span className="font-semibold text-brand-700">{e.fecha_fin && e.fecha_fin !== e.fecha_inicio ? `${fC(e.fecha_inicio)} – ${fC(e.fecha_fin)}` : fC(e.fecha_inicio)}</span>
+                    <span className="text-slate-400">· {e.online ? "💻 Online" : e.provincia ?? "Andalucía"}</span>
+                  </div>
+                  <h3 className="mt-1.5 line-clamp-2 font-semibold text-slate-800 group-hover:text-brand-700">{e.titulo}</h3>
+                  {e.categoria && <p className="mt-1 text-xs text-slate-400">{e.categoria}</p>}
+                </div>
+              </a>
+            ))}
           </div>
         </section>
       )}

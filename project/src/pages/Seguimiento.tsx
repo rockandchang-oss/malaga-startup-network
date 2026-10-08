@@ -10,7 +10,7 @@ function Caja({ children }: { children: React.ReactNode }) {
 }
 function EnlaceInvalido() {
   return <Caja><h1 className="text-2xl font-extrabold text-brand-700">Enlace no válido</h1>
-    <p className="mt-3 text-slate-600">Este enlace no es correcto o ha caducado. Si necesitas ayuda, usa el botón "¿Algo falla?" de abajo a la derecha.</p>
+    <p className="mt-3 text-slate-600">Este enlace no es correcto o ha caducado. Si necesitas ayuda, usa el botón "¿Necesitas ayuda?" de abajo a la derecha.</p>
     <Link to="/" className="btn-primary mt-6 inline-block">Ir al inicio</Link></Caja>
 }
 function useLead() {
