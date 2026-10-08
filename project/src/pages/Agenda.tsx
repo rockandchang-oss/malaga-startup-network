@@ -6,7 +6,7 @@ type Evento = {
   fecha_inicio: string; fecha_fin: string | null; hora: string | null
   ciudad: string | null; provincia: string | null; online: boolean
   categoria: string | null; url: string | null; fuente: string | null; organizador: string | null
-  origen: string | null; inscripcion_inicio: string | null; inscripcion_fin: string | null
+  origen: string | null; inscripcion_inicio: string | null; inscripcion_fin: string | null; imagen_url: string | null
 }
 
 const COLOR: Record<string, string> = {
@@ -97,6 +97,9 @@ export default function Agenda() {
                 {evs.map(e => {
                   const inner = (
                     <div className="flex items-start gap-4 p-4 transition hover:bg-slate-50">
+                      {e.imagen_url
+                        ? <img src={e.imagen_url} alt="" loading="lazy" onError={(ev) => { (ev.currentTarget as HTMLImageElement).style.display = "none" }} className="hidden h-16 w-24 shrink-0 rounded-lg object-cover sm:block" />
+                        : <div className="hidden h-16 w-24 shrink-0 rounded-lg bg-gradient-to-br from-brand-400 to-brand-600 sm:block" />}
                       <div className="w-14 shrink-0 text-center">
                         <div className="text-lg font-extrabold leading-none text-brand-700">{new Date(e.fecha_inicio + "T00:00:00").getDate()}</div>
                         <div className="text-[11px] uppercase text-slate-400">{new Date(e.fecha_inicio + "T00:00:00").toLocaleDateString("es-ES", { month: "short" })}</div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { supabase } from "../../lib/supabase"
 import { useEntidadActiva, SelectorEntidad } from "../../lib/entidadActiva"
+import { uploadImage } from "../../lib/storage"
 
 type Evento = Record<string, any>
 const TIPOS = ["Jornada", "Formación / taller", "Networking / encuentro", "Convocatoria / concurso",
@@ -11,7 +12,7 @@ function vacio(entityId: string): Evento {
   return { entity_id: entityId, origen: "entidad", estado: "publicado", fuente: "Entidad",
     titulo: "", descripcion: "", categoria: "Jornada", fecha_inicio: "", fecha_fin: "", hora: "",
     provincia: "Málaga", ciudad: "", online: false, url: "",
-    inscripcion_inicio: "", inscripcion_fin: "" }
+    inscripcion_inicio: "", inscripcion_fin: "", imagen_url: "" }
 }
 
 export default function MyEventos() {
@@ -35,7 +36,7 @@ export default function MyEventos() {
       fuente: "Entidad", organizador: ed.organizador || null,
       fecha_fin: ed.fecha_fin || null, hora: ed.hora || null, ciudad: ed.ciudad || null,
       provincia: ed.online ? "Online" : (ed.provincia || null), url: ed.url || null,
-      descripcion: ed.descripcion || null,
+      descripcion: ed.descripcion || null, imagen_url: ed.imagen_url || null,
       inscripcion_inicio: ed.inscripcion_inicio || null, inscripcion_fin: ed.inscripcion_fin || null,
       dedupe_key: ed.dedupe_key || ("ent_" + entityId.slice(0, 8) + "_" + Date.now().toString(36)),
     }
@@ -102,6 +103,11 @@ export default function MyEventos() {
           </div>
           <label className="flex items-center gap-2 text-sm text-slate-600">
             <input type="checkbox" checked={!!ed.online} onChange={(e) => setEd({ ...ed, online: e.target.checked })} /> Es un evento online</label>
+          <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-dashed border-slate-300 px-3 py-2 text-sm text-slate-500">
+            {ed.imagen_url ? <img src={ed.imagen_url} alt="" className="h-10 w-16 rounded object-cover" /> : null}
+            {ed.imagen_url ? "Imagen lista (pulsa para cambiarla)" : "📷 Imagen / cartel del evento (opcional)"}
+            <input type="file" accept="image/*" className="hidden" onChange={async (e) => { const f = e.target.files?.[0]; if (!f) return; if (f.size > 3 * 1024 * 1024) { setMsg("La imagen debe pesar menos de 3 MB"); return } try { const u = await uploadImage(f, "eventos"); setEd((x: any) => ({ ...x, imagen_url: u })) } catch (er: any) { setMsg("No se pudo subir: " + (er?.message || er)) } }} />
+          </label>
 
           <div className="rounded-xl border border-amber-200 bg-amber-50 p-3">
             <p className="text-xs font-semibold text-amber-800">Plazo de inscripción (si es una convocatoria)</p>
