@@ -98,8 +98,8 @@ export default function Agenda() {
                   const inner = (
                     <div className="flex items-start gap-4 p-4 transition hover:bg-slate-50">
                       {e.imagen_url
-                        ? <img src={e.imagen_url} alt="" loading="lazy" onError={(ev) => { (ev.currentTarget as HTMLImageElement).style.display = "none" }} className="hidden h-16 w-24 shrink-0 rounded-lg object-cover sm:block" />
-                        : <div className="hidden h-16 w-24 shrink-0 rounded-lg bg-gradient-to-br from-brand-400 to-brand-600 sm:block" />}
+                        ? <img src={e.imagen_url} alt="" loading="lazy" onError={(ev) => { (ev.currentTarget as HTMLImageElement).style.display = "none" }} className="h-14 w-20 shrink-0 rounded-lg object-cover sm:h-16 sm:w-24" />
+                        : <div className="h-14 w-20 shrink-0 rounded-lg bg-gradient-to-br from-brand-400 to-brand-600 sm:h-16 sm:w-24" />}
                       <div className="w-14 shrink-0 text-center">
                         <div className="text-lg font-extrabold leading-none text-brand-700">{new Date(e.fecha_inicio + "T00:00:00").getDate()}</div>
                         <div className="text-[11px] uppercase text-slate-400">{new Date(e.fecha_inicio + "T00:00:00").toLocaleDateString("es-ES", { month: "short" })}</div>
