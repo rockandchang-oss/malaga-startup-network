@@ -1,7 +1,7 @@
 Options -MultiViews
 RewriteEngine On
 # Bloqueo de bots de scraping / entrenamiento de IA (Google, Bing y buscadores siguen permitidos)
-RewriteCond %{HTTP_USER_AGENT} (GPTBot|CCBot|ClaudeBot|Claude-Web|anthropic-ai|Google-Extended|Bytespider|Amazonbot|meta-externalagent|FacebookBot|Applebot-Extended|cohere-ai|Diffbot|ImagesiftBot|Timpibot|omgili|PetalBot|DataForSeoBot|AhrefsBot|SemrushBot|MJ12bot|DotBot|BLEXBot|Scrapy|HTTrack|SiteSnagger|WebCopier|Offline Explorer) [NC]
+RewriteCond %{HTTP_USER_AGENT} (GPTBot|CCBot|ClaudeBot|Claude-Web|anthropic-ai|Google-Extended|Bytespider|Amazonbot|meta-externalagent|FacebookBot|Applebot-Extended|cohere-ai|Diffbot|ImagesiftBot|Timpibot|omgili|PetalBot|DataForSeoBot|AhrefsBot|SemrushBot|MJ12bot|DotBot|BLEXBot|Scrapy|HTTrack|SiteSnagger|WebCopier|Offline.Explorer) [NC]
 RewriteRule .* - [F,L]
 RewriteBase /startups/
 RewriteCond %{REQUEST_FILENAME} -f [OR]
