@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Málaga Startup Network</title>
+  <meta name="description"
+    content="Málaga Startup Network — Red colaborativa que conecta a entidades públicas y privadas que apoyan el emprendimiento en Málaga." />
+  <meta property="og:title" content="Málaga Startup Network" />
+  <meta property="og:description" content="Conectamos a quienes hacen crecer el emprendimiento en Málaga." />
+  <link rel="icon" type="image/jpeg" href="img/logo-MSN.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="./style.min.css?v=1.4" />
+</head>
+
+<body>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="mobile-close" id="mobileClose">✕</button>
+    <a href="#que-es" class="mobile-link">Qué es</a>
+    <a href="#quienes" class="mobile-link">La red</a>
+    <a href="/startups/agenda" target="_blank" rel="noopener" class="mobile-link">Agenda</a>
+    <a href="pages/actualidad.html" class="mobile-link">Actualidad</a>
+    <a href="#contacto" class="mobile-link">Quiero unirme</a>
+  </div>
+
+  <nav id="navbar">
+    <a href="#hero" class="nav-logo">
+      <img class="nav-logo-img" src="./img/logo-MSN.jpg" alt="MSN" />
+      <span class="nav-logo-text">Málaga Startup Network</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#que-es">Qué es</a></li>
+      <li><a href="#quienes">La red</a></li>
+      <li><a href="/startups/agenda" target="_blank" rel="noopener">Agenda</a></li>
+      <li><a href="pages/actualidad.html">Actualidad</a></li>
+      <li><a href="#contacto" class="nav-cta">Quiero unirme</a></li>
+      <a href="https://www.linkedin.com/company/malaga-startup-network/" target="_blank" rel="noopener noreferrer"
+        aria-label="Perfil de LinkedIn" class="footer-email">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+          <path
+            d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+        </svg>
+      </a>
+    </ul>
+    <button class="nav-burger" id="burgerBtn" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <section id="hero">
+    <!-- CAROUSEL -->
+    <div class="hero-carousel" id="heroCarousel">
+      <div class="hero-carousel-slide active" style="background-image: url('./img/carrusel/slide-1.jpg');"></div>
+    </div>
+    <div class="hero-carousel-overlay"></div>
+
+    <canvas id="nodes-canvas"></canvas>
+
+    <div class="hero-content">
+      <div class="orb-wrapper">
+        <div class="orb-frame">
+          <img src="./img/logo-MSN.jpg" alt="Logo MSN" />
+        </div>
+      </div>
+
+      <h1 class="hero-title">
+        El ecosistema startup<br />de Málaga, <span class="highlight">conectado.</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        Coordinamos a entidades públicas y privadas para que el apoyo al emprendimiento en Málaga sea más efectivo,
+        estructurado y transparente.
+      </p>
+
+      <div class="hero-ctas">
+        <a href="/startups/" target="_blank" rel="noopener noreferrer" class="btn-primary">Soy startup</a>
+        <a href="#que-es" class="btn-ghost">Conoce la red</a>
+      </div>
+    </div>
+
+    <a href="#que-es" class="hero-scroll-hint" aria-label="Desplazarse hacia abajo">
+      <svg class="scroll-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M7 13l5 5 5-5M7 6l5 5 5-5" />
+      </svg>
+    </a>
+  </section>
+
+  <div class="section-separator separator-curve">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 100" preserveAspectRatio="none">
+      <path d="M0,0 C300,60 900,100 1200,0 V100 H0 Z" fill="var(--navy)"></path>
+    </svg>
+  </div>
+
+  <section id="que-es">
+    <div class="que-es-grid">
+      <div class="que-es-left">
+        <div class="section-label reveal">Misión y Objetivos</div>
+        <h2 class="reveal">Una red <em>interconectada</em> para el apoyo emprendedor de Málaga</h2>
+      </div>
+    </div>
+
+    <div class="logos-container reveal">
+      <div class="logos-grid">
+        <a href="https://www.bic.es/" target="_blank" rel="noopener noreferrer" class="logo-card">
+          <img src="./img/logos-startups/LOGO_BIC.svg" alt="BIC Euronova" class="logo-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <span class="logo-placeholder">BIC Euronova</span>
+        </a>
+        <a href="https://www.andaluciaemprende.es/" target="_blank" rel="noopener noreferrer" class="logo-card">
+          <img src="./img/logos-startups/logo-AndaluciaEmprende.png" alt="Andalucía Emprende" class="logo-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <span class="logo-placeholder">Andalucía Emprende</span>
+        </a>
+        <a href="https://www.juntadeandalucia.es/" target="_blank" rel="noopener noreferrer" class="logo-card">
+          <img src="./img/logos-startups/Logo-junta-andalucia.png" alt="Junta de Andalucía" class="logo-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <span class="logo-placeholder">Junta de Andalucía</span>
+        </a>
+        <a href="https://www.malaga.eu/" target="_blank" rel="noopener noreferrer" class="logo-card">
+          <img src="./img/logos-startups/logo-ayto_Malaga.png" alt="Ayuntamiento de Málaga" class="logo-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <span class="logo-placeholder">Ayuntamiento de Málaga</span>
+        </a>
+        <a href="https://www.promalaga.es/" target="_blank" rel="noopener noreferrer" class="logo-card">
+          <img src="./img/logos-startups/Promalaga-logo.png" alt="Promálaga" class="logo-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <span class="logo-placeholder">Promálaga</span>
+        </a>
+        <a href="https://www.bancsabadell.com/" target="_blank" rel="noopener noreferrer" class="logo-card">
+          <img src="./img/logos-startups/Logo_sabadell.svg" alt="Sabadell BStartup" class="logo-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <span class="logo-placeholder">Sabadell BStartup</span>
+        </a>
+        <a href="https://www.bancosantander.es" target="_blank" rel="noopener noreferrer" class="logo-card">
+          <img src="./img/logos-startups/Logo-santander.png" alt="Santander" class="logo-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <span class="logo-placeholder">Banco Santander</span>
+        </a>
+        <a href="https://www.corporaciontecnologica.com/" target="_blank" rel="noopener noreferrer" class="logo-card">
+          <img src="./img/logos-startups/CTAlogo.png" alt="CTA Andalucía" class="logo-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <span class="logo-placeholder">CTA Andalucía</span>
+        </a>
+        <a href="https://www.fundalogy.com/" target="_blank" rel="noopener noreferrer" class="logo-card">
+          <img src="./img/logos-startups/fundalogy-logotipo.png" alt="Fundalogy" class="logo-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <span class="logo-placeholder">Fundalogy</span>
+        </a>
+        <a href="https://malaga.impacthub.net/" target="_blank" rel="noopener noreferrer" class="logo-card">
+          <img src="./img/logos-startups/logo-impact-hub-malaga.png" alt="Impact Hub Málaga" class="logo-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <span class="logo-placeholder">Impact Hub Málaga</span>
+        </a>
+        <a href="https://innovairv.com/" target="_blank" rel="noopener noreferrer" class="logo-card">
+          <img src="./img/logos-startups/logo-innovairv.png" alt="Innova IRV" class="logo-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <span class="logo-placeholder">Innova IRV</span>
+        </a>
+        <a href="https://techmalaga.com/" target="_blank" rel="noopener noreferrer" class="logo-card">
+          <img src="./img/logos-startups/logo-MalagaTech.svg" alt="Málaga Tech" class="logo-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <span class="logo-placeholder">Málaga Tech</span>
+        </a>
+        <a href="https://www.pta.es/" target="_blank" rel="noopener noreferrer" class="logo-card">
+          <img src="./img/logos-startups/logo-Malaga-Tech-Park.png" alt="Málaga TechPark" class="logo-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <span class="logo-placeholder">Málaga TechPark</span>
+        </a>
+        <a href="https://www.polodigital.eu/" target="_blank" rel="noopener noreferrer" class="logo-card">
+          <img src="./img/logos-startups/polo-digital-logo.png" alt="Polo Digital" class="logo-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <span class="logo-placeholder">Polo Digital</span>
+        </a>
+        <a href="http://thegreenray.eu/" target="_blank" rel="noopener noreferrer" class="logo-card">
+          <img src="./img/logos-startups/Logo_UMA.png" alt="Link by UMA" class="logo-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <span class="logo-placeholder">Link by UMA</span>
+        </a>
+        <a href="https://www.teamlabs.es/" target="_blank" rel="noopener noreferrer" class="logo-card">
+          <img src="https://malagastartupnetwork.com/startups/logos/teamlabs-msn.png" alt="Teamlabs Málaga" class="logo-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <span class="logo-placeholder">Teamlabs Málaga</span>
+        </a>
+        <a href="https://andaluciavuela.es/aof-lafarola" target="_blank" rel="noopener noreferrer" class="logo-card">
+          <img src="https://malagastartupnetwork.com/startups/logos/farolavuela3-msn.png" alt="La Farola Vuela · Andalucía Open Future" class="logo-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <span class="logo-placeholder">La Farola Vuela</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-separator separator-curve">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none">
+      <path d="M0,0 C400,100 800,0 1200,100 V100 H0 Z" fill="var(--white)"></path>
+    </svg>
+  </div>
+
+  <section id="quienes">
+    <div class="quienes-header reveal">
+      <div class="section-label" style="justify-content:center;">Estructura de la Red</div>
+      <h2>Entidades Participantes</h2>
+      <p>Organismos y sectores profesionales que impulsan el ecosistema malagueño bajo un marco de
+        colaboración.</p>
+    </div>
+
+    <div class="entity-cards">
+
+      <div class="entity-card card-gobernanza">
+        <div class="card-img"
+          style="background-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=600');">
+        </div>
+        <div class="card-overlay"></div>
+        <div class="card-content">
+          <div>
+            <h3>Entidades Públicas</h3>
+            <p class="card-desc">Instituciones públicas encargadas de dar apoyo, guía e infraestructura para impulsar
+              empresas emergentes.</p>
+          </div>
+          <a href="pages/entidades-publicas.html" class="card-link">SABER MÁS ➔</a>
+        </div>
+      </div>
+
+      <div class="entity-card card-ecosistema">
+        <div class="card-img"
+          style="background-image: url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=600');">
+        </div>
+        <div class="card-overlay"></div>
+        <div class="card-content">
+          <div>
+            <h3>Academia</h3>
+            <p class="card-desc">Universidades y centros de innovación dedicados a la investigación y el talento.</p>
+          </div>
+          <a href="pages/academia.html" class="card-link">SABER MÁS ➔</a>
+        </div>
+      </div>
+
+      <div class="entity-card card-networking">
+        <div class="card-img"
+          style="background-image: url('https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&q=80&w=600');">
+        </div>
+        <div class="card-overlay"></div>
+        <div class="card-content">
+          <div>
+            <h3>Entidades privadas</h3>
+            <p class="card-desc">Entidades privadas que abren oportunidades de mercado y apoyo a las startups.</p>
+          </div>
+          <a href="pages/entidades-privadas.html" class="card-link">SABER MÁS ➔</a>
+        </div>
+      </div>
+      <div class="entity-card card-financiacion">
+        <div class="card-img"
+          style="background-image: url('https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=600');">
+        </div>
+        <div class="card-overlay"></div>
+        <div class="card-content">
+          <div>
+            <h3>Inversión</h3>
+            <p class="card-desc">Banca, fondos públicos y vehículos de inversión.</p>
+          </div>
+          <a href="pages/inversion.html" class="card-link">SABER MÁS ➔</a>
+        </div>
+      </div>
+
+      <div class="entity-card card-startups">
+        <div class="card-img"
+          style="background-image: url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&q=80&w=600');">
+        </div>
+        <div class="card-overlay"></div>
+        <div class="card-content">
+          <div>
+            <h3>Startups</h3>
+            <p class="card-desc">Empresas innovadoras de nueva creación que actúan como motor de la red.</p>
+          </div>
+          <a href="pages/startups.html" class="card-link">SABER MÁS ➔</a>
+        </div>
+      </div>
+
+      <div class="entity-card card-mentores">
+        <div class="card-img"
+          style="background-image: url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&q=80&w=600');">
+        </div>
+        <div class="card-overlay"></div>
+        <div class="card-content">
+          <div>
+            <h3>Mentores</h3>
+            <p class="card-desc">Red de mentores expertos por industrias y áreas.</p>
+          </div>
+          <a href="pages/mentores.html" class="card-link">SABER MÁS ➔</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- AGENDA (XRC) -->
+  <section id="agenda-home" style="padding:20px clamp(20px,8vw,120px) 90px;background:var(--white);position:relative">
+    <style>
+      #agenda-home .ah-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;max-width:1200px;margin:0 auto}
+      #agenda-home h2{font-family:var(--font-display);color:var(--navy);font-size:clamp(28px,3.4vw,42px);font-weight:800;margin:6px 0 4px}
+      #agenda-home .ah-sub{color:var(--text-muted);margin:0}
+      #agenda-home .ah-all{color:var(--navy);font-weight:700;text-decoration:none;border:1.5px solid var(--gold);border-radius:999px;padding:10px 20px;transition:.2s}
+      #agenda-home .ah-all:hover{background:var(--gold)}
+      #agenda-home .ah-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;max-width:1200px;margin:32px auto 0}
+      #agenda-home .ah-card{display:block;background:#fff;border:1px solid var(--border-light);border-radius:16px;overflow:hidden;text-decoration:none;color:inherit;transition:.25s}
+      #agenda-home .ah-card:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(44,57,89,.12);border-color:var(--gold)}
+      #agenda-home .ah-img{height:140px;width:100%;object-fit:cover;background:linear-gradient(135deg,#fdecc4,#fff8e6);display:block}
+      #agenda-home .ah-body{padding:16px}
+      #agenda-home .ah-meta{font-size:12px;color:var(--text-muted)}
+      #agenda-home .ah-meta b{color:#cc8005}
+      #agenda-home .ah-tag{display:inline-block;background:var(--navy);color:#fff;font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px;margin-bottom:6px}
+      #agenda-home h3{font-size:16px;line-height:1.3;color:var(--navy);margin:6px 0 4px;font-weight:700;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+      #agenda-home .ah-cat{font-size:12px;color:var(--text-muted)}
+    </style>
+    <div class="ah-head reveal">
+      <div>
+        <div class="section-label">Agenda del ecosistema</div>
+        <h2>Próximos eventos</h2>
+        <p class="ah-sub">Jornadas, convocatorias, ayudas e inversión para emprender en Málaga y Andalucía.</p>
+      </div>
+      <a class="ah-all" href="/startups/agenda">Ver agenda completa →</a>
+    </div>
+    <div class="ah-grid" id="ah-grid"></div>
+    <script>
+    (function(){
+      var U="https://rsitqcrnuiglogtxljls.supabase.co/rest/v1/eventos", K="sb_publishable_bAvlF3jI-s0P0U17EqZ37Q_AkxuUJA-";
+      var hoy=new Date().toISOString().slice(0,10);
+      var q="?select=id,titulo,fecha_inicio,fecha_fin,provincia,online,categoria,url,imagen_url,origen&estado=eq.publicado&or=(fecha_inicio.gte."+hoy+",fecha_fin.gte."+hoy+")&order=fecha_inicio.asc&limit=80";
+      function fc(s){return new Date(s+"T00:00:00").toLocaleDateString("es-ES",{day:"numeric",month:"short"})}
+      function esc(t){return String(t||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+      fetch(U+q,{headers:{apikey:K,Authorization:"Bearer "+K}}).then(function(r){return r.json()}).then(function(d){
+        if(!Array.isArray(d)||!d.length){document.getElementById("agenda-home").style.display="none";return}
+        function rk(e){return (e.origen==="entidad"?0:2)+((e.provincia==="Málaga"&&!e.online)?0:1)}
+        d.sort(function(a,b){return rk(a)-rk(b)||a.fecha_inicio.localeCompare(b.fecha_inicio)});
+        d=d.slice(0,4).sort(function(a,b){return a.fecha_inicio.localeCompare(b.fecha_inicio)});
+        document.getElementById("ah-grid").innerHTML=d.map(function(e){
+          var f=(e.fecha_fin&&e.fecha_fin!==e.fecha_inicio)?fc(e.fecha_inicio)+" – "+fc(e.fecha_fin):fc(e.fecha_inicio);
+          var l=e.online?"💻 Online":(e.provincia||"Andalucía");
+          var img=e.imagen_url?'<img class="ah-img" loading="lazy" alt="" src="'+esc(e.imagen_url)+'" onerror="this.removeAttribute(\'src\')">':'<div class="ah-img"></div>';
+          return '<a class="ah-card" target="_blank" rel="noopener" href="'+esc(e.url||"/startups/agenda")+'">'+img+'<div class="ah-body">'+(e.origen==="entidad"?'<span class="ah-tag">Entidad de la red</span><br>':'')+'<span class="ah-meta"><b>'+f+'</b> · '+esc(l)+'</span><h3>'+esc(e.titulo)+'</h3>'+(e.categoria?'<span class="ah-cat">'+esc(e.categoria)+'</span>':'')+'</div></a>';
+        }).join("");
+      }).catch(function(){document.getElementById("agenda-home").style.display="none"});
+    })();
+    </script>
+  </section>
+
+  <div class="section-separator separator-reveal">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 55" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="wave-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#4A5D8A" />
+          <stop offset="70%" stop-color="#2C3959" />
+          <stop offset="100%" stop-color="#1A2235" />
+        </linearGradient>
+      </defs>
+      <path
+        d="M321.39,32.44c58-5.79,114.16-15.13,172-21.86,82.39-8.72,168.19-9.73,250.45-.39C823.78,16,906.67,36,985.66,46.83c70.05,9.48,146.53,13.09,214.34,2V60H0V12.35A600.21,600.21,0,0,0,321.39,32.44Z"
+        fill="url(#wave-gradient)"></path>
+    </svg>
+  </div>
+
+  <section id="contacto">
+    <div class="contacto-inner">
+
+      <div class="contacto-left reveal">
+        <div class="section-label">Registro Oficial</div>
+        <h2>Adhesión a la <span>red</span></h2>
+        <p>Complete el formulario adjunto para iniciar el expediente de entrada, pendiente de aprobación.</p>
+        <div class="contacto-perks">
+          <div class="perk">
+            <div class="perk-dot"></div><span>Integración en el directorio oficial</span>
+          </div>
+          <div class="perk">
+            <div class="perk-dot"></div><span>Asignación a mesas sectoriales de trabajo</span>
+          </div>
+          <div class="perk">
+            <div class="perk-dot"></div><span>Acceso al canal de comunicación interno</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-form reveal">
+        <div id="formContainer">
+
+          <div class="form-type-toggle">
+            <button class="form-type-btn active" id="btnToggleColab" onclick="switchForm('colab')">Entidad
+              Colaboradora</button>
+            <button class="form-type-btn" id="btnToggleStartup" onclick="switchForm('startup')">Startup</button>
+          </div>
+
+          <!-- FORMULARIO ENTIDAD COLABORATIVA -->
+          <form id="formColab" class="form-wrapper active">
+            <div class="form-group">
+              <label for="name_colab">Representante Legal / Contacto</label>
+              <input type="text" id="name_colab" name="name" placeholder="Nombre y apellidos" />
+              <div class="field-error" id="err-name_colab">Este campo es obligatorio.</div>
+            </div>
+            <div class="form-group">
+              <label for="entidad_colab">Denominación de la Entidad</label>
+              <input type="text" id="entidad_colab" name="entidad" placeholder="Razón social u organismo" />
+              <div class="field-error" id="err-entidad_colab">Este campo es obligatorio.</div>
+            </div>
+            <div class="form-group">
+              <label for="email_colab">Correo Institucional</label>
+              <input type="email" id="email_colab" name="email" placeholder="correo@institucion.es" />
+              <div class="field-error" id="err-email_colab">Introduce un correo válido.</div>
+            </div>
+            <div class="form-group">
+              <div class="label-row">
+                <label for="tipo_colab">Clasificación de la Entidad</label>
+                <div class="tooltip-wrap">
+                  <button type="button" class="info-btn" data-tip="tipo_colab" aria-label="Información">i</button>
+                  <div class="tooltip-box" id="tip-tipo_colab">
+                    <strong>Administración Pública:</strong> Organismos y entidades públicas a nivel local, autonómico o
+                    nacional.<br><br>
+                    <strong>Institución Académica/Científica:</strong> Universidades, centros de investigación y
+                    organismos de ciencia e innovación.<br><br>
+                    <strong>Sector Privado Corporativo:</strong> Empresas consolidadas que apoyan el
+                    emprendimiento.<br><br>
+                    <strong>Entidad Financiera o de Inversión:</strong> Bancos, fondos de inversión, business angels y
+                    aceleradoras.<br><br>
+                    <strong>Otras Entidades Jurídicas:</strong> Asociaciones, cámaras de comercio, colegios
+                    profesionales, etc.
+                  </div>
+                </div>
+              </div>
+              <select id="tipo_colab" name="tipo">
+                <option value="" disabled selected>Seleccione la naturaleza de su entidad</option>
+                <option value="gobierno">Administración Pública</option>
+                <option value="academia">Institución Académica / Científica</option>
+                <option value="privado">Sector Privado Corporativo</option>
+                <option value="banca">Entidad Financiera o de Inversión</option>
+                <option value="otro">Otras Entidades Jurídicas</option>
+              </select>
+              <div class="field-error" id="err-tipo_colab">Seleccione un tipo de entidad.</div>
+            </div>
+            <div class="form-group">
+              <div class="label-row">
+                <label for="mensaje_colab">Memoria Breve de Actividad</label>
+                <div class="tooltip-wrap">
+                  <button type="button" class="info-btn" data-tip="mensaje_colab" aria-label="Información">i</button>
+                  <div class="tooltip-box" id="tip-mensaje_colab">
+                    Cuéntanos en 3-5 líneas: cuál es el propósito de tu organización, cómo apoyas actualmente el
+                    emprendimiento en Málaga, y qué objetivos buscas alcanzar al unirte a la red.
+                  </div>
+                </div>
+              </div>
+              <textarea id="mensaje_colab" name="mensaje" maxlength="2500"
+                placeholder="Describa el impacto actual de su organización en el tejido empresarial local..."></textarea>
+              <div class="field-error" id="err-mensaje_colab">Este campo es obligatorio.</div>
+            </div>
+            <!-- Honeypot field (anti-spam) -->
+            <div style="display:none !important;">
+              <input type="text" name="honeypot_field" tabindex="-1" autocomplete="off">
+            </div>
+            <input type="hidden" name="form_type" value="colab">
+            <button class="btn-submit" id="submitBtnColab" type="button" onclick="submitForm('colab', event)">
+              Enviar Solicitud Oficial
+            </button>
+          </form>
+
+          <!-- STARTUP: derivación a la landing especializada -->
+          <div id="formStartup" class="form-wrapper">
+            <div class="startup-redirect">
+              <h3 class="startup-redirect-title">Tenemos un espacio hecho para startups</h3>
+              <p class="startup-redirect-text">Hemos preparado una página específica para startups donde podrás descubrir
+                cómo la red puede ayudarte a crecer: acompañamiento, financiación, mentoring, internacionalización y
+                conexión con todo el ecosistema.</p>
+              <a href="/startups/" target="_blank" rel="noopener noreferrer"
+                class="btn-submit">
+                Soy startup, llévame allí
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="form-success" id="formSuccess">
+          <div class="success-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5">
+              <path d="M20 6L9 17l-5-5" />
+            </svg>
+          </div>
+          <h3>Expediente Registrado</h3>
+          <p>El Comité de Evaluación se pondrá en contacto con
+            usted a través del correo proporcionado.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer id="footer">
+    <div class="footer-inner">
+      <a href="#hero" class="footer-logo">
+        <img src="./img/logo-MSN.jpg" alt="MSN" />
+        <div>
+          <div class="footer-logo-text">Málaga Startup Network</div>
+          <span class="footer-logo-sub">Iniciativa Oficial de Apoyo al Emprendimiento</span>
+        </div>
+      </a>
+      <div class="footer-right">
+        <a href="https://www.linkedin.com/company/malaga-startup-network/" target="_blank" rel="noopener noreferrer"
+          aria-label="Perfil de LinkedIn" class="footer-email">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+            <path
+              d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+          </svg>
+        </a>
+        <span class="footer-copy">© 2026 Málaga Startup Network. Todos los derechos reservados.</span>
+        <a href="https://xrc.es" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:7px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.25);color:#fff;text-decoration:none;font-size:13px;font-weight:600;transition:all .2s" onmouseover="this.style.borderColor='#d4145a';this.style.background='rgba(212,20,90,.15)'" onmouseout="this.style.borderColor='rgba(255,255,255,.25)';this.style.background='transparent'">Desarrollado por <b style="color:#ff5c93">XRC Experiencias Inmersivas</b> ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="./main.min.js?v=1.4"></script>
+</body>
+
+</html>
