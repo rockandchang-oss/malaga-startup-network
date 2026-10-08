@@ -32,7 +32,7 @@ PROV={"malaga":"Málaga","sevilla":"Sevilla","granada":"Granada","cordoba":"Cór
  "motril":"Granada","ejido":"Almería","sanlucar":"Cádiz","utrera":"Sevilla","andujar":"Jaén",
  "velez malaga":"Málaga","fuengirola":"Málaga","torremolinos":"Málaga","benalmadena":"Málaga","mijas":"Málaga",
  "estepona":"Málaga","rincon de la victoria":"Málaga","alhaurin":"Málaga","cartama":"Málaga","nerja":"Málaga",
- "coin":"Málaga","pizarra":"Málaga","techpark":"Málaga","pta":"Málaga","polo digital":"Málaga",
+ "coin":"Málaga","pizarra":"Málaga","malaga techpark":"Málaga","pta":"Málaga","polo digital":"Málaga",
  "ecija":"Sevilla","carmona":"Sevilla","moron":"Sevilla","alcala de guadaira":"Sevilla","lebrija":"Sevilla","cartuja":"Sevilla",
  "baeza":"Jaén","ubeda":"Jaén","martos":"Jaén","puente genil":"Córdoba","lucena":"Córdoba","montilla":"Córdoba",
  "baza":"Granada","loja":"Granada","guadix":"Granada","armilla":"Granada","chiclana":"Cádiz","puerto real":"Cádiz",
@@ -67,11 +67,20 @@ def clasifica(txt):
     for tipo,kws in TIPOS:
         if any(k in n for k in kws): return tipo
     return "Evento"
+PROV_BASE={"malaga":"Málaga","sevilla":"Sevilla","granada":"Granada","cordoba":"Córdoba","cadiz":"Cádiz",
+ "almeria":"Almería","huelva":"Huelva","jaen":"Jaén"}
 def provincia_txt(txt):
-    n=norm(txt); prov=None
+    """Primero nombres de provincia (gana el que aparece antes); si no hay, alias de municipios/lugares."""
+    n=norm(txt); best=None
+    for k,v in PROV_BASE.items():
+        m=re.search(r"\b"+k+r"\b",n)
+        if m and (best is None or m.start()<best[0]): best=(m.start(),v)
+    if best: return best[1]
     for k,v in PROV.items():
-        if re.search(r"\b"+re.escape(k)+r"\b",n): prov=v
-    return prov
+        if k in PROV_BASE: continue
+        m=re.search(r"\b"+re.escape(k)+r"\b",n)
+        if m and (best is None or m.start()<best[0]): best=(m.start(),v)
+    return best[1] if best else None
 
 def mkitem(tit,des,start,end,hora,prov,cat,url,img,fuente,organizador=None,online=None):
     txt=tit+" "+(des or "")
@@ -113,13 +122,20 @@ def ical_source(url, fuente, provincia_fija=None, organizador=None):
             if not tit or not m: cur=None; continue
             start=m.group(1); start=f"{start[:4]}-{start[4:6]}-{start[6:8]}"
             hm=re.search(r"T(\d{2})(\d{2})",ds); hora=f"{hm.group(1)}:{hm.group(2)}" if hm else None
+            mz=re.search(r"(\d{8})T(\d{6})Z",ds)
+            if mz:
+                try:
+                    from zoneinfo import ZoneInfo
+                    dtu=datetime.datetime.strptime(mz.group(1)+mz.group(2),"%Y%m%d%H%M%S").replace(tzinfo=datetime.timezone.utc).astimezone(ZoneInfo("Europe/Madrid"))
+                    start=dtu.date().isoformat(); hora=dtu.strftime("%H:%M")
+                except Exception: pass
             me=re.search(r"(\d{8})",de); end=None
             if me:
                 e2=me.group(1); e2=f"{e2[:4]}-{e2[4:6]}-{e2[6:8]}"
                 if e2!=start: end=e2
             u=limpia(cur.get("URL","")) or None
             loc=limpia(cur.get("LOCATION","")); des=limpia(cur.get("DESCRIPTION",""))[:500] or None
-            prov=provincia_fija or provincia_txt(tit+" "+loc)
+            prov=provincia_fija or provincia_txt(loc) or provincia_txt(tit)
             txt=tit+" "+(des or "")
             out.append(mkitem(tit,des,start,end,hora,prov,clasifica(txt),u,None,fuente,organizador))
             cur=None
@@ -196,6 +212,135 @@ def symposium_rss(url, fuente, prov_default=None):
         out.append(mkitem(tit,des,start,None,hora,("Online" if online and not prov else prov),clasifica(txt),link,None,fuente,None,online))
     return out
 
+
+# ---------- utilidades de fechas en español ----------
+MESES={"enero":1,"febrero":2,"marzo":3,"abril":4,"mayo":5,"junio":6,"julio":7,"agosto":8,
+ "septiembre":9,"setiembre":9,"octubre":10,"noviembre":11,"diciembre":12}
+_MES_RE="(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|setiembre|octubre|noviembre|diciembre)"
+def _fecha(d,mes,anio,ref):
+    try:
+        y=int(anio) if anio else ref.year
+        f=datetime.date(y,MESES[mes.lower()],int(d))
+        if not anio and f < ref-datetime.timedelta(days=60): f=f.replace(year=y+1)
+        return f
+    except Exception: return None
+def fechas_es(txt, ref=None):
+    """Devuelve (inicio, fin|None) en ISO a partir de texto en español. ref = fecha de referencia para el año."""
+    ref=ref or datetime.date.today(); t=" "+(txt or "")+" "
+    m=re.search(r"\b(\d{1,2})\s+de\s+"+_MES_RE+r"(?:\s+de\s+(20\d\d))?\s+(?:al|hasta el|-)\s+(\d{1,2})\s+de\s+"+_MES_RE+r"(?:\s+de\s+(20\d\d))?",t,re.I)
+    if m:
+        a=_fecha(m.group(1),m.group(2),m.group(3) or m.group(6),ref); b=_fecha(m.group(4),m.group(5),m.group(6),ref)
+        if a and b: return a.isoformat(), (b.isoformat() if b>a else None)
+    m=re.search(r"\b(\d{1,2})\s*(?:al|y|-|–)\s*(\d{1,2})\s+de\s+"+_MES_RE+r"(?:,?\s+(?:de\s+)?(20\d\d))?",t,re.I)
+    if m:
+        a=_fecha(m.group(1),m.group(3),m.group(4),ref); b=_fecha(m.group(2),m.group(3),m.group(4),ref)
+        if a and b: return a.isoformat(), (b.isoformat() if b>a else None)
+    m=re.search(r"\b(\d{1,2})\s+(?:de\s+)?"+_MES_RE+r",?\s+(?:de\s+)?(20\d\d)?",t,re.I)
+    if m:
+        a=_fecha(m.group(1),m.group(2),m.group(3),ref)
+        if a: return a.isoformat(), None
+    return None, None
+
+def _par(fn, xs, n=8):
+    import concurrent.futures as _cf
+    with _cf.ThreadPoolExecutor(max_workers=n) as ex: return list(ex.map(fn, xs))
+
+def polo_digital():
+    out=[]
+    for tipo in ("evento","formacion"):
+        try: lst=json.loads(get(f"https://www.polodigital.eu/wp-json/wp/v2/{tipo}?per_page=30"))
+        except Exception as ex: print("ERROR polo",tipo,ex); continue
+        if not isinstance(lst,list): continue
+        def ficha(e):
+            try: h=get(e["link"])
+            except Exception: return None
+            md=re.search(r'class="meta date">\s*([^<]+)<',h); mp=re.search(r'class="meta place">\s*([^<]+)<',h)
+            if not md: return None
+            ini,fin=fechas_es(html.unescape(md.group(1)))
+            if not ini: return None
+            place=limpia(html.unescape(mp.group(1))) if mp else ""
+            tit=limpia(e.get("title",{}).get("rendered",""))
+            des=limpia(re.sub(r"<[^>]+>"," ",e.get("excerpt",{}).get("rendered","")))[:500] or None
+            img=og_image_html(h)
+            onl=bool(ONLINE_RE.search(norm(place)))
+            prov=provincia_txt(place) or ("Málaga" if not onl else None)
+            return mkitem(tit,des,ini,fin,None,("Online" if onl and not prov else prov),clasifica(tit+" "+(des or "")),
+                          e["link"],img,"Polo de Contenidos Digitales","Polo de Contenidos Digitales",onl)
+        out+= [x for x in _par(ficha,lst) if x]
+    return out
+
+def og_image_html(h):
+    for pat in (r'<meta[^>]+property=["\']og:image(?::url)?["\'][^>]+content=["\']([^"\']+)',
+                r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:image'):
+        m=re.search(pat,h,re.I)
+        if m:
+            u=html.unescape(m.group(1)).strip()
+            if u.startswith("http"): return u
+    return None
+
+def cta():
+    try: lst=json.loads(get("https://www.corporaciontecnologica.com/wp-json/wp/v2/eventos?per_page=25"))
+    except Exception as ex: print("ERROR cta",ex); return []
+    def ficha(e):
+        try: h=get(e["link"])
+        except Exception: return None
+        body=re.sub(r"<script.*?</script>|<style.*?</style>"," ",h,flags=re.S)
+        txt=re.sub(r"\s+"," ",html.unescape(re.sub(r"<[^>]+>"," ",body)))
+        ref=datetime.date.fromisoformat(e.get("date","")[:10]) if e.get("date") else datetime.date.today()
+        m=re.search(r"Fecha:\s*(.{0,80})",txt)
+        ini,fin=fechas_es(m.group(1) if m else "",ref)
+        if not ini:
+            mi=re.search(r"main|entry-content|elementor-widget-text-editor",h)
+            ini,fin=fechas_es(txt[:4000],ref) if False else (None,None)
+        if not ini: return None
+        ml=re.search(r"(?:Lugar|Dirección|Ubicación):\s*(.{0,120})",txt)
+        lugar=ml.group(1) if ml else ""
+        tit=limpia(e.get("title",{}).get("rendered",""))
+        onl=bool(ONLINE_RE.search(norm(lugar+" "+tit)))
+        prov=provincia_txt(lugar+" "+tit)
+        if not prov and not onl: return None
+        des=limpia(re.sub(r"<[^>]+>"," ",e.get("excerpt",{}).get("rendered","")))[:500] or None
+        return mkitem(tit,des,ini,fin,None,(prov or "Online"),clasifica(tit+" "+(des or "")),e["link"],og_image_html(h),
+                      "CTA · Corporación Tecnológica de Andalucía","CTA",onl)
+    return [x for x in _par(ficha,lst) if x]
+
+def eoi():
+    ids=set()
+    for pg in range(0,4):
+        try: h=get(f"https://www.eoi.es/es/actualidad?page={pg}")
+        except Exception: break
+        ids.update(re.findall(r"/es/eventos/(\d+)/",h))
+    def uno(i):
+        try: return ical_source(f"https://www.eoi.es/es/event/{i}/ics_download","EOI · Escuela de Organización Industrial",None,"EOI")
+        except Exception: return []
+    out=[]
+    for lst in _par(uno,sorted(ids)):
+        for it in lst:
+            if it.get("provincia") or it.get("online"):
+                if it.get("online") and not it.get("provincia"): it["provincia"]="Online"
+                out.append(it)
+    return out
+
+def el_referente():
+    out=[]
+    for pg in (1,2,3):
+        try: raw=get(f"https://elreferente.es/feed/?post_type=evento&paged={pg}")
+        except Exception: break
+        for i in re.findall(r"<item>(.*?)</item>",raw,re.S):
+            def g(k):
+                m=re.search(r"<"+k+r">(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</"+k+r">",i,re.S); return m.group(1) if m else ""
+            tit=limpia(html.unescape(g("title"))); link=limpia(g("link")) or None
+            c=g("content:encoded") or g("description")
+            txt=re.sub(r"\s+"," ",html.unescape(re.sub(r"<[^>]+>"," ",c)))
+            try: ref=email.utils.parsedate_to_datetime(limpia(g("pubDate"))).date()
+            except Exception: ref=datetime.date.today()
+            prov=provincia_txt(tit+" "+txt); onl=bool(ONLINE_RE.search(norm(tit+" "+txt)))
+            if not prov and not onl: continue
+            ini,fin=fechas_es(tit+" . "+txt,ref)
+            if not ini: continue
+            out.append(mkitem(tit,txt[:500] or None,ini,fin,None,(prov or "Online"),clasifica(tit+" "+txt),link,None,"El Referente",None,onl))
+    return out
+
 def main(dry=False):
     items=[]
     def add(fn,*a,**k):
@@ -212,6 +357,7 @@ def main(dry=False):
         pv={"eventos.uma.es":"Málaga","eventos.uco.es":"Córdoba","eventos.us.es":"Sevilla",
             "eventos.uhu.es":"Huelva","eventos.ujaen.es":"Jaén","eventos.uca.es":"Cádiz"}[dom]
         add(symposium_rss,f"https://{dom}/rss.html",fu,pv)
+    add(polo_digital); add(cta); add(eoi); add(el_referente)
 
     # dedup cross-fuente por clave canonica (titulo+fecha); fusiona rellenando huecos, prefiere con imagen
     vistos={}
@@ -222,6 +368,29 @@ def main(dry=False):
             if not cur.get(campo) and it.get(campo): cur[campo]=it[campo]
         if it.get("_portal"): cur["_portal"]=True
     items=list(vistos.values())
+    # 2a red: fusion difusa el MISMO dia (palabras clave casi iguales entre fuentes distintas)
+    STOP={"de","del","la","el","los","las","y","en","a","al","para","con","por","un","una","jornada","taller",
+          "curso","evento","webinar","sesion","encuentro","2025","2026","2027","ii","iii","iv","i","v","edicion"}
+    def toks(t): return {w for w in norm(t).split() if w not in STOP and len(w)>2}
+    from collections import defaultdict
+    pordia=defaultdict(list)
+    for it in items: pordia[it["fecha_inicio"]].append(it)
+    fuera=set()
+    for dia,lst in pordia.items():
+        for i in range(len(lst)):
+            a=lst[i]
+            if id(a) in fuera: continue
+            ta=toks(a["titulo"])
+            for b in lst[i+1:]:
+                if id(b) in fuera or a["fuente"]==b["fuente"]: continue
+                tb=toks(b["titulo"])
+                if len(ta)<2 or len(tb)<2: continue
+                inter=len(ta&tb); jac=inter/len(ta|tb)
+                if jac>=0.7 or (inter>=3 and (ta<=tb or tb<=ta)):
+                    for campo in ("imagen_url","url","descripcion","provincia","hora","fecha_fin","organizador"):
+                        if not a.get(campo) and b.get(campo): a[campo]=b[campo]
+                    fuera.add(id(b)); print("fusion difusa:",a["titulo"][:50],"<=",b["titulo"][:50])
+    items=[i for i in items if id(i) not in fuera]
     hoy=(datetime.date.today()-datetime.timedelta(days=7)).isoformat()
     items=[i for i in items if i["fecha_inicio"]>=hoy]
 

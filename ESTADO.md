@@ -10,6 +10,22 @@
 
 ## Registro
 
+### 2026-10-08 (g) — Recolector v3: Polo Digital, CTA, EOI, El Referente + fusión difusa
+- **Polo Digital**: API WP `/wp/v2/evento` y `/formacion` + ficha (`div.meta date` "16 Octubre, 2026", `meta place`).
+- **CTA**: API WP `/wp/v2/eventos` + ficha ("Fecha: 21 de octubre", año deducido de la fecha de publicación);
+  solo si la ubicación es andaluza u online.
+- **EOI**: listado `/es/actualidad?page=0..3` → `/es/event/{id}/ics_download`; solo Andalucía u online.
+  Horas de .ics en UTC (…Z) se pasan a Europe/Madrid.
+- **El Referente**: la web tiene Cloudflare, pero el feed `https://elreferente.es/feed/?post_type=evento&paged=N`
+  responde; se quedan solo los de Andalucía/online con fecha en el texto (hoy pocos o ninguno futuro).
+- Parser de fechas en español `fechas_es()` (rangos "del 13 al 15 de octubre", "21 y 22 de…", "16 Octubre, 2026").
+- Provincia: primero nombres de provincia (gana el primero que aparece), luego alias; en .ics manda LOCATION
+  sobre el título. Quitado el alias "techpark" (confundía Sevilla TechPark con Málaga).
+- **Anti-duplicados 2ª red**: fusión difusa el mismo día entre fuentes distintas (Jaccard de palabras clave ≥0,7
+  o una contenida en otra con ≥3 palabras). Comprobado en BD con pg_trgm: sin casi-duplicados.
+- Resultado: 98 eventos/pasada, Málaga 34 (antes 17), ~37 s. Pendiente menor: ~33 eventos del Portal sin provincia
+  (la ficha no la indica).
+
 ### 2026-10-08 (f) — Agenda v2: almanaque, recolector v2, home oficial, bots
 - **Agenda** (/startups/agenda): calendario mensual tipo almanaque (intervalos pintados; rangos >7 días solo
   ▶ abre / ⏹ cierra; ⏳ fin de inscripción), listado pequeño lateral (clic en un día filtra), arriba los 2
