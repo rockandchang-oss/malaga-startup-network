@@ -3,6 +3,7 @@ import { NavLink, Outlet, useNavigate, Link } from "react-router-dom"
 import { useAuth } from "../lib/auth"
 import { useEffect, useState } from "react"
 import TourEntidad from "./TourEntidad"
+import SelectorEntidad from "./SelectorEntidad"
 import { supabase } from "../lib/supabase"
 
 export default function AdminLayout() {
@@ -51,6 +52,7 @@ export default function AdminLayout() {
           <img src={logoMSN} alt="MSN" className="h-8 w-8 rounded-lg object-cover" />
           <span className="text-sm font-extrabold leading-tight">MSN Panel{!isSuperadmin && <span className="block text-[11px] font-semibold text-[#4A5D8A]">Entidades</span>}</span>
         </Link>
+        {!isSuperadmin && <SelectorEntidad />}
         <nav className="flex-1 space-y-1">
           {!isSuperadmin && (
             <button onClick={() => setTour(true)} className="mb-3 flex w-full items-center gap-2 rounded-lg border border-[#4A5D8A]/30 bg-[#4A5D8A]/5 px-3 py-2 text-left text-sm font-semibold text-[#4A5D8A] hover:bg-[#4A5D8A]/10">
@@ -86,6 +88,7 @@ export default function AdminLayout() {
       </aside>
       <main className="flex-1 overflow-x-hidden">
         <div className="flex gap-2 overflow-x-auto border-b border-slate-200 bg-white px-3 py-2 md:hidden">
+          {!isSuperadmin && <SelectorEntidad compacto />}
           <NavLink to="/admin" end className={link}>Inicio</NavLink>
           <NavLink to="/admin/entidad" className={link}>{isSuperadmin ? "Editar entidades" : "Mi entidad"}</NavLink>
           <NavLink to="/admin/programas" className={link}>Programas</NavLink>
