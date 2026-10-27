@@ -103,6 +103,7 @@ function PostEditor({ post, entityId, authorId, canPublish, onClose }: { post: P
           <label className="block">
             <span className="text-sm font-medium text-slate-700">Contenido</span>
             <textarea rows={10} value={p.body ?? ""} onChange={(e) => set("body", e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 px-4 py-2.5 outline-none focus:border-brand-500" />
+            <span className="mt-1 block text-xs text-slate-500">Formato: **negrita**, [texto del enlace](https://…), líneas que empiezan por "- " = lista, "## " = subtítulo.</span>
           </label>
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={!!p.send_newsletter} onChange={(e) => set("send_newsletter", e.target.checked)} />

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { supabase } from "../lib/supabase"
+import TextoRico from "../components/TextoRico"
 
 export default function BlogPost() {
   const { slug } = useParams()
@@ -34,7 +35,7 @@ export default function BlogPost() {
       <h1 className="mt-3 text-4xl font-extrabold leading-tight tracking-tight">{post.title}</h1>
       {post.excerpt && <p className="mt-3 text-lg text-slate-600">{post.excerpt}</p>}
       {post.cover_url && <img src={post.cover_url} alt="" className="mt-6 w-full rounded-2xl object-cover" />}
-      <div className="prose mt-8 max-w-none whitespace-pre-line leading-relaxed text-slate-700">{post.body}</div>
+      <TextoRico texto={post.body ?? ""} className="mt-8 text-[17px] leading-relaxed text-slate-700" />
     </article>
   )
 }

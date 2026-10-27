@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react"
 import { supabase } from "../../lib/supabase"
 import { useAuth } from "../../lib/auth"
+import { uploadImage } from "../../lib/storage"
+import TextoRico from "../../components/TextoRico"
 
 export type Aviso = {
   id?: string; titulo: string; cuerpo: string | null; tipo: "reunion" | "aviso" | "plazo"
   fecha_evento: string | null; lugar: string | null; enlace: string | null
+  enlace_texto?: string | null; adjunto_url?: string | null; adjunto_nombre?: string | null
   publicado: boolean; fijado: boolean; created_at?: string
 }
-const vacio: Aviso = { titulo: "", cuerpo: "", tipo: "reunion", fecha_evento: null, lugar: "", enlace: "", publicado: true, fijado: false }
+const vacio: Aviso = { titulo: "", cuerpo: "", tipo: "reunion", fecha_evento: null, lugar: "", enlace: "", enlace_texto: "", adjunto_url: null, adjunto_nombre: null, publicado: true, fijado: false }
 const TIPOS: Record<string, string> = { reunion: "Reunión", aviso: "Aviso", plazo: "Plazo" }
 
 export function fechaEvento(iso: string) {
@@ -36,8 +39,13 @@ export function TarjetaAviso({ a }: { a: Aviso }) {
           {a.lugar}
         </p>
       )}
-      {a.cuerpo && <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-slate-600">{a.cuerpo}</p>}
-      {a.enlace && <a href={a.enlace} target="_blank" rel="noreferrer" className="mt-3 inline-block text-sm font-semibold text-[#4A5D8A] hover:underline">Más información / unirse →</a>}
+      {a.cuerpo && <TextoRico texto={a.cuerpo} compacto className="mt-2 text-sm leading-relaxed text-slate-600" />}
+      {(a.enlace || a.adjunto_url) && (
+        <div className="mt-3 flex flex-wrap gap-3">
+          {a.enlace && <a href={a.enlace} target="_blank" rel="noreferrer" className="btn-primary text-sm">{a.enlace_texto?.trim() || "Más información / unirse"} →</a>}
+          {a.adjunto_url && <a href={a.adjunto_url} target="_blank" rel="noreferrer" download className="btn-ghost text-sm">📄 {a.adjunto_nombre?.trim() || "Descargar documento"}</a>}
+        </div>
+      )}
     </div>
   )
 }
@@ -47,6 +55,18 @@ export default function Avisos() {
   const [lista, setLista] = useState<Aviso[]>([])
   const [ed, setEd] = useState<Aviso | null>(null)
   const [msg, setMsg] = useState<string | null>(null)
+  const [subiendo, setSubiendo] = useState(false)
+
+  async function subirAdjunto(file: File | undefined) {
+    if (!file || !ed) return
+    if (file.size > 15 * 1024 * 1024) { setMsg("❌ El documento pesa más de 15 MB"); return }
+    setSubiendo(true)
+    try {
+      const url = await uploadImage(file, "avisos")
+      setEd({ ...ed, adjunto_url: url, adjunto_nombre: ed.adjunto_nombre || file.name.replace(/\.[^.]+$/, "") })
+    } catch (e: any) { setMsg("❌ No se pudo subir: " + (e?.message ?? e)) }
+    setSubiendo(false)
+  }
 
   async function cargar() {
     const { data } = await supabase.from("avisos" as any).select("*")
@@ -58,7 +78,7 @@ export default function Avisos() {
   async function guardar() {
     if (!ed) return
     if (!ed.titulo.trim()) { setMsg("❌ Pon un título"); return }
-    const fila = { titulo: ed.titulo.trim(), cuerpo: ed.cuerpo || null, tipo: ed.tipo, fecha_evento: ed.fecha_evento, lugar: ed.lugar || null, enlace: ed.enlace || null, publicado: ed.publicado, fijado: ed.fijado }
+    const fila = { titulo: ed.titulo.trim(), cuerpo: ed.cuerpo || null, tipo: ed.tipo, fecha_evento: ed.fecha_evento, lugar: ed.lugar || null, enlace: ed.enlace || null, enlace_texto: ed.enlace_texto || null, adjunto_url: ed.adjunto_url || null, adjunto_nombre: ed.adjunto_nombre || null, publicado: ed.publicado, fijado: ed.fijado }
     const r = ed.id ? await supabase.from("avisos" as any).update(fila).eq("id", ed.id) : await supabase.from("avisos" as any).insert(fila)
     if (r.error) setMsg("❌ " + r.error.message); else { setMsg("✓ Guardado"); setEd(null); cargar() }
   }
@@ -102,9 +122,26 @@ export default function Avisos() {
             <label className="block text-sm font-semibold text-slate-700">Enlace (opcional)
               <input className="input mt-1 w-full" value={ed.enlace ?? ""} onChange={(e) => setEd({ ...ed, enlace: e.target.value })} placeholder="Meet, Teams, formulario…" />
             </label>
+            <label className="block text-sm font-semibold text-slate-700">Texto del botón del enlace
+              <input className="input mt-1 w-full" value={ed.enlace_texto ?? ""} onChange={(e) => setEd({ ...ed, enlace_texto: e.target.value })} placeholder="Más información / unirse" />
+            </label>
+            <div className="block text-sm font-semibold text-slate-700 sm:col-span-2">Documento adjunto (PDF, imagen…)
+              <div className="mt-1 flex flex-wrap items-center gap-3">
+                <input type="file" className="text-sm font-normal" onChange={(e) => subirAdjunto(e.target.files?.[0])} disabled={subiendo} />
+                {subiendo && <span className="font-normal text-slate-500">Subiendo…</span>}
+                {ed.adjunto_url && !subiendo && (
+                  <>
+                    <input className="input w-56" value={ed.adjunto_nombre ?? ""} onChange={(e) => setEd({ ...ed, adjunto_nombre: e.target.value })} placeholder="Nombre que verá la entidad" />
+                    <a href={ed.adjunto_url} target="_blank" rel="noreferrer" className="font-normal text-[#4A5D8A] underline">ver</a>
+                    <button type="button" className="font-normal text-red-600 hover:underline" onClick={() => setEd({ ...ed, adjunto_url: null, adjunto_nombre: null })}>quitar</button>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
           <label className="block text-sm font-semibold text-slate-700">Texto
             <textarea className="input mt-1 min-h-[120px] w-full" value={ed.cuerpo ?? ""} onChange={(e) => setEd({ ...ed, cuerpo: e.target.value })} placeholder="Orden del día, qué traer, confirmación de asistencia…" />
+            <span className="mt-1 block text-xs font-normal text-slate-500">Formato: **negrita**, [texto del enlace](https://…), líneas que empiezan por "- " = lista, "## " = subtítulo.</span>
           </label>
           <div className="flex flex-wrap gap-5 text-sm">
             <label className="flex items-center gap-2"><input type="checkbox" checked={ed.publicado} onChange={(e) => setEd({ ...ed, publicado: e.target.checked })} /> Visible para las entidades</label>
