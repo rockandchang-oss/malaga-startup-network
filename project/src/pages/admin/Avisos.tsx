@@ -8,9 +8,10 @@ export type Aviso = {
   id?: string; titulo: string; cuerpo: string | null; tipo: "reunion" | "aviso" | "plazo"
   fecha_evento: string | null; lugar: string | null; enlace: string | null
   enlace_texto?: string | null; adjunto_url?: string | null; adjunto_nombre?: string | null
+  enviar_correo?: boolean; correo_enviado_at?: string | null; correo_destinatarios?: number | null
   publicado: boolean; fijado: boolean; created_at?: string
 }
-const vacio: Aviso = { titulo: "", cuerpo: "", tipo: "reunion", fecha_evento: null, lugar: "", enlace: "", enlace_texto: "", adjunto_url: null, adjunto_nombre: null, publicado: true, fijado: false }
+const vacio: Aviso = { titulo: "", cuerpo: "", tipo: "reunion", fecha_evento: null, lugar: "", enlace: "", enlace_texto: "", adjunto_url: null, adjunto_nombre: null, enviar_correo: false, publicado: true, fijado: false }
 const TIPOS: Record<string, string> = { reunion: "Reunión", aviso: "Aviso", plazo: "Plazo" }
 
 export function fechaEvento(iso: string) {
@@ -78,7 +79,7 @@ export default function Avisos() {
   async function guardar() {
     if (!ed) return
     if (!ed.titulo.trim()) { setMsg("❌ Pon un título"); return }
-    const fila = { titulo: ed.titulo.trim(), cuerpo: ed.cuerpo || null, tipo: ed.tipo, fecha_evento: ed.fecha_evento, lugar: ed.lugar || null, enlace: ed.enlace || null, enlace_texto: ed.enlace_texto || null, adjunto_url: ed.adjunto_url || null, adjunto_nombre: ed.adjunto_nombre || null, publicado: ed.publicado, fijado: ed.fijado }
+    const fila = { titulo: ed.titulo.trim(), cuerpo: ed.cuerpo || null, tipo: ed.tipo, fecha_evento: ed.fecha_evento, lugar: ed.lugar || null, enlace: ed.enlace || null, enlace_texto: ed.enlace_texto || null, adjunto_url: ed.adjunto_url || null, adjunto_nombre: ed.adjunto_nombre || null, enviar_correo: !!ed.enviar_correo, publicado: ed.publicado, fijado: ed.fijado }
     const r = ed.id ? await supabase.from("avisos" as any).update(fila).eq("id", ed.id) : await supabase.from("avisos" as any).insert(fila)
     if (r.error) setMsg("❌ " + r.error.message); else { setMsg("✓ Guardado"); setEd(null); cargar() }
   }
@@ -147,6 +148,14 @@ export default function Avisos() {
             <label className="flex items-center gap-2"><input type="checkbox" checked={ed.publicado} onChange={(e) => setEd({ ...ed, publicado: e.target.checked })} /> Visible para las entidades</label>
             <label className="flex items-center gap-2"><input type="checkbox" checked={ed.fijado} onChange={(e) => setEd({ ...ed, fijado: e.target.checked })} /> Destacar arriba</label>
           </div>
+          {ed.correo_enviado_at ? (
+            <p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800">✉️ Enviado por correo el {new Date(ed.correo_enviado_at).toLocaleString("es-ES", { timeZone: "Europe/Madrid" })}{ed.correo_destinatarios ? ` a ${ed.correo_destinatarios} personas` : ""}. Editarlo no lo vuelve a enviar.</p>
+          ) : (
+            <label className="flex items-start gap-2 rounded-lg bg-amber-50 p-3 text-sm text-slate-700">
+              <input type="checkbox" className="mt-0.5" checked={!!ed.enviar_correo} onChange={(e) => setEd({ ...ed, enviar_correo: e.target.checked })} />
+              <span><b>Enviar también por correo</b> a todas las entidades de la red (cada persona una vez) y una copia a los superadmins. Sale en unos minutos al guardar, solo si está visible, y una única vez.</span>
+            </label>
+          )}
           <div className="flex gap-3">
             <button className="btn-primary text-sm" onClick={guardar}>Guardar</button>
             <button className="btn-ghost text-sm" onClick={() => setEd(null)}>Cancelar</button>
@@ -162,6 +171,8 @@ export default function Avisos() {
             {isSuperadmin && (
               <div className="mt-1 flex gap-4 px-2 text-xs">
                 {!a.publicado && <span className="font-semibold text-amber-600">Oculto</span>}
+                {a.correo_enviado_at ? <span className="text-emerald-700">✉️ Enviado por correo{a.correo_destinatarios ? ` (${a.correo_destinatarios})` : ""}</span>
+                  : a.enviar_correo ? <span className="text-amber-700">✉️ Correo en cola</span> : null}
                 <button className="font-semibold text-slate-600 hover:underline" onClick={() => setEd({ ...a })}>Editar</button>
                 <button className="font-semibold text-red-600 hover:underline" onClick={() => borrar(a)}>Borrar</button>
               </div>
