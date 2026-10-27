@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<!-- ============================================================
+  ACTUALIDAD — Hub unificado de contenido de MSN
+  3 filtros: Conoce a las entidades · Artículos · Prensa
+  Sustituye a las páginas separadas blog.html y noticias.html
+  (que se conservan para no romper enlaces antiguos).
+  ============================================================ -->
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Actualidad | Málaga Startup Network</title>
+  <meta name="description" content="Prensa, artículos y los perfiles de las entidades que forman el ecosistema de Málaga Startup Network." />
+  <link rel="icon" type="image/jpeg" href="../img/logo-MSN.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../style.min.css?v=1.4" />
+</head>
+
+<body>
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="mobile-close" id="mobileClose">✕</button>
+    <a href="../index.html#que-es" class="mobile-link">Qué es</a>
+    <a href="../index.html#quienes" class="mobile-link">La red</a>
+    <a href="actualidad.html" class="mobile-link" style="color:var(--gold-light)">Actualidad</a>
+    <a href="../index.html#contacto" class="mobile-link">Quiero unirme</a>
+  </div>
+
+  <nav id="navbar" class="scrolled">
+    <a href="../index.html#hero" class="nav-logo">
+      <img class="nav-logo-img" src="../img/logo-MSN.jpg" alt="MSN" />
+      <span class="nav-logo-text">Málaga Startup Network</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html#que-es">Qué es</a></li>
+      <li><a href="../index.html#quienes">La red</a></li>
+      <li><a href="actualidad.html" class="active">Actualidad</a></li>
+      <li><a href="../index.html#contacto" class="nav-cta">Quiero unirme</a></li>
+      <a href="https://www.linkedin.com/company/malaga-startup-network/" target="_blank" rel="noopener noreferrer"
+        aria-label="Perfil de LinkedIn" class="footer-email">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+        </svg>
+      </a>
+    </ul>
+    <button class="nav-burger" id="burgerBtn" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <section id="hero-blog">
+    <div class="hero-content">
+      <div class="section-label" style="justify-content:center;margin-bottom:20px">Actualidad</div>
+      <h1 class="hero-title" style="animation:none;opacity:1">Actualidad de la red</h1>
+      <p class="hero-subtitle" style="animation:none;opacity:1;margin-bottom:0">
+        Conoce a las entidades, lee nuestros artículos y sigue la prensa del ecosistema startup de Málaga.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── FILTROS ──────────────────────────────────────────────── -->
+  <div class="actualidad-tabs" role="tablist">
+    <button class="actualidad-tab active" data-panel="entidades">Conoce a las entidades</button>
+    <button class="actualidad-tab" data-panel="articulos">Artículos</button>
+    <button class="actualidad-tab" data-panel="prensa">Prensa</button>
+  </div>
+
+  <section id="blog">
+
+    <!-- ══ PANEL: CONOCE A LAS ENTIDADES ════════════════════════ -->
+    <div class="actualidad-panel active" id="panel-entidades">
+      <p class="actualidad-group-label">Perfiles de las entidades que forman la red</p>
+      <div class="blog-grid">
+
+        <a href="entidad-bic-euronova.html" class="blog-card">
+          <div class="blog-card-img" style="background-image:url('../img/carrusel/slide-1.jpg')"></div>
+          <div class="blog-card-content">
+            <span class="blog-card-category">Entidad promotora</span>
+            <h3 class="blog-card-title">BIC Euronova</h3>
+            <p class="blog-card-excerpt">Centro Europeo de Empresas e Innovación de Málaga y promotor de la red. Reconocido por Financial Times y Statista como el #1 Innovation Hub de España (2026).</p>
+            <div class="blog-card-footer">
+              <span class="blog-card-date">Conoce a la entidad</span>
+              <span class="blog-card-link">
+                Leer
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </span>
+            </div>
+          </div>
+        </a>
+
+        <a href="noticia-conoce-a-andalucia-open-future-la-farola.html" class="blog-card">
+          <div class="blog-card-img" style="background-image:url('https://malagastartupnetwork.com/startups/logos/farolavuela3-msn.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;"></div>
+          <div class="blog-card-content">
+            <span class="blog-card-category">Entidades</span>
+            <h3 class="blog-card-title">La Farola Vuela · Andalucía Open Future</h3>
+            <p class="blog-card-excerpt">Aceleradora de startups tecnológicas en Málaga, dentro de Andalucía Open Future y Andalucía Vuela (Junta de Andalucía).</p>
+            <div class="blog-card-footer">
+              <span class="blog-card-date">Conoce a la entidad</span>
+              <span class="blog-card-link">Leer <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
+            </div>
+          </div>
+        </a>
+
+        <a href="noticia-conoce-a-teamlabs-malaga.html" class="blog-card">
+          <div class="blog-card-img" style="background-image:url('https://rsitqcrnuiglogtxljls.supabase.co/storage/v1/object/public/media/logos/1bc3b35c-0186-42d8-b0cc-5fb443f4c12d.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;"></div>
+          <div class="blog-card-content">
+            <span class="blog-card-category">Entidades</span>
+            <h3 class="blog-card-title">Teamlabs Málaga</h3>
+            <p class="blog-card-excerpt">Laboratorio de aprendizaje radical y Grado LEINN (Liderazgo Emprendedor e Innovación) en Málaga Tech Park, Madrid y Barcelona.</p>
+            <div class="blog-card-footer">
+              <span class="blog-card-date">Conoce a la entidad</span>
+              <span class="blog-card-link">Leer <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
+            </div>
+          </div>
+        </a>
+
+        <a href="noticia-conoce-a-andalucia-emprende.html" class="blog-card">
+          <div class="blog-card-img" style="background-image:url('https://rsitqcrnuiglogtxljls.supabase.co/storage/v1/object/public/media/logos/9feaae1e-de57-4ab3-b4da-39bf9d161143.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;"></div>
+          <div class="blog-card-content">
+            <span class="blog-card-category">Entidades</span>
+            <h3 class="blog-card-title">Andalucía Emprende</h3>
+            <p class="blog-card-excerpt">Fundación pública de la Junta de Andalucía para el fomento del emprendimiento.</p>
+            <div class="blog-card-footer">
+              <span class="blog-card-date">Conoce a la entidad</span>
+              <span class="blog-card-link">Leer <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
+            </div>
+          </div>
+        </a>
+
+        <a href="noticia-conoce-a-junta-andalucia.html" class="blog-card">
+          <div class="blog-card-img" style="background-image:url('https://malagastartupnetwork.com/img/logos-startups/Logo-junta-andalucia.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;"></div>
+          <div class="blog-card-content">
+            <span class="blog-card-category">Entidades</span>
+            <h3 class="blog-card-title">Junta de Andalucía</h3>
+            <p class="blog-card-excerpt">Administración autonómica andaluza, con programas de apoyo a la innovación.</p>
+            <div class="blog-card-footer">
+              <span class="blog-card-date">Conoce a la entidad</span>
+              <span class="blog-card-link">Leer <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
+            </div>
+          </div>
+        </a>
+
+        <a href="noticia-conoce-a-ayuntamiento-malaga.html" class="blog-card">
+          <div class="blog-card-img" style="background-image:url('https://malagastartupnetwork.com/img/logos-startups/logo-ayto_Malaga.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;"></div>
+          <div class="blog-card-content">
+            <span class="blog-card-category">Entidades</span>
+            <h3 class="blog-card-title">Ayuntamiento de Málaga</h3>
+            <p class="blog-card-excerpt">Administración local de Málaga, impulsora del ecosistema emprendedor.</p>
+            <div class="blog-card-footer">
+              <span class="blog-card-date">Conoce a la entidad</span>
+              <span class="blog-card-link">Leer <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
+            </div>
+          </div>
+        </a>
+
+        <a href="noticia-conoce-a-impact-hub-malaga.html" class="blog-card">
+          <div class="blog-card-img" style="background-image:url('https://malagastartupnetwork.com/img/logos-startups/logo-impact-hub-malaga.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;"></div>
+          <div class="blog-card-content">
+            <span class="blog-card-category">Entidades</span>
+            <h3 class="blog-card-title">Impact Hub Málaga</h3>
+            <p class="blog-card-excerpt">Comunidad y espacio de innovación con foco en impacto social y emprendimiento.</p>
+            <div class="blog-card-footer">
+              <span class="blog-card-date">Conoce a la entidad</span>
+              <span class="blog-card-link">Leer <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
+            </div>
+          </div>
+        </a>
+
+        <a href="noticia-conoce-a-innova-irv.html" class="blog-card">
+          <div class="blog-card-img" style="background-image:url('https://malagastartupnetwork.com/img/logos-startups/logo-innovairv.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;"></div>
+          <div class="blog-card-content">
+            <span class="blog-card-category">Entidades</span>
+            <h3 class="blog-card-title">Innova IRV</h3>
+            <p class="blog-card-excerpt">Innovación y aceleración de proyectos empresariales.</p>
+            <div class="blog-card-footer">
+              <span class="blog-card-date">Conoce a la entidad</span>
+              <span class="blog-card-link">Leer <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
+            </div>
+          </div>
+        </a>
+
+        <a href="noticia-conoce-a-malaga-tech.html" class="blog-card">
+          <div class="blog-card-img" style="background-image:url('https://malagastartupnetwork.com/img/logos-startups/logo-MalagaTech.svg');background-size:contain;background-repeat:no-repeat;background-color:#fff;"></div>
+          <div class="blog-card-content">
+            <span class="blog-card-category">Entidades</span>
+            <h3 class="blog-card-title">Málaga Tech</h3>
+            <p class="blog-card-excerpt">Comunidad del ecosistema tecnológico malagueño.</p>
+            <div class="blog-card-footer">
+              <span class="blog-card-date">Conoce a la entidad</span>
+              <span class="blog-card-link">Leer <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
+            </div>
+          </div>
+        </a>
+
+        <a href="noticia-conoce-a-malaga-techpark.html" class="blog-card">
+          <div class="blog-card-img" style="background-image:url('https://malagastartupnetwork.com/img/logos-startups/logo-Malaga-Tech-Park.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;"></div>
+          <div class="blog-card-content">
+            <span class="blog-card-category">Entidades</span>
+            <h3 class="blog-card-title">Málaga TechPark (PTA)</h3>
+            <p class="blog-card-excerpt">Parque Tecnológico de Andalucía. Sede de empresas tecnológicas y centros de I+D.</p>
+            <div class="blog-card-footer">
+              <span class="blog-card-date">Conoce a la entidad</span>
+              <span class="blog-card-link">Leer <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
+            </div>
+          </div>
+        </a>
+
+        <a href="noticia-conoce-a-link-by-uma.html" class="blog-card">
+          <div class="blog-card-img" style="background-image:url('https://malagastartupnetwork.com/img/logos-startups/Logo_UMA.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;"></div>
+          <div class="blog-card-content">
+            <span class="blog-card-category">Entidades</span>
+            <h3 class="blog-card-title">Link by UMA</h3>
+            <p class="blog-card-excerpt">Programa de transferencia y emprendimiento de la Universidad de Málaga.</p>
+            <div class="blog-card-footer">
+              <span class="blog-card-date">Conoce a la entidad</span>
+              <span class="blog-card-link">Leer <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
+            </div>
+          </div>
+        </a>
+
+        <a href="noticia-conoce-a-cta-andalucia.html" class="blog-card">
+          <div class="blog-card-img" style="background-image:url('https://malagastartupnetwork.com/img/logos-startups/CTAlogo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;"></div>
+          <div class="blog-card-content">
+            <span class="blog-card-category">Entidades</span>
+            <h3 class="blog-card-title">CTA Andalucía</h3>
+            <p class="blog-card-excerpt">Corporación Tecnológica de Andalucía. Financiación de proyectos de I+D+i empresarial.</p>
+            <div class="blog-card-footer">
+              <span class="blog-card-date">Conoce a la entidad</span>
+              <span class="blog-card-link">Leer <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
+            </div>
+          </div>
+        </a>
+
+        <a href="noticia-conoce-a-fundalogy.html" class="blog-card">
+          <div class="blog-card-img" style="background-image:url('https://malagastartupnetwork.com/img/logos-startups/fundalogy-logotipo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;"></div>
+          <div class="blog-card-content">
+            <span class="blog-card-category">Entidades</span>
+            <h3 class="blog-card-title">Fundalogy</h3>
+            <p class="blog-card-excerpt">Plataforma de innovación y aceleración de startups.</p>
+            <div class="blog-card-footer">
+              <span class="blog-card-date">Conoce a la entidad</span>
+              <span class="blog-card-link">Leer <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
+            </div>
+          </div>
+        </a>
+
+        <a href="noticia-conoce-a-sabadell-bstartup.html" class="blog-card">
+          <div class="blog-card-img" style="background-image:url('https://malagastartupnetwork.com/img/logos-startups/Logo_sabadell.svg');background-size:contain;background-repeat:no-repeat;background-color:#fff;"></div>
+          <div class="blog-card-content">
+            <span class="blog-card-category">Entidades</span>
+            <h3 class="blog-card-title">Sabadell BStartup</h3>
+            <p class="blog-card-excerpt">Programa de Banco Sabadell para financiar y acompañar startups.</p>
+            <div class="blog-card-footer">
+              <span class="blog-card-date">Conoce a la entidad</span>
+              <span class="blog-card-link">Leer <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
+            </div>
+          </div>
+        </a>
+
+        <a href="noticia-conoce-a-banco-santander.html" class="blog-card">
+          <div class="blog-card-img" style="background-image:url('https://malagastartupnetwork.com/img/logos-startups/Logo-santander.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;"></div>
+          <div class="blog-card-content">
+            <span class="blog-card-category">Entidades</span>
+            <h3 class="blog-card-title">Banco Santander</h3>
+            <p class="blog-card-excerpt">Banca y programas de apoyo a emprendedores y startups.</p>
+            <div class="blog-card-footer">
+              <span class="blog-card-date">Conoce a la entidad</span>
+              <span class="blog-card-link">Leer <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
+            </div>
+          </div>
+        </a>
+
+        <a href="noticia-conoce-a-polo-digital.html" class="blog-card">
+          <div class="blog-card-img" style="background-image:url('https://malagastartupnetwork.com/img/logos-startups/polo-digital-logo.png');background-size:contain;background-repeat:no-repeat;background-color:#fff;"></div>
+          <div class="blog-card-content">
+            <span class="blog-card-category">Entidades</span>
+            <h3 class="blog-card-title">Polo Digital</h3>
+            <p class="blog-card-excerpt">Hub de empresas digitales y tecnológicas en Tabacalera, Málaga.</p>
+            <div class="blog-card-footer">
+              <span class="blog-card-date">Conoce a la entidad</span>
+              <span class="blog-card-link">Leer <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
+            </div>
+          </div>
+        </a>
+
+
+
+
+      </div>
+    </div>
+
+    <!-- ══ PANEL: ARTÍCULOS ═════════════════════════════════════ -->
+    <div class="actualidad-panel" id="panel-articulos">
+      <p class="actualidad-group-label">Artículos, análisis y recursos del ecosistema</p>
+      <div class="blog-grid" id="msn-blog-grid">
+
+        <a href="noticia-los-100-jovenes-que-cursan-leinn-en-malaga-han-creado-9-empr-89hhn.html" class="blog-card">
+          <div class="blog-card-img" style="background-image:url('../img/carrusel/slide-5.jpg');"></div>
+          <div class="blog-card-content">
+            <span class="blog-card-category">Noticias de la red</span>
+            <h3 class="blog-card-title">Los más de 100 jóvenes que cursan LEINN en Málaga han creado 9 empresas y han facturado más de 260.000 euros</h3>
+            <p class="blog-card-excerpt">Málaga TechPark es para el grado LEINN un entorno privilegiado para aprender y desarrollar proyectos emprendedores con base tecnológica.</p>
+            <div class="blog-card-footer">
+              <span class="blog-card-date">27 Sep, 2026 · 2 min</span>
+              <span class="blog-card-link">Leer <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
+            </div>
+          </div>
+        </a>
+
+        <a href="noticia-bienvenida-malaga-startup-network.html" class="blog-card">
+          <div class="blog-card-img" style="background-image:url('../img/carrusel/slide-6.jpg');"></div>
+          <div class="blog-card-content">
+            <span class="blog-card-category">Noticias de la red</span>
+            <h3 class="blog-card-title">Nace el punto de entrada del ecosistema startup de Málaga</h3>
+            <p class="blog-card-excerpt">Un único lugar para que cualquier emprendedor descubra, en 2 minutos, qué programas y entidades de la red encajan con su momento.</p>
+            <div class="blog-card-footer">
+              <span class="blog-card-date">8 Jun, 2026 · 1 min</span>
+              <span class="blog-card-link">Leer <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
+            </div>
+          </div>
+        </a>
+
+
+
+
+        <a href="blog-ecosistema-malaga.html" class="blog-card">
+          <div class="blog-card-img" style="background-image:url('../img/carrusel/slide-3.jpg')"></div>
+          <div class="blog-card-content">
+            <span class="blog-card-category">Ecosistema</span>
+            <h3 class="blog-card-title">El ecosistema startup de Málaga cierra 2025 con cifras récord</h3>
+            <p class="blog-card-excerpt">Más de 150 nuevas empresas innovadoras, 40&nbsp;M€ en inversión y una internacionalización sin precedentes consolidan a Málaga como referente startup del sur de Europa.</p>
+            <div class="blog-card-footer">
+              <span class="blog-card-date">15 Enero, 2026 · 6 min</span>
+              <span class="blog-card-link">
+                Leer
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </span>
+            </div>
+          </div>
+        </a>
+
+        <a href="blog-5-claves-startup.html" class="blog-card">
+          <div class="blog-card-img" style="background-image:url('../img/carrusel/slide-4.jpg')"></div>
+          <div class="blog-card-content">
+            <span class="blog-card-category">Consejos</span>
+            <h3 class="blog-card-title">5 claves para que tu startup sobreviva el primer año</h3>
+            <p class="blog-card-excerpt">La mayoría de las startups no superan los doce primeros meses. Repasamos los errores más comunes y las decisiones que marcan la diferencia entre cerrar y escalar.</p>
+            <div class="blog-card-footer">
+              <span class="blog-card-date">28 Feb, 2026 · 5 min</span>
+              <span class="blog-card-link">
+                Leer
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </span>
+            </div>
+          </div>
+        </a>
+
+        <a href="blog-malaga-tech-park.html" class="blog-card">
+          <div class="blog-card-img" style="background-image:url('../img/carrusel/slide-1.jpg')"></div>
+          <div class="blog-card-content">
+            <span class="blog-card-category">Alianzas</span>
+            <h3 class="blog-card-title">Málaga Tech Park: motor del emprendimiento tecnológico en Andalucía</h3>
+            <p class="blog-card-excerpt">Más de 650 empresas bajo un mismo techo. La alianza entre el parque tecnológico malagueño y MSN está abriendo puertas que antes parecían imposibles para las startups de la región.</p>
+            <div class="blog-card-footer">
+              <span class="blog-card-date">10 Mar, 2026 · 4 min</span>
+              <span class="blog-card-link">
+                Leer
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </span>
+            </div>
+          </div>
+        </a>
+
+        <a href="blog-programa-mentoria.html" class="blog-card">
+          <div class="blog-card-img" style="background-image:url('../img/carrusel/slide-6.jpg')"></div>
+          <div class="blog-card-content">
+            <span class="blog-card-category">Programas</span>
+            <h3 class="blog-card-title">MSN lanza su primer programa de mentoría estructurada para startups en etapa seed</h3>
+            <p class="blog-card-excerpt">25 mentores expertos en financiación, producto y expansión internacional abren sus puertas a las startups validadas de la región a partir de mayo de 2026.</p>
+            <div class="blog-card-footer">
+              <span class="blog-card-date">1 Abr, 2026 · 3 min</span>
+              <span class="blog-card-link">
+                Leer
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- ══ PANEL: PRENSA ════════════════════════════════════════ -->
+    <div class="actualidad-panel" id="panel-prensa">
+      <div class="news-grid">
+
+        <div class="news-separator">
+          <h2 class="separator-title">Noticias MSN</h2>
+        </div>
+
+        <article class="news-card">
+          <div class="news-img" style="background-image: url('../img/carrusel/slide-5.jpg');"></div>
+          <div class="news-content">
+            <div class="news-date">19 Julio, 2024</div>
+            <h3 class="news-title">Nace Málaga Startup Network para fortalecer e impulsar el ecosistema de innovación empresarial malagueño</h3>
+            <p class="news-excerpt">Málaga Startup Network anuncia su establecimiento como una red de colaboración para promover el emprendimiento, fomentar la creación de nuevas startups tecnológicas e innovadoras y fortalecer el ecosistema empresarial de Málaga.</p>
+            <a href="https://www.vidaeconomica.com/2024/07/malaga-startup-network-impulsar-emprendimiento/" target="_blank" rel="noopener noreferrer" class="news-link">
+              Leer artículo
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
+        </article>
+
+        <article class="news-card">
+          <div class="news-img" style="background-image: url('../img/carrusel/slide-6.jpg');"></div>
+          <div class="news-content">
+            <div class="news-date">22 Octubre, 2024</div>
+            <h3 class="news-title">Málaga Startup Network distingue a las 30 startups malagueñas innovadoras con mayor potencial</h3>
+            <p class="news-excerpt">La Red Málaga Startup Network, promovida por BIC Euronova y formada por distintas entidades, con esta distinción reconoce a una treintena de startups como destacadas en el ecosistema de innovación empresarial de Málaga.</p>
+            <a href="https://elreferente.es/ecosistema/malaga-startup-network-distingue-a-las-30-startups-malaguenas-innovadoras-con-mayor-potencial/" target="_blank" rel="noopener noreferrer" class="news-link">
+              Leer artículo
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
+        </article>
+
+        <article class="news-card">
+          <div class="news-img" style="background-image: url('../img/carrusel/slide-2.jpg');"></div>
+          <div class="news-content">
+            <div class="news-date">26 Noviembre, 2025</div>
+            <h3 class="news-title">Málaga Startup Network impulsa 27 startups malagueñas con alto potencial innovador</h3>
+            <p class="news-excerpt">Málaga Startup Network, la red de entidades que promueven el emprendimiento y creación de empresas innovadoras en Málaga, reconoce a 27 startups malagueñas que están posicionando a la ciudad como Hub internacional de innovación.</p>
+            <a href="https://www.vidaeconomica.com/2025/11/malaga-startup-network-startups-malaguenas-innovadoras-2025/" target="_blank" rel="noopener noreferrer" class="news-link">
+              Leer artículo
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
+        </article>
+
+        <div class="news-separator">
+          <h2 class="separator-title">Noticias de Startups</h2>
+        </div>
+
+        <article class="news-card">
+          <div class="news-img" style="background-image: url('../img/noticias/CloudyOlé.png');"></div>
+          <div class="news-content">
+            <h3 class="news-title">La apuesta de Cloud y Olé por una ciberseguridad de alta precisión hecha en Málaga</h3>
+            <p class="news-excerpt">Esta startup de ciberseguridad ha decidido crecer sin renunciar al control de cada proyecto. Detrás de la compañía están Rafael Ruiz (CEO) y Salvador Madrid (CTO), a los que se suma David Santo como miembro del consejo asesor.</p>
+            <a href="https://www.elespanol.com/malaga/economia/20260215/apuesta-cloud-ole-ciberseguridad-alta-precision-hecha-malaga/1003744129892_0.html" target="_blank" rel="noopener noreferrer" class="news-link">
+              Leer artículo
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
+        </article>
+
+        <article class="news-card">
+          <div class="news-img" style="background-image: url('../img/noticias/TecoMobility.png');"></div>
+          <div class="news-content">
+            <h3 class="news-title">TECO Mobility, la ‘kilómetro cero’ de la movilidad turística sostenible nacida en Málaga</h3>
+            <p class="news-excerpt">La startup malagueña impulsa un modelo de movilidad eléctrica inteligente con bicicletas premium para hoteles, resorts y destinos turísticos, y prepara su expansión europea y latinoamericana respaldada por inversión privada local.</p>
+            <a href="https://www.elespanol.com/malaga/economia/20260223/teco-mobility-kilometro-cero-movilidad-turistica-sostenible-nacida-malaga/1003744140452_0.html" target="_blank" rel="noopener noreferrer" class="news-link">
+              Leer artículo
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
+        </article>
+
+        <article class="news-card">
+          <div class="news-img" style="background-image: url('../img/noticias/PromottyNoticias.png');"></div>
+          <div class="news-content">
+            <h3 class="news-title">Promotty, la startup malagueña que quiere revolucionar la fidelización en el comercio físico</h3>
+            <p class="news-excerpt">Esta plataforma combina tecnología, gamificación y datos para ayudar a comercios y eventos gastronómicos a convertir visitas puntuales en clientes recurrentes.</p>
+            <a href="https://www.elespanol.com/malaga/economia/20260224/promotty-startup-malaguena-quiere-revolucionar-fidelizacion-comercio-fisico/1003744141821_0.html" target="_blank" rel="noopener noreferrer" class="news-link">
+              Leer artículo
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
+        </article>
+
+        <article class="news-card">
+          <div class="news-img" style="background-image: url('../img/noticias/FindButton.png');"></div>
+          <div class="news-content">
+            <h3 class="news-title">Button, la app que quiere cambiar la forma de elegir restaurante: "Recomendaciones de tus amigos, no de extraños"</h3>
+            <p class="news-excerpt">La plataforma ofrece un feed social donde el usuario puede ver en tiempo real qué están probando sus contactos, qué platos recomiendan y cómo los valoran.</p>
+            <a href="https://www.elespanol.com/malaga/vivir/gastronomia/20260203/button-app-quiere-cambiar-forma-elegir-restaurante-recomendaciones-amigos-no-extranos/1003744113759_0.html" target="_blank" rel="noopener noreferrer" class="news-link">
+              Leer artículo
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
+        </article>
+
+        <article class="news-card">
+          <div class="news-img" style="background-image: url('../img/noticias/ActivacarNoticia.png');"></div>
+          <div class="news-content">
+            <h3 class="news-title">La startup Activacar consolida desde Málaga su apuesta por la movilidad eléctrica</h3>
+            <p class="news-excerpt">La empresa ya cuenta con 12 empleados y afirman que es una de las compañías que más puntos de recarga instala en Andalucía.</p>
+            <a href="https://www.elespanol.com/malaga/economia/tecnologia/20260306/startup-activacar-consolida-malaga-apuesta-movilidad-electrica-quieren-facturar-millones-euros/1003744157861_0.html" target="_blank" rel="noopener noreferrer" class="news-link">
+              Leer artículo
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
+        </article>
+
+        <article class="news-card">
+          <div class="news-img" style="background-image: url('../img/noticias/PharmavicNoticia.png');"></div>
+          <div class="news-content">
+            <h3 class="news-title">Pharmavic, el laboratorio malagueño que quiere garantizar el suministro de fármacos hospitalarios</h3>
+            <p class="news-excerpt">La startup, fundada por Juan Antonio Vargas, ya suministra medicamentos a más de 400 hospitales en España y prepara nuevas terapias bio‑regenerativas.</p>
+            <a href="https://www.elespanol.com/malaga/economia/20260309/pharmavic-laboratorio-malagueno-quiere-garantizar-suministro-farmacos-hospitalarios/1003744159707_0.html" target="_blank" rel="noopener noreferrer" class="news-link">
+              Leer artículo
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
+        </article>
+
+        <article class="news-card">
+          <div class="news-img" style="background-image: url('../img/noticias/HHNoticias.png');"></div>
+          <div class="news-content">
+            <h3 class="news-title">Hagamos Hogar, la startup que lucha contra la soledad con 'match' entre personas y viviendas compartidas</h3>
+            <p class="news-excerpt">La firma malagueña usa un algoritmo de compatibilidad validado científicamente para conectar propietarios y compañeros de piso, reducir la soledad y promover convivencias más estables en ciudades como Málaga, Madrid, Valencia o Pamplona.</p>
+            <a href="https://www.elespanol.com/malaga/economia/tecnologia/20260323/hagamos-hogar-startup-lucha-soledad-match-personas-viviendas-compartidas/1003744178516_0.html" target="_blank" rel="noopener noreferrer" class="news-link">
+              Leer artículo
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
+        </article>
+
+        <article class="news-card">
+          <div class="news-img" style="background-image: url('../img/noticias/MetaMedicsNoticia.png');"></div>
+          <div class="news-content">
+            <h3 class="news-title">MetaMedicsVR: la startup malagueña que entrena a sanitarios en realidad virtual desde Irlanda a China</h3>
+            <p class="news-excerpt">La empresa, fundada por Beatriz Zambrano y David Martín, desarrolla simulaciones médicas inmersivas con VR, AR e inteligencia artificial para hospitales y universidades de varios países.</p>
+            <a href="https://www.elespanol.com/malaga/vivir/salud/20260324/metamedicsvr-startup-malaguena-entrena-sanitarios-realidad-virtual-irlanda-china/1003744181064_0.html" target="_blank" rel="noopener noreferrer" class="news-link">
+              Leer artículo
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
+        </article>
+
+        <article class="news-card">
+          <div class="news-img" style="background-image: url('../img/noticias/KanzoTechNoticia.png');"></div>
+          <div class="news-content">
+            <h3 class="news-title">Kanzo Tech, la startup que convierte datos dispersos en conocimiento para una IA más fiable</h3>
+            <p class="news-excerpt">La startup, fundada en 2023 y con alianzas en el ecosistema tecnológico de Málaga, apuesta por tecnologías semánticas y grafos de conocimiento y prevé superar los 6 millones de facturación en cinco años.</p>
+            <a href="https://www.elespanol.com/malaga/economia/20260325/kanzo-tech-startup-convierte-datos-dispersos-conocimiento-ia-fiable/1003744182573_0.html" target="_blank" rel="noopener noreferrer" class="news-link">
+              Leer artículo
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
+        </article>
+
+        <article class="news-card">
+          <div class="news-img" style="background-image: url('../img/noticias/SkyproNoticia.png');"></div>
+          <div class="news-content">
+            <h3 class="news-title">Skypro 360, la startup malagueña que usa drones para limpiar o mantener edificios sin riesgo para los operarios</h3>
+            <p class="news-excerpt">La empresa ha sido creada por Luis Durán y Ferenc Stefan, tiene cinco empleados y prevén duplicar la plantilla a medio plazo.</p>
+            <a href="https://www.elespanol.com/malaga/economia/tecnologia/20260407/skypro-startup-malaguena-usa-drones-limpiar-mantener-edificios-sin-riesgo-operarios/1003744196776_0.html" target="_blank" rel="noopener noreferrer" class="news-link">
+              Leer artículo
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
+        </article>
+
+      </div>
+    </div>
+
+  </section>
+
+  <footer id="footer">
+    <div class="footer-inner">
+      <a href="../index.html#hero" class="footer-logo">
+        <img src="../img/logo-MSN.jpg" alt="MSN" />
+        <div>
+          <div class="footer-logo-text">Málaga Startup Network</div>
+          <span class="footer-logo-sub">Iniciativa Oficial de Apoyo al Emprendimiento</span>
+        </div>
+      </a>
+      <div class="footer-right">
+        <a href="https://www.linkedin.com/company/malaga-startup-network/" target="_blank" rel="noopener noreferrer"
+          aria-label="Perfil de LinkedIn" class="footer-email">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+          </svg>
+        </a>
+        <span class="footer-copy">© 2026 Málaga Startup Network. Todos los derechos reservados.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Filtrado de paneles (Conoce a las entidades / Artículos / Prensa) -->
+  <script>
+    (function () {
+      var tabs = document.querySelectorAll('.actualidad-tab');
+      var panels = document.querySelectorAll('.actualidad-panel');
+      function activate(name) {
+        tabs.forEach(function (t) { t.classList.toggle('active', t.dataset.panel === name); });
+        panels.forEach(function (p) { p.classList.toggle('active', p.id === 'panel-' + name); });
+      }
+      tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          activate(tab.dataset.panel);
+          if (history.replaceState) history.replaceState(null, '', '#' + tab.dataset.panel);
+        });
+      });
+      var hash = (location.hash || '').replace('#', '');
+      if (hash && document.getElementById('panel-' + hash)) activate(hash);
+    })();
+  </script>
+
+
+  <!-- Noticias publicadas por las entidades en la plataforma (/startups): se cargan solas y van primero en "Artículos". 27-oct-2026 -->
+  <script>
+    (function () {
+      var SB = 'https://rsitqcrnuiglogtxljls.supabase.co';
+      var KEY = 'sb_publishable_bAvlF3jI-s0P0U17EqZ37Q_AkxuUJA-';
+      var grid = document.getElementById('msn-blog-grid');
+      if (!grid || !window.fetch) return;
+      var MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+      var url = SB + '/rest/v1/posts?select=slug,title,excerpt,cover_url,published_at,body,entities(name)&status=eq.published&order=published_at.desc&limit=24';
+      fetch(url, { headers: { apikey: KEY, Authorization: 'Bearer ' + KEY } })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (posts) {
+          var primero = grid.firstChild;
+          var norm = function (t) { return String(t || '').toLowerCase().replace(/\s+/g, ' ').trim(); };
+          var yaHay = {};
+          Array.prototype.forEach.call(grid.querySelectorAll('a.blog-card'), function (el) {
+            yaHay[(el.getAttribute('href') || '').toLowerCase()] = 1;
+            var t = el.querySelector('.blog-card-title'); if (t) yaHay['t:' + norm(t.textContent)] = 1;
+          });
+          (posts || []).forEach(function (p) {
+            // Los perfiles "Conoce a ..." ya estan en la pestana "Conoce a las entidades".
+            if (!p || !p.slug || /^conoce a /i.test(p.title || '')) return;
+            // Las que ya existen como pagina fija en esta seccion no se repiten.
+            if (yaHay[('noticia-' + p.slug + '.html').toLowerCase()] || yaHay['t:' + norm(p.title)]) return;
+            var a = document.createElement('a');
+            a.className = 'blog-card';
+            a.href = '/startups/noticias/' + encodeURIComponent(p.slug);
+            var img = document.createElement('div');
+            img.className = 'blog-card-img';
+            img.style.backgroundImage = "url('" + String(p.cover_url || '../img/carrusel/slide-6.jpg').replace(/'/g, '%27') + "')";
+            var c = document.createElement('div'); c.className = 'blog-card-content';
+            var cat = document.createElement('span'); cat.className = 'blog-card-category';
+            cat.textContent = 'Noticias de la red' + (p.entities && p.entities.name ? ' · ' + p.entities.name : '');
+            var h = document.createElement('h3'); h.className = 'blog-card-title'; h.textContent = p.title || '';
+            var ex = document.createElement('p'); ex.className = 'blog-card-excerpt'; ex.textContent = p.excerpt || '';
+            var ft = document.createElement('div'); ft.className = 'blog-card-footer';
+            var dt = document.createElement('span'); dt.className = 'blog-card-date';
+            var d = p.published_at ? new Date(p.published_at) : null;
+            var min = Math.max(1, Math.round(String(p.body || '').split(/\s+/).length / 200));
+            dt.textContent = (d ? d.getDate() + ' ' + MESES[d.getMonth()] + ', ' + d.getFullYear() + ' · ' : '') + min + ' min';
+            var lk = document.createElement('span'); lk.className = 'blog-card-link';
+            lk.innerHTML = 'Leer <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
+            ft.appendChild(dt); ft.appendChild(lk);
+            c.appendChild(cat); c.appendChild(h); if (p.excerpt) c.appendChild(ex); c.appendChild(ft);
+            a.appendChild(img); a.appendChild(c);
+            grid.insertBefore(a, primero);
+          });
+        })
+        .catch(function () {});
+    })();
+  </script>
+
+  <script src="../main.min.js?v=1.4"></script>
+</body>
+
+</html>

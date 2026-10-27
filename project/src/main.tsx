@@ -12,8 +12,14 @@ import Home from "./pages/Home"
 import Onboarding from "./pages/Onboarding"
 import Directory from "./pages/Directory"
 import EntityDetail from "./pages/EntityDetail"
-import Blog from "./pages/Blog"
 import BlogPost from "./pages/BlogPost"
+
+// Las noticias se listan en "Actualidad" de la web oficial (pestana Articulos), no en la app.
+function IrAActualidad() {
+  const site = (import.meta.env.VITE_SITE_URL as string) || "https://malagastartupnetwork.com"
+  window.location.replace(site + "/pages/actualidad.html#articulos")
+  return null
+}
 import NotFound from "./pages/NotFound"
 import Agenda from "./pages/Agenda"
 import { Valoracion, Incidencia, Contactado } from "./pages/Seguimiento"
@@ -83,7 +89,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <Route path="/entidades" element={<Directory />} />
             <Route path="/entidades/:slug" element={<EntityDetail />} />
             <Route path="/agenda" element={<Agenda />} />
-            <Route path="/noticias" element={<Blog />} />
+            <Route path="/noticias" element={<IrAActualidad />} />
             <Route path="/noticias/:slug" element={<BlogPost />} />
             <Route path="/valoracion" element={<Valoracion />} />
             <Route path="/incidencia" element={<Incidencia />} />

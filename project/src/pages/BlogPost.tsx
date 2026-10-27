@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react"
-import { Link, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { supabase } from "../lib/supabase"
 import TextoRico from "../components/TextoRico"
+
+const SITE = (import.meta.env.VITE_SITE_URL as string) || "https://malagastartupnetwork.com"
+const ACTUALIDAD = SITE + "/pages/actualidad.html#articulos"
 
 export default function BlogPost() {
   const { slug } = useParams()
@@ -20,13 +23,13 @@ export default function BlogPost() {
   if (!post) return (
     <div className="container-x py-20 text-center">
       <p className="text-slate-500">Noticia no encontrada.</p>
-      <Link to="/noticias" className="btn-ghost mt-4">Volver a noticias</Link>
+      <a href={ACTUALIDAD} className="btn-ghost mt-4">Volver a Actualidad</a>
     </div>
   )
 
   return (
     <article className="container-x max-w-3xl py-14">
-      <Link to="/noticias" className="text-sm text-brand-700 hover:underline">← Noticias</Link>
+      <a href={ACTUALIDAD} className="text-sm text-brand-700 hover:underline">← Actualidad</a>
       <div className="mt-4 flex items-center gap-2 text-sm text-slate-400">
         {post.entities?.logo_url && <img src={post.entities.logo_url} alt="" className="h-6 w-6 object-contain" />}
         <span>{post.entities?.name}</span>
