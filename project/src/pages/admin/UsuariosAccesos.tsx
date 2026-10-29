@@ -83,6 +83,7 @@ export default function UsuariosAccesos() {
       {pendientes.length > 0 && (
         <section className="card mt-6 border-amber-300 p-5">
           <h2 className="text-lg font-extrabold text-[#2C3959]">Solicitudes pendientes ({pendientes.length})</h2>
+          {!d.aprobador && <p className="mt-1 text-sm text-slate-600">Solo Isaac puede aprobarlas (doble validación). Aquí ves su estado; cuando se aprueben o rechacen te llegará un correo.</p>}
           <div className="mt-3 space-y-3">
             {pendientes.map((s) => (
               <div key={s.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-amber-50 p-3 text-sm">
@@ -91,6 +92,7 @@ export default function UsuariosAccesos() {
                   {s.entidad && <> en <b>{s.entidad}</b></>}{s.role && s.tipo !== "quitar" && <> como {ROL[s.role] ?? s.role}</>}
                   <div className="text-xs text-slate-500">Pedido por {s.solicitante ?? "—"} el {fecha(s.solicitado_at)}{s.motivo && <> · «{s.motivo}»</>}</div>
                 </div>
+                {!d.aprobador && <span className="rounded-full bg-amber-200 px-3 py-1 text-xs font-semibold text-amber-900">Pendiente de aprobación por Isaac · se aplica cuando la apruebe</span>}
                 {d.aprobador && (
                   <div className="flex gap-2">
                     <button disabled={enviando} className="btn-primary text-sm" onClick={() => llamar({ accion: "aprobar", id: s.id }, `¿Aprobar y aplicar: ${TIPO[s.tipo]} ${s.email}?`)}>Aprobar</button>
