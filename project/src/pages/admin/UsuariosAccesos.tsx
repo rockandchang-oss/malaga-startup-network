@@ -7,8 +7,8 @@ import { supabase } from "../../lib/supabase"
 
 type Miembro = { user_id: string; email: string; full_name: string | null; role: string; activa: boolean; ultimo_acceso: string | null; invitado: string | null; bloqueado: boolean; otras: string[] }
 type Entidad = { id: string; name: string; slug: string; status: string; miembros: Miembro[] }
-type Solicitud = { id: number; tipo: string; email: string; full_name: string | null; entity_id: string | null; entidad: string | null; role: string | null; motivo: string | null; estado: string; solicitante: string | null; solicitado_at: string; revisor: string | null; revisado_at: string | null; resultado: string | null }
-type Datos = { aprobador: boolean; entidades: Entidad[]; superadmins: { email: string; full_name: string | null; ultimo_acceso: string | null }[]; solicitudes: Solicitud[] }
+type Solicitud = { id: number; solicitado_por?: string | null; tipo: string; email: string; full_name: string | null; entity_id: string | null; entidad: string | null; role: string | null; motivo: string | null; estado: string; solicitante: string | null; solicitado_at: string; revisor: string | null; revisado_at: string | null; resultado: string | null }
+type Datos = { yo?: string; directo?: boolean; aprobador: boolean; entidades: Entidad[]; superadmins: { email: string; full_name: string | null; ultimo_acceso: string | null }[]; solicitudes: Solicitud[] }
 
 const ROL: Record<string, string> = { entity_admin: "Administrador", editor: "Editor", superadmin: "Superadmin" }
 const TIPO: Record<string, string> = { invitar: "Dar de alta", cambiar_rol: "Cambiar rol", quitar: "Quitar acceso", reenviar_acceso: "Reenviar acceso" }
@@ -58,7 +58,7 @@ export default function UsuariosAccesos() {
     return data
   }
   const solicitar = (tipo: string, extra: Record<string, unknown>, confirmar?: string) => llamar({ accion: "solicitar", tipo, ...extra }, confirmar)
-  const verbo = d?.aprobador ? "" : " (quedará pendiente de aprobación)"
+  const verbo = d?.directo ? "" : " (quedará pendiente de aprobación de otro superadmin)"
 
   const pendientes = (d?.solicitudes ?? []).filter((s) => s.estado === "pendiente")
   const historial = (d?.solicitudes ?? []).filter((s) => s.estado !== "pendiente")
@@ -74,16 +74,14 @@ export default function UsuariosAccesos() {
     <div>
       <h1 className="text-2xl font-extrabold">Usuarios y accesos</h1>
       <p className="mt-1 text-slate-500">
-        Quién tiene acceso a cada entidad. {d.aprobador
-          ? "Eres aprobador: tus cambios se aplican al momento y aquí apruebas o rechazas lo que pidan otros superadmins."
-          : "Los cambios que pidas quedan como solicitud y se aplican cuando los aprueba Isaac (le llega un aviso por correo)."}
+        Quién tiene acceso a cada entidad. Doble validación: lo que pide un superadmin lo aprueba otro (nadie aprueba lo suyo){d.aprobador ? "; aquí apruebas o rechazas lo que pidan los demás." : "."} Cuando hay algo pendiente, al aprobador le llega un correo.
       </p>
       {msg && <p className="mt-3 rounded-lg bg-slate-50 p-3 text-sm text-slate-700">{msg}</p>}
 
       {pendientes.length > 0 && (
         <section className="card mt-6 border-amber-300 p-5">
           <h2 className="text-lg font-extrabold text-[#2C3959]">Solicitudes pendientes ({pendientes.length})</h2>
-          {!d.aprobador && <p className="mt-1 text-sm text-slate-600">Solo Isaac puede aprobarlas (doble validación). Aquí ves su estado; cuando se aprueben o rechacen te llegará un correo.</p>}
+          <p className="mt-1 text-sm text-slate-600">Cada solicitud la aprueba un superadmin distinto del que la pidió. A quien la pidió le llega un correo con el resultado.</p>
           <div className="mt-3 space-y-3">
             {pendientes.map((s) => (
               <div key={s.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-amber-50 p-3 text-sm">
@@ -92,8 +90,8 @@ export default function UsuariosAccesos() {
                   {s.entidad && <> en <b>{s.entidad}</b></>}{s.role && s.tipo !== "quitar" && <> como {ROL[s.role] ?? s.role}</>}
                   <div className="text-xs text-slate-500">Pedido por {s.solicitante ?? "—"} el {fecha(s.solicitado_at)}{s.motivo && <> · «{s.motivo}»</>}</div>
                 </div>
-                {!d.aprobador && <span className="rounded-full bg-amber-200 px-3 py-1 text-xs font-semibold text-amber-900">Pendiente de aprobación por Isaac · se aplica cuando la apruebe</span>}
-                {d.aprobador && (
+                {(!d.aprobador || s.solicitado_por === d.yo) && <span className="rounded-full bg-amber-200 px-3 py-1 text-xs font-semibold text-amber-900">{s.solicitado_por === d.yo ? "La pediste tú: la aprueba otro superadmin" : "Pendiente de aprobación"}</span>}
+                {d.aprobador && s.solicitado_por !== d.yo && (
                   <div className="flex gap-2">
                     <button disabled={enviando} className="btn-primary text-sm" onClick={() => llamar({ accion: "aprobar", id: s.id }, `¿Aprobar y aplicar: ${TIPO[s.tipo]} ${s.email}?`)}>Aprobar</button>
                     <button disabled={enviando} className="btn-ghost text-sm" onClick={() => { const m = window.prompt("Motivo del rechazo (opcional):") ; if (m !== null) llamar({ accion: "rechazar", id: s.id, motivo: m }) }}>Rechazar</button>
@@ -157,7 +155,7 @@ export default function UsuariosAccesos() {
                       <input className="input" placeholder="Motivo o quién lo pide (opcional)" value={alta.motivo} onChange={(ev) => setAlta({ ...alta, motivo: ev.target.value })} />
                       <div className="flex gap-2 sm:col-span-2">
                         <button disabled={enviando || !alta.email.trim()} className="btn-primary text-sm" onClick={async () => { const r = await solicitar("invitar", { ...alta }); if (r && (r as any).estado !== "error") setAlta(null) }}>
-                          {d.aprobador ? "Dar de alta y enviar invitación" : "Solicitar el alta"}
+                          {d.directo ? "Dar de alta y enviar invitación" : "Solicitar el alta"}
                         </button>
                         <button className="btn-ghost text-sm" onClick={() => setAlta(null)}>Cancelar</button>
                       </div>

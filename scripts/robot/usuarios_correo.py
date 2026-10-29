@@ -17,13 +17,14 @@ def procesar(rpc, token, enviar, marco, boton, e, res):
     aprob = [x for x in (d.get("aprobadores") or []) if x]
     for s in d.get("nuevas") or []:
         try:
+            para = [x for x in aprob if x.lower() != (s.get("solicitante") or "").lower()]  # nadie aprueba lo suyo
             cuerpo = ('<h1 style="font-size:20px;margin:6px 0 12px">Solicitud pendiente de tu aprobación</h1>'
                       f'<p style="font-size:15px;line-height:1.6">{e(s.get("solicitante") or "Un superadmin")} pide:</p>'
                       f'<p style="font-size:15px;line-height:1.6;background:#FFF8E1;padding:12px;border-radius:8px">{_desc(s, e)}'
                       + (f'<br><span style="color:#6B7A99">Motivo: {e(s["motivo"])}</span>' if s.get("motivo") else "") + '</p>'
                       f'<p style="text-align:center;margin:20px 0">{boton(PANEL, "Revisar y aprobar")}</p>'
                       '<p style="font-size:12px;color:#6B7A99">No se aplica nada hasta que lo apruebes en el panel.</p>')
-            if enviar(aprob, "[MSN] Solicitud de usuarios: " + TIPO.get(s.get("tipo"), "") + " " + (s.get("email") or ""), marco("Usuarios y accesos", cuerpo, "Aviso para aprobadores de Málaga Startup Network.")):
+            if enviar(para, "[MSN] Solicitud de usuarios: " + TIPO.get(s.get("tipo"), "") + " " + (s.get("email") or ""), marco("Usuarios y accesos", cuerpo, "Aviso para aprobadores de Málaga Startup Network.")):
                 rpc("robot_solicitud_avisada", {"token": token, "sid": s["id"], "cual": "aprobador"}); res["solicitudes_usuarios"] += 1
         except Exception as ex:
             res["errores"].append("solus " + str(ex)[:120])
