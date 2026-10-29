@@ -76,7 +76,7 @@ export default function AdminLayout() {
               <NavLink to="/admin/leads" className={link}>Leads</NavLink>
               <NavLink to="/admin/estadisticas" className={link}>Estadísticas</NavLink>
               <NavLink to="/admin/entidades" className={link}>Entidades</NavLink>
-              <NavLink to="/admin/usuarios" className={link}>Usuarios</NavLink>
+              <NavLink to="/admin/usuarios" className={link}>Usuarios y accesos</NavLink>
             </>
           )}
         </nav>
@@ -100,7 +100,7 @@ export default function AdminLayout() {
           <NavLink to="/admin/emprendedores" className={link}>Emprendedores</NavLink>
           {isSuperadmin && <NavLink to="/admin/revision" className={link}>Revisión</NavLink>}
           {isSuperadmin && <NavLink to="/admin/leads" className={link}>Leads</NavLink>}
-          {isSuperadmin && <NavLink to="/admin/usuarios" className={link}>Usuarios</NavLink>}
+          {isSuperadmin && <NavLink to="/admin/usuarios" className={link}>Usuarios y accesos</NavLink>}
           <button onClick={signOut} className="shrink-0 px-3 py-2 text-sm font-medium text-red-600">Salir</button>
         </div>
         <div className="mx-auto max-w-5xl p-6">

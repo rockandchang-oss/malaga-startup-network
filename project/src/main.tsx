@@ -33,7 +33,7 @@ import MyEventos from "./pages/admin/MyEventos"
 import Leads from "./pages/admin/Leads"
 import Stats from "./pages/admin/Stats"
 import AdminEntities from "./pages/admin/AdminEntities"
-import AdminUsers from "./pages/admin/AdminUsers"
+import UsuariosAccesos from "./pages/admin/UsuariosAccesos"
 import Revision from "./pages/admin/Revision"
 import Candidaturas from "./pages/admin/Candidaturas"
 import Avisos from "./pages/admin/Avisos"
@@ -110,7 +110,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <Route path="leads" element={<RequireSuperadmin><Leads /></RequireSuperadmin>} />
             <Route path="estadisticas" element={<Stats />} />
             <Route path="entidades" element={<RequireSuperadmin><AdminEntities /></RequireSuperadmin>} />
-            <Route path="usuarios" element={<RequireSuperadmin><AdminUsers /></RequireSuperadmin>} />
+            <Route path="usuarios" element={<RequireSuperadmin><UsuariosAccesos /></RequireSuperadmin>} />
             <Route path="revision" element={<RequireSuperadmin><Revision /></RequireSuperadmin>} />
             <Route path="feedback" element={<RequireSuperadmin><Feedback /></RequireSuperadmin>} />
           </Route>
