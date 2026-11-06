@@ -74,7 +74,7 @@ export default function UsuariosAccesos() {
     <div>
       <h1 className="text-2xl font-extrabold">Usuarios y accesos</h1>
       <p className="mt-1 text-slate-500">
-        Quién tiene acceso a cada entidad. Doble validación: lo que pide un superadmin lo aprueba otro (nadie aprueba lo suyo){d.aprobador ? "; aquí apruebas o rechazas lo que pidan los demás." : "."} Cuando hay algo pendiente, al aprobador le llega un correo.
+        Quién tiene acceso a cada entidad. {d.directo ? "Tus cambios se aplican al momento y quedan en el registro de cambios (quién, qué y cuándo)." : "Lo que pidas queda pendiente hasta que lo apruebe otro superadmin."}
       </p>
       {msg && <p className="mt-3 rounded-lg bg-slate-50 p-3 text-sm text-slate-700">{msg}</p>}
 
