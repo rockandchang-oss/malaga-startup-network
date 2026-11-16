@@ -8,8 +8,17 @@ import { VistaPreviaNoticia } from "../../components/VistaNoticia"
 type Post = Record<string, any>
 
 function slugify(s: string) {
-  return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60)
+  return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
+}
+
+// Mejora 10 (SEO): direccion con las palabras clave del titulo, sin palabras vacias ni codigos al final.
+const VACIAS = new Set("a al ante con contra de del desde el en entre es este esta estos estas hacia hasta la las lo los mas o para por que se segun sin sobre su sus tras un una unos unas y e ni u".split(" "))
+function slugSEO(titulo: string) {
+  const palabras = slugify(titulo || "").split("-").filter((w) => w && !VACIAS.has(w))
+  let out = ""
+  for (const w of palabras) { if ((out + "-" + w).length > 70) break; out = out ? out + "-" + w : w }
+  return out || "noticia"
 }
 
 export default function MyPosts() {
@@ -79,6 +88,7 @@ function PostEditor({ post, entityId, authorId, canPublish, onClose }: { post: P
     try { const c = JSON.parse(localStorage.getItem(clave) || "null"); return c && (c.title || c.body || c.excerpt) ? c : null } catch { return null }
   })
   const cambiado = useRef(false)
+  const yaPublicada = post.status === "published" && !!post.slug
   function set(k: string, v: any) { cambiado.current = true; setP((s) => ({ ...s, [k]: v })) }
 
   useEffect(() => {
@@ -105,15 +115,23 @@ function PostEditor({ post, entityId, authorId, canPublish, onClose }: { post: P
   async function save() {
     setSaving(true)
     const status = p.status
+    const base = yaPublicada ? post.slug : (slugify(p.slug_manual ?? "").slice(0, 80).replace(/-$/, "") || slugSEO(p.title))
     const payload: any = {
-      title: p.title, slug: p.slug || `${slugify(p.title || "entrada")}-${Math.random().toString(36).slice(2, 7)}`,
+      title: p.title, slug: base,
       excerpt: p.excerpt, body: p.body, cover_url: p.cover_url, status,
       send_newsletter: !!p.send_newsletter,
       entity_id: p.entity_id ?? entityId, author_id: p.author_id ?? authorId,
       published_at: status === "published" ? (p.published_at ?? new Date().toISOString()) : null,
     }
-    if (p.id) await supabase.from("posts").update(payload).eq("id", p.id)
-    else await supabase.from("posts").insert(payload)
+    // Si la direccion ya existe se anade -2, -3...
+    let error: any = null
+    for (let n = 1; n <= 20; n++) {
+      payload.slug = n === 1 ? base : `${base}-${n}`
+      const r = p.id ? await supabase.from("posts").update(payload).eq("id", p.id) : await supabase.from("posts").insert(payload)
+      error = r.error
+      if (!error || error.code !== "23505") break
+    }
+    if (error) { setSaving(false); alert("No se pudo guardar: " + error.message); return }
     cambiado.current = false; olvidarCopia()
     setSaving(false); onClose()
   }
@@ -137,6 +155,20 @@ function PostEditor({ post, entityId, authorId, canPublish, onClose }: { post: P
           <label className="block">
             <span className="text-sm font-medium text-slate-700">Título</span>
             <input value={p.title ?? ""} onChange={(e) => set("title", e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 px-4 py-2.5 outline-none focus:border-brand-500" />
+          </label>
+          <label className="block">
+            <span className="text-sm font-medium text-slate-700">Dirección de la noticia</span>
+            {yaPublicada ? (
+              <span className="mt-1 block break-all rounded-xl bg-slate-50 px-4 py-2.5 text-sm text-slate-500">malagastartupnetwork.com/startups/noticias/<b>{post.slug}</b> <span className="text-xs">(ya publicada: no se cambia para no romper los enlaces compartidos)</span></span>
+            ) : (
+              <>
+                <div className="mt-1 flex items-center overflow-hidden rounded-xl border border-slate-200 focus-within:border-brand-500">
+                  <span className="hidden shrink-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-400 sm:block">…/noticias/</span>
+                  <input value={p.slug_manual ?? slugSEO(p.title ?? "")} onChange={(e) => set("slug_manual", e.target.value)} className="w-full px-3 py-2.5 text-sm outline-none" />
+                </div>
+                <span className="mt-1 block text-xs text-slate-500">Se crea sola con las palabras clave del título (bueno para Google). Puedes ajustarla: usa 3-6 palabras que alguien buscaría.{p.slug_manual != null && <button type="button" className="ml-2 font-semibold text-brand-700 hover:underline" onClick={() => setP((x) => { const { slug_manual, ...r } = x; return r })}>Volver a la automática</button>}</span>
+              </>
+            )}
           </label>
           <label className="block">
             <span className="text-sm font-medium text-slate-700">Resumen</span>
