@@ -3,6 +3,7 @@ import { supabase } from "../../lib/supabase"
 import { useAuth } from "../../lib/auth"
 import { uploadImage } from "../../lib/storage"
 import EditorRico from "../../components/EditorRico"
+import { VistaPreviaNoticia } from "../../components/VistaNoticia"
 
 type Post = Record<string, any>
 
@@ -15,6 +16,15 @@ export default function MyPosts() {
   const { profile, isSuperadmin, session } = useAuth()
   const [posts, setPosts] = useState<Post[]>([])
   const [editing, setEditing] = useState<Post | null>(null)
+  const [viendo, setViendo] = useState<Post | null>(null)
+  const [entidades, setEntidades] = useState<Record<string, any>>({})
+  useEffect(() => {
+    supabase.from("entities").select("id,name,logo_url").then(({ data }) => {
+      const m: Record<string, any> = {}
+      for (const e of (data ?? []) as any[]) m[e.id] = e
+      setEntidades(m)
+    })
+  }, [])
 
   async function load() {
     let q = supabase.from("posts").select("*").order("created_at", { ascending: false })
@@ -34,13 +44,17 @@ export default function MyPosts() {
 
       <div className="mt-6 space-y-3">
         {posts.map((p) => (
-          <div key={p.id} className="card flex items-center justify-between p-4">
-            <div>
-              <p className="font-semibold">{p.title}</p>
-              <p className="text-sm text-slate-500">{p.excerpt}</p>
+          <div key={p.id} role="button" tabIndex={0} title="Ver la noticia"
+            onClick={() => setViendo(p)} onKeyDown={(e) => { if (e.key === "Enter") setViendo(p) }}
+            className="group card flex cursor-pointer items-center justify-between gap-4 p-4 transition hover:border-brand-300 hover:shadow-md">
+            {p.cover_url && <img src={p.cover_url} alt="" className="hidden h-14 w-20 shrink-0 rounded-lg object-cover sm:block" />}
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold group-hover:underline">{p.title}</p>
+              <p className="line-clamp-2 text-sm text-slate-500">{p.excerpt}</p>
             </div>
-            <div className="flex items-center gap-3">
-              <span className={`rounded-full px-2 py-1 text-xs ${p.status === "published" ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-500"}`}>{p.status}</span>
+            <div className="flex shrink-0 items-center gap-3" onClick={(e) => e.stopPropagation()}>
+              <button onClick={() => setViendo(p)} className="text-sm font-medium text-slate-600 hover:underline">{p.status === "published" ? "Ver" : "Vista previa"}</button>
+              <span className={`rounded-full px-2 py-1 text-xs ${p.status === "published" ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-500"}`}>{({ published: "Publicada", draft: "Borrador", pending: "Pendiente de revisión", archived: "Archivada" } as Record<string, string>)[p.status] ?? p.status}</span>
               <button onClick={() => setEditing(p)} className="text-sm font-medium text-brand-700 hover:underline">Editar</button>
             </div>
           </div>
@@ -48,6 +62,8 @@ export default function MyPosts() {
         {posts.length === 0 && <p className="text-slate-400">Aún no hay entradas. Crea la primera.</p>}
       </div>
 
+      {viendo && <VistaPreviaNoticia post={viendo} entidad={entidades[viendo.entity_id]} onClose={() => setViendo(null)}
+        acciones={<button onClick={() => { const p = viendo; setViendo(null); setEditing(p) }} className="font-semibold text-brand-700 hover:underline">Editar</button>} />}
       {editing && <PostEditor post={editing} entityId={profile?.entity_id ?? null} authorId={session?.user.id ?? null} canPublish={isSuperadmin} onClose={() => { setEditing(null); load() }} />}
     </div>
   )

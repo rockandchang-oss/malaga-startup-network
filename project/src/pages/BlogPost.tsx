@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { supabase } from "../lib/supabase"
-import TextoRico from "../components/TextoRico"
+import VistaNoticia from "../components/VistaNoticia"
 
 const SITE = (import.meta.env.VITE_SITE_URL as string) || "https://malagastartupnetwork.com"
 const ACTUALIDAD = SITE + "/pages/actualidad.html#articulos"
@@ -30,15 +30,7 @@ export default function BlogPost() {
   return (
     <article className="container-x max-w-3xl py-14">
       <a href={ACTUALIDAD} className="text-sm text-brand-700 hover:underline">← Actualidad</a>
-      <div className="mt-4 flex items-center gap-2 text-sm text-slate-400">
-        {post.entities?.logo_url && <img src={post.entities.logo_url} alt="" className="h-6 w-6 object-contain" />}
-        <span>{post.entities?.name}</span>
-        {post.published_at && <span>· {new Date(post.published_at).toLocaleDateString("es-ES")}</span>}
-      </div>
-      <h1 className="mt-3 text-4xl font-extrabold leading-tight tracking-tight">{post.title}</h1>
-      {post.excerpt && <p className="mt-3 text-lg text-slate-600">{post.excerpt}</p>}
-      {post.cover_url && <img src={post.cover_url} alt="" className="mt-6 w-full rounded-2xl object-cover" />}
-      <TextoRico texto={post.body ?? ""} className="mt-8 text-[17px] leading-relaxed text-slate-700" />
+      <VistaNoticia post={post} />
     </article>
   )
 }

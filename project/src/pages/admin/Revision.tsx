@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { supabase } from "../../lib/supabase"
+import { VistaPreviaNoticia } from "../../components/VistaNoticia"
 
 type Post = Record<string, any>
 
@@ -80,9 +81,9 @@ export default function Revision() {
                 </p>
                 <h2 className="mt-1 text-lg font-bold leading-snug">{p.title}</h2>
                 <p className="mt-1 text-sm text-slate-600">{p.excerpt}</p>
-                <button onClick={() => setAbierto(abierto === p.id ? null : p.id)}
+                <button onClick={() => setAbierto(p.id)}
                   className="mt-2 text-sm font-semibold text-brand-700 hover:underline">
-                  {abierto === p.id ? "Ocultar el texto" : "Leer el texto completo"}
+                  👁 Vista previa (como quedará publicada)
                 </button>
               </div>
               <div className="flex shrink-0 flex-col gap-2">
@@ -91,9 +92,11 @@ export default function Revision() {
               </div>
             </div>
             {abierto === p.id && (
-              <div className="border-t border-slate-100 bg-slate-50 p-5">
-                <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-700">{p.body}</p>
-              </div>
+              <VistaPreviaNoticia post={p} entidad={{ name: entidades[p.entity_id] }} onClose={() => setAbierto(null)}
+                acciones={<>
+                  <button onClick={() => { setAbierto(null); aprobar(p) }} className="rounded-full bg-brand-500 px-3 py-1 font-semibold text-brand-950 hover:bg-brand-600">Aprobar y publicar</button>
+                  <button onClick={() => { setAbierto(null); devolver(p) }} className="font-semibold text-slate-600 hover:underline">Devolver a borrador</button>
+                </>} />
             )}
           </div>
         ))}
