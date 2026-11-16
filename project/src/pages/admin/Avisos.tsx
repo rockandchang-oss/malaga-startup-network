@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import EditorRico from "../../components/EditorRico"
 import { supabase } from "../../lib/supabase"
 import { useAuth } from "../../lib/auth"
 import { uploadImage } from "../../lib/storage"
@@ -140,10 +141,10 @@ export default function Avisos() {
               </div>
             </div>
           </div>
-          <label className="block text-sm font-semibold text-slate-700">Texto
-            <textarea className="input mt-1 min-h-[120px] w-full" value={ed.cuerpo ?? ""} onChange={(e) => setEd({ ...ed, cuerpo: e.target.value })} placeholder="Orden del día, qué traer, confirmación de asistencia…" />
-            <span className="mt-1 block text-xs font-normal text-slate-500">Formato: **negrita**, [texto del enlace](https://…), líneas que empiezan por "- " = lista, "## " = subtítulo.</span>
-          </label>
+          <div className="block text-sm font-semibold text-slate-700">Texto
+            <div className="font-normal"><EditorRico value={ed.cuerpo ?? ""} onChange={(md) => { if (md !== (ed.cuerpo ?? "")) setEd((x: any) => ({ ...x, cuerpo: md })) }} minAlto={140} placeholder="Orden del día, qué traer, confirmación de asistencia…" /></div>
+            <span className="mt-1 block text-xs font-normal text-slate-500">Usa los botones para negrita, subtítulos, listas y enlaces, o pega el texto ya con formato.</span>
+          </div>
           <div className="flex flex-wrap gap-5 text-sm">
             <label className="flex items-center gap-2"><input type="checkbox" checked={ed.publicado} onChange={(e) => setEd({ ...ed, publicado: e.target.checked })} /> Visible para las entidades</label>
             <label className="flex items-center gap-2"><input type="checkbox" checked={ed.fijado} onChange={(e) => setEd({ ...ed, fijado: e.target.checked })} /> Destacar arriba</label>

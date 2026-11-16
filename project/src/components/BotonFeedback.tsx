@@ -37,8 +37,8 @@ export default function BotonFeedback() {
         <span aria-hidden>{esPanel ? "💬" : "🙋"}</span><span className="hidden sm:inline">{esPanel ? "¿Algo falla o se puede mejorar?" : "¿Necesitas ayuda?"}</span><span className="sm:hidden">{esPanel ? "Feedback" : "Ayuda"}</span>
       </button>
       {abierto && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4" onClick={() => setAbierto(false)}>
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
             {estado === "ok" ? (
               <div className="py-6 text-center"><p className="text-3xl">🙌</p><p className="mt-2 font-bold text-[#2C3959]">¡Gracias! Lo hemos recibido.</p></div>
             ) : (

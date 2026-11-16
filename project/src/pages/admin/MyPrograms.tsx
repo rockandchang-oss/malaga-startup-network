@@ -126,8 +126,8 @@ function ProgramEditor({ entityId, program, onClose }: { entityId: string; progr
   }
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4" onClick={onClose}>
-      <div className="card max-h-[90vh] w-full max-w-2xl overflow-y-auto p-6" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4">
+      <div className="card max-h-[90vh] w-full max-w-2xl overflow-y-auto p-6">
         <h2 className="text-xl font-bold">{p.id ? "Editar" : "Nuevo"} programa</h2>
         <div className="mt-4 space-y-4">
           <Inp label="Nombre" value={p.name} onChange={(v) => set("name", v)} />

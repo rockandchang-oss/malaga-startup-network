@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { supabase } from "../../lib/supabase"
 import { useAuth } from "../../lib/auth"
 import { uploadImage } from "../../lib/storage"
+import EditorRico from "../../components/EditorRico"
 
 type Post = Record<string, any>
 
@@ -53,9 +54,33 @@ export default function MyPosts() {
 }
 
 function PostEditor({ post, entityId, authorId, canPublish, onClose }: { post: Post; entityId: string | null; authorId: string | null; canPublish: boolean; onClose: () => void }) {
+  // Mejora 5 (16-nov-2026): lo escrito no se pierde. Clic fuera no cierra, Cancelar pregunta si hay cambios
+  // y se guarda una copia en este navegador mientras se escribe (se ofrece recuperarla al volver a abrir).
+  const clave = `msn-borrador-noticia-${post.id ?? "nueva"}`
   const [p, setP] = useState<Post>(post)
   const [saving, setSaving] = useState(false)
-  function set(k: string, v: any) { setP((s) => ({ ...s, [k]: v })) }
+  const [copia, setCopia] = useState<Post | null>(() => {
+    try { const c = JSON.parse(localStorage.getItem(clave) || "null"); return c && (c.title || c.body || c.excerpt) ? c : null } catch { return null }
+  })
+  const cambiado = useRef(false)
+  function set(k: string, v: any) { cambiado.current = true; setP((s) => ({ ...s, [k]: v })) }
+
+  useEffect(() => {
+    if (!cambiado.current) return
+    try { localStorage.setItem(clave, JSON.stringify({ ...p, _guardado: new Date().toISOString() })) } catch { /* sin almacenamiento */ }
+  }, [p])
+
+  useEffect(() => {
+    const aviso = (e: BeforeUnloadEvent) => { if (cambiado.current) { e.preventDefault(); e.returnValue = "" } }
+    window.addEventListener("beforeunload", aviso)
+    return () => window.removeEventListener("beforeunload", aviso)
+  }, [])
+
+  function olvidarCopia() { try { localStorage.removeItem(clave) } catch { /* nada */ } }
+  function cancelar() {
+    if (cambiado.current && !confirm("Tienes cambios sin guardar. ¿Seguro que quieres cerrar y descartarlos?")) return
+    olvidarCopia(); onClose()
+  }
 
   async function onCover(file: File) {
     try { const url = await uploadImage(file, "posts"); set("cover_url", url) } catch { /* ignore */ }
@@ -73,17 +98,25 @@ function PostEditor({ post, entityId, authorId, canPublish, onClose }: { post: P
     }
     if (p.id) await supabase.from("posts").update(payload).eq("id", p.id)
     else await supabase.from("posts").insert(payload)
+    cambiado.current = false; olvidarCopia()
     setSaving(false); onClose()
   }
 
   async function remove() {
-    if (p.id && confirm("¿Eliminar esta entrada?")) { await supabase.from("posts").delete().eq("id", p.id); onClose() }
+    if (p.id && confirm("¿Eliminar esta entrada?")) { await supabase.from("posts").delete().eq("id", p.id); cambiado.current = false; olvidarCopia(); onClose() }
   }
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4" onClick={onClose}>
-      <div className="card max-h-[90vh] w-full max-w-2xl overflow-y-auto p-6" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4" onKeyDown={(e) => { if (e.key === "Escape") cancelar() }}>
+      <div className="card max-h-[90vh] w-full max-w-2xl overflow-y-auto p-6">
         <h2 className="text-xl font-bold">{p.id ? "Editar" : "Nueva"} entrada</h2>
+        {copia && (
+          <div className="mt-3 flex flex-wrap items-center gap-3 rounded-lg bg-amber-50 p-3 text-sm text-amber-900">
+            <span>Hay un borrador sin guardar de esta entrada{copia._guardado ? ` (${new Date(copia._guardado).toLocaleString("es-ES", { timeZone: "Europe/Madrid", dateStyle: "short", timeStyle: "short" })})` : ""}.</span>
+            <button type="button" className="font-semibold underline" onClick={() => { const { _guardado, ...resto } = copia; cambiado.current = true; setP({ ...post, ...resto }); setCopia(null) }}>Recuperarlo</button>
+            <button type="button" className="text-amber-700 hover:underline" onClick={() => { olvidarCopia(); setCopia(null) }}>Descartarlo</button>
+          </div>
+        )}
         <div className="mt-4 space-y-4">
           <label className="block">
             <span className="text-sm font-medium text-slate-700">Título</span>
@@ -100,11 +133,11 @@ function PostEditor({ post, entityId, authorId, canPublish, onClose }: { post: P
               <label className="btn-ghost cursor-pointer text-sm">Subir<input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && onCover(e.target.files[0])} /></label>
             </div>
           </div>
-          <label className="block">
+          <div>
             <span className="text-sm font-medium text-slate-700">Contenido</span>
-            <textarea rows={10} value={p.body ?? ""} onChange={(e) => set("body", e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 px-4 py-2.5 outline-none focus:border-brand-500" />
-            <span className="mt-1 block text-xs text-slate-500">Formato: **negrita**, [texto del enlace](https://…), líneas que empiezan por "- " = lista, "## " = subtítulo.</span>
-          </label>
+            <EditorRico value={p.body ?? ""} onChange={(md) => { if (md !== (p.body ?? "")) set("body", md) }} placeholder="Escribe o pega aquí la noticia (desde Word, Google Docs o una web se mantiene el formato)…" />
+            <span className="mt-1 block text-xs text-slate-500">Usa los botones para negrita, subtítulos, listas y enlaces, o pega el texto ya con formato.</span>
+          </div>
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={!!p.send_newsletter} onChange={(e) => set("send_newsletter", e.target.checked)} />
             <span className="text-slate-700">Incluir en la próxima newsletter</span>
@@ -123,7 +156,7 @@ function PostEditor({ post, entityId, authorId, canPublish, onClose }: { post: P
         <div className="mt-6 flex items-center justify-between">
           {p.id ? <button onClick={remove} className="text-sm text-red-600 hover:underline">Eliminar</button> : <span />}
           <div className="flex gap-3">
-            <button onClick={onClose} className="btn-ghost text-sm">Cancelar</button>
+            <button onClick={cancelar} className="btn-ghost text-sm">Cancelar</button>
             <button onClick={save} disabled={saving || !p.title} className="btn-primary text-sm disabled:opacity-50">{saving ? "Guardando…" : "Guardar"}</button>
           </div>
         </div>

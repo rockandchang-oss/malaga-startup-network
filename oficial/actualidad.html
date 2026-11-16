@@ -18,6 +18,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../style.min.css?v=1.4" />
+  <style>/* Tarjeta de noticia entera clicable (mejora 9, 16-nov-2026) */
+    .news-card{position:relative;cursor:pointer}
+    .news-card .news-link::after{content:"";position:absolute;inset:0;z-index:1}
+  </style>
 </head>
 
 <body>
